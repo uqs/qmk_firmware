@@ -18,7 +18,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #pragma once
 
-
 #define USE_SERIAL
 
 //#define MASTER_LEFT
@@ -30,10 +29,13 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //#define SPLIT_USB_DETECT
 //#define NO_USB_STARTUP_CHECK
 
-
 //#undef RGBLED_NUM
 #define RGBLED_NUM 12
 //#define RGBLED_SPLIT {12,12}
 #define RGBLED_SPLIT {6,6}
 
 #define RGBLIGHT_ANIMATIONS
+#define RGBLIGHT_SLEEP
+#define RGBLIGHT_LAYERS
+
+#define DYNAMIC_KEYMAP_LAYER_COUNT 5  // default is 4 for VIA builds
