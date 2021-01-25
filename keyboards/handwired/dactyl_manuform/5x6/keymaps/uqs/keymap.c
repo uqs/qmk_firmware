@@ -10,32 +10,32 @@ enum layers {
     L4,  // wasd gaming
 };
 
+uint8_t l_prev = L0;
+uint8_t rgb_desired = RGBLIGHT_MODE_BREATHING + 3;
+
 // defining layer L3 when both keys are pressed
 layer_state_t layer_state_set_user(layer_state_t state) {
-  state = update_tri_layer_state(state, L1, L2, L3);
+#ifdef RGBLIGHT_LAYERS
   rgblight_set_layer_state(0, true);
   rgblight_set_layer_state(1, layer_state_cmp(state, L4));
-#if 0
-  switch(get_highest_layer(state)) {
-    case L3:
-      break;
-    case L4:
-      //rgb_mode = rgblight_get_mode();
-      //rgb_hsv = rgblight_get_hsv();
-      //rgblight_mode_noeeprom(RGBLIGHT_MODE_BREATHING);
-      //rgblight_setrgb_range(RGB_BLACK, 6, 12);
-      //rgblight_sethsv_range(HSV_BLACK, 6, 12);
-      rgblight_setrgb_at(255, 255, 255, RGBLED_NUM / 2);
-      rgblight_mode_noeeprom(RGBLIGHT_MODE_STATIC_LIGHT);
-      break;
-    default:
-      //rgblight_mode_noeeprom(RGBLIGHT_MODE_RAINBOW_MOOD);
-      //rgblight_sethsv_noeeprom(rgb_hsv.h, rgb_hsv.s, rgb_hsv.v);
-      rgb_mode = RGBLIGHT_MODE_STATIC_LIGHT;
-      rgblight_mode_noeeprom(rgb_mode);
-      break;
+#else
+  uint8_t layer = biton32(state);
+  if (layer == L4) {
+    rgblight_mode_noeeprom(RGBLIGHT_MODE_STATIC_LIGHT);
+    rgblight_setrgb(RGB_RED);
+    rgblight_setrgb_range(RGB_BLACK, 6, 12);
+  } else {
+    // If we're about to exit L3, don't mess with the RGB again, obviously!
+    if (l_prev == L3) {
+      rgb_desired = rgblight_get_mode();
+    }
+    if (l_prev == L4) {
+      rgblight_mode(rgb_desired);
+    }
   }
+  l_prev = layer;
 #endif
+  state = update_tri_layer_state(state, L1, L2, L3);
   return state;
 }
 
@@ -55,14 +55,17 @@ const rgblight_segment_t* const PROGMEM my_rgb_layers[] = RGBLIGHT_LAYERS_LIST(
     my_default_layer,
     my_wasd_layer
 );
+#endif
 
 void keyboard_post_init_user(void) {
+#ifdef RGBLIGHT_LAYERS
     // Enable the LED layers
     rgblight_layers = my_rgb_layers;
     rgblight_set_layer_state(0, true);
-    rgblight_mode_noeeprom(RGBLIGHT_MODE_BREATHING + 3);
-}
+#else
 #endif
+    rgblight_mode_noeeprom(rgb_desired);
+}
 
 #define KC_SHIFT_INS LSFT(KC_INS)
 #define KC_ALT_SHIFT_INS LALT(LSFT(KC_INS))
@@ -96,6 +99,7 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
 };
 */
 
+// clang-format off
 const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 
   [L0] = LAYOUT_5x6(
