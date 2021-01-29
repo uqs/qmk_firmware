@@ -37,3 +37,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //#define RGBLIGHT_LAYERS
 
 #define DYNAMIC_KEYMAP_LAYER_COUNT 5  // default is 4 for VIA builds
+
+#define LEADER_TIMEOUT 300
+#define LEADER_PER_KEY_TIMING
+
+#define UNICODE_SELECTED_MODES UC_LNX
