@@ -34,9 +34,11 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #define RGBLIGHT_ANIMATIONS
 #define RGBLIGHT_SLEEP
-//#define RGBLIGHT_LAYERS
+#define RGBLIGHT_LAYERS
 
 #define DYNAMIC_KEYMAP_LAYER_COUNT 5  // default is 4 for VIA builds
+
+#define TAPPING_TOGGLE 2
 
 #define LEADER_TIMEOUT 300
 #define LEADER_PER_KEY_TIMING
