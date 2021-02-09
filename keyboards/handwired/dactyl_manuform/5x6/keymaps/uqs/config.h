@@ -32,12 +32,12 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #define RGBLED_NUM 12
 #define RGBLED_SPLIT {6,6}
 
-//#define RGBLIGHT_ANIMATIONS
+#define RGBLIGHT_ANIMATIONS
 #define RGBLIGHT_SLEEP
 #define RGBLIGHT_LAYERS
 #define RGBLIGHT_MAX_LAYERS 8  // default is 16
 
-#define DYNAMIC_KEYMAP_LAYER_COUNT 6  // default is 4 for VIA builds
+#define DYNAMIC_KEYMAP_LAYER_COUNT 7  // default is 4 for VIA builds
 
 #define TAPPING_TOGGLE 2
 
