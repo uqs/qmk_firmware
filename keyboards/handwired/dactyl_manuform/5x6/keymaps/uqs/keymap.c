@@ -15,11 +15,16 @@ enum layers {
     L_COLM = 0,  // Colemak DHm
     L_QWER,
     L_WASD,  // wasd gaming
-    L_NAV,
+    L_EXTD,
     L_MEDIA,
     L_NUM,
     L_MOUSE,
+    L_LAST, // unused
 };
+
+#ifdef VIA_ENABLE
+_Static_assert(DYNAMIC_KEYMAP_LAYER_COUNT >= L_LAST, "VIA enabled, but not enough DYNAMIC_KEYMAP_LAYER_COUNT for all layers");
+#endif
 
 #ifdef RGBLIGHT_LAYERS
 layer_state_t default_layer_state_set_user(layer_state_t state) {
@@ -33,9 +38,9 @@ layer_state_t default_layer_state_set_user(layer_state_t state) {
 // NOTE have a look at keyboards/jones/v03/keymaps/default_jp/keymap.c for default layers and put WASD there and NUM?
 layer_state_t layer_state_set_user(layer_state_t state) {
   // defining layer L_MOUSE when both keys are pressed
-  state = update_tri_layer_state(state, L_NAV, L_MEDIA, L_MOUSE);
+  state = update_tri_layer_state(state, L_EXTD, L_MEDIA, L_MOUSE);
 #ifdef RGBLIGHT_LAYERS
-  rgblight_set_layer_state(L_NAV, layer_state_cmp(state, L_NAV));
+  rgblight_set_layer_state(L_EXTD, layer_state_cmp(state, L_EXTD));
   rgblight_set_layer_state(L_MEDIA, layer_state_cmp(state, L_MEDIA));
   rgblight_set_layer_state(L_NUM, layer_state_cmp(state, L_NUM));
   rgblight_set_layer_state(L_MOUSE, layer_state_cmp(state, L_MOUSE));
@@ -45,57 +50,28 @@ layer_state_t layer_state_set_user(layer_state_t state) {
 }
 
 #ifdef RGBLIGHT_LAYERS
-const rgblight_segment_t PROGMEM my_qwerty_layer[] = RGBLIGHT_LAYER_SEGMENTS(
-    {0, 12, HSV_WHITE}
-);
-
-const rgblight_segment_t PROGMEM my_coldhm_layer[] = RGBLIGHT_LAYER_SEGMENTS(
-    {0, 12, HSV_TURQUOISE}
-);
-
-const rgblight_segment_t PROGMEM my_nav_layer[] = RGBLIGHT_LAYER_SEGMENTS(
-    {0, 12, HSV_BLUE}
-);
-
-const rgblight_segment_t PROGMEM my_media_layer[] = RGBLIGHT_LAYER_SEGMENTS(
-    {0, 12, HSV_YELLOW}
-);
-
-const rgblight_segment_t PROGMEM my_mouse_layer[] = RGBLIGHT_LAYER_SEGMENTS(
-    {0, 12, HSV_GREEN}
-);
-
-const rgblight_segment_t PROGMEM my_num_layer[] = RGBLIGHT_LAYER_SEGMENTS(
-    {0, 12, HSV_PURPLE}
-);
-
-const rgblight_segment_t PROGMEM my_wasd_layer[] = RGBLIGHT_LAYER_SEGMENTS(
-    {0, 6, HSV_RED},
-    {6, 6, HSV_OFF}
-);
-
 // NOTE: at most 2 elements, last one needs to be RGBLIGHT_END_SEGMENTS
 typedef rgblight_segment_t rgblight_layer_t[3];
 
 const rgblight_layer_t PROGMEM my_rgb_segments[] = {
-  [L_COLM] = {{0, 12, HSV_GREEN}, RGBLIGHT_END_SEGMENTS},
-  [L_QWER] = {{0, 12, HSV_WHITE}, RGBLIGHT_END_SEGMENTS},
+  [L_COLM] = {{0, 12, HSV_GREEN},  RGBLIGHT_END_SEGMENTS},
+  [L_QWER] = {{0, 12, HSV_WHITE},  RGBLIGHT_END_SEGMENTS},
   [L_WASD] = {{0,  6, HSV_RED}, {6, 6, HSV_OFF}, RGBLIGHT_END_SEGMENTS},
-  [L_NAV] =  {{0, 12, HSV_BLUE}, RGBLIGHT_END_SEGMENTS},
+  [L_EXTD] = {{0, 12, HSV_BLUE},   RGBLIGHT_END_SEGMENTS},
   [L_MEDIA]= {{0, 12, HSV_YELLOW}, RGBLIGHT_END_SEGMENTS},
   [L_NUM] =  {{0, 12, HSV_ORANGE}, RGBLIGHT_END_SEGMENTS},
   [L_MOUSE]= {{0, 12, HSV_PURPLE}, RGBLIGHT_END_SEGMENTS},
 };
 
-// Now define the array of layers. Later layers take precedence
+// This array needs pointers, :/
 const rgblight_segment_t* const PROGMEM my_rgb_layers[] = {
+    [L_COLM] = my_rgb_segments[L_COLM],
     [L_QWER] = my_rgb_segments[L_QWER],
-    [L_WASD] = my_wasd_layer,
-    [L_COLM] = my_coldhm_layer,
-    [L_NAV] = my_nav_layer,
-    [L_MEDIA] = my_media_layer,
-    [L_NUM] = my_num_layer,
-    [L_MOUSE] = my_mouse_layer,
+    [L_WASD] = my_rgb_segments[L_WASD],
+    [L_EXTD] = my_rgb_segments[L_EXTD],
+    [L_MEDIA]= my_rgb_segments[L_MEDIA],
+    [L_NUM]  = my_rgb_segments[L_NUM],
+    [L_MOUSE]= my_rgb_segments[L_MOUSE],
 };
 #endif
 
@@ -206,9 +182,10 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
      KC_LCTL, KC_A  , KC_R  , KC_S  , KC_T  , KC_G  ,                        KC_M  , KC_N  , KC_E  , KC_I  , KC_O  ,KC_QUOT,
      KC_LSFT, KC_Z  , KC_X  , KC_C  , KC_D  , KC_V  ,                        KC_K  , KC_H  ,KC_COMM,KC_DOT ,KC_SLSH,RSFT_T(KC_GRV),
                       KC_LBRC, KC_RBRC,                                                     KC_MINS, KC_EQL,
-                                 MO(L_NAV), KC_SPC,                             KC_ENT, MO(L_MEDIA),
-                                  /* Order is TR, BR, TL, BL             Order is BL, TL, BR, TR */
-                                      KC_LSFT, KC_LEAD,                      KC_LEAD, RSFT_T(KC_S_INS),
+                                 MO(L_EXTD), KC_SPC,                             KC_ENT, MO(L_MEDIA),
+                                  /* Order is TR, BR                     Order is BL, TL,
+                                              TL, BL                              BR, TR */
+                           LSFT_T(KC_A_S_INS), KC_LEAD,                      KC_LEAD, RSFT_T(KC_S_INS),
                                       KC_LGUI, KC_LALT,                      KC_RALT, KC_APP
   ),
   [L_QWER] = LAYOUT_5x6(
@@ -217,14 +194,11 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
      KC_LCTL, KC_A  , KC_S  , KC_D  , KC_F  , KC_G  ,                        KC_H  , KC_J  , KC_K  , KC_L  ,KC_SCLN,KC_QUOT,
      KC_LSFT, KC_Z  , KC_X  , KC_C  , KC_V  , KC_B  ,                        KC_N  , KC_M  ,KC_COMM,KC_DOT ,KC_SLSH,RSFT_T(KC_GRV),
                       KC_LBRC, KC_RBRC,                                                     KC_MINS, KC_EQL,
-                                 MO(L_NAV), KC_SPC,                             KC_ENT, MO(L_MEDIA),
+                                 MO(L_EXTD), KC_SPC,                             KC_ENT, MO(L_MEDIA),
                                   /* Order is TR, BR, TL, BL             Order is BL, TL, BR, TR */
 // TODO: drop KC_LEAD and make it MO(L_NUM) instead? do I want to embrace the numblock?
-                                      KC_LSFT, KC_LEAD,                      KC_LEAD, RSFT_T(KC_S_INS),
+                           LSFT_T(KC_A_S_INS), KC_LEAD,                      KC_LEAD, RSFT_T(KC_S_INS),
                                       KC_LGUI, KC_LALT,                      KC_RALT, KC_APP
-                                       /*   Shift                          Shift       *
-                                        * Alt   Leader                 Leader  Alt     *
-                                        *    Win                            Menu       */
   /* Should also consider tapping on some of them, e.g. in keyboards/handwired/dactyl_manuform/6x6/keymaps/happysalada/keymap.c
                      LT(_RIGHT_UP,KC_BSPC),LSFT_T(KC_ESC),         LT(_LEFT, KC_ENT),LT(_LEFT_UP,KC_SPC),
                                    _______,LCTL_T(KC_DEL),         LGUI_T(KC_TAB),_______,
@@ -245,13 +219,14 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 
   ),
 
-  // TODO: drop hjkl-like movement in favor of wasd, with Colemak I don't have hjkl anyway?
-  [L_NAV] = LAYOUT_5x6(
-     KC_TILD,KC_EXLM, KC_AT ,KC_HASH,KC_DLR ,KC_PERC,                        KC_CIRC,KC_AMPR,KC_ASTR,KC_LPRN,KC_RPRN,KC_DEL,
-     _______,KC_WBAK,KC_PGUP, KC_UP ,MS_WHUP,KC_LPRN,                        KC_RPRN,KC_PGUP, KC_UP ,MS_WHUP,KC_A_S_INS,KC_S_INS,  // 2 macros here
-     _______,KC_HOME,KC_LEFT,KC_DOWN,KC_RGHT,KC_END ,                        KC_HOME,KC_LEFT,KC_DOWN,KC_RGHT,KC_END ,KC_INS,
-     _______,KC_WFWD,KC_PGDN, KC_NO ,MS_WHDN,KC_LBRC,                        KC_RBRC,KC_PGDN, KC_NO, MS_WHDN,KC_NO  ,_______,
-                     _______,KC_PSCR,                                                        KC_SLCK,KC_PAUS,
+  // Updated with inspiration from https://forum.colemak.com/topic/2014-extend-extra-extreme/
+  // TODO: move DEL to thumb for everything? same for INS maybe?
+  [L_EXTD] = LAYOUT_5x6(
+     KC_F1  , KC_F2 , KC_F3 , KC_F4 , KC_F5 , KC_F6 ,                        KC_F7  , KC_F8 , KC_F9 , KC_F10,KC_F11 ,KC_F12 ,
+     _______,KC_ESC ,MS_WHUP,KC_WBAK,KC_WFWD,KC_PGUP,                        KC_PGUP,KC_HOME, KC_UP ,KC_END ,KC_INS ,KC_NO,
+     _______,KC_LALT,MS_WHDN,KC_LSFT,KC_LCTL,KC_PGDN,                        KC_PGDN,KC_LEFT,KC_DOWN,KC_RGHT,KC_DEL ,KC_NO,
+     _______,KC_UNDO,KC_CUT ,KC_COPY,KC_PSTE,MS_WHLEFT,                    MS_WHRGHT,KC_BSPC, KC_NO, KC_NO  ,KC_NO  ,_______,
+                     _______,_______,                                                        KC_PSCR,KC_PAUS,
                                      _______,_______,                        _______,_______,
                                      _______,_______,                        _______,_______,
                                      _______,_______,                        _______,_______
@@ -266,7 +241,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
                      _______,_______,                                                        _______,_______,
                                      _______,_______,                        _______,_______,
                                      _______,_______,                      TG(L_NUM),DF(L_WASD),
-                                     _______,_______,                        _______,_______
+                                     _______,_______,                        _______,_______  //Put other DFs here?
   ),
 
   // Numpad. This only works when NumLock is turned on. TODO: turn it on when
