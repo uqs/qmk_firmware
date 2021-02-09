@@ -12,31 +12,20 @@
 // https://play.typeracer.com/  shows about 75-80wpm (en) or ~400cpm (de) on my classic keeb.
 
 enum layers {
-    L_QWER = 0,
-    L_COLDHM,
+    L_COLM = 0,  // Colemak DHm
+    L_QWER,
+    L_WASD,  // wasd gaming
     L_NAV,
     L_MEDIA,
-    L_MOUSE,
-    L_WASD,  // wasd gaming
     L_NUM,
+    L_MOUSE,
 };
 
 #ifdef RGBLIGHT_LAYERS
-#else
-uint8_t l_prev = L_QWER;
-uint8_t rgb_desired = 0;//RGBLIGHT_MODE_BREATHING + 3;
-#endif
-
-#ifdef RGBLIGHT_LAYERS
 layer_state_t default_layer_state_set_user(layer_state_t state) {
+  rgblight_set_layer_state(L_COLM, layer_state_cmp(state, L_COLM));
   rgblight_set_layer_state(L_QWER, layer_state_cmp(state, L_QWER));
-  rgblight_set_layer_state(L_COLDHM, layer_state_cmp(state, L_COLDHM));
-  //rgblight_set_layer_state(L_NAV, layer_state_cmp(state, L_NAV));
-  //rgblight_set_layer_state(L_MEDIA, layer_state_cmp(state, L_MEDIA));
-  //rgblight_set_layer_state(L_MOUSE, layer_state_cmp(state, L_MOUSE));
-  //rgblight_set_layer_state(L_NUM, layer_state_cmp(state, L_NUM));
   rgblight_set_layer_state(L_WASD, layer_state_cmp(state, L_WASD));
-
   return state;
 }
 #endif
@@ -46,36 +35,11 @@ layer_state_t layer_state_set_user(layer_state_t state) {
   // defining layer L_MOUSE when both keys are pressed
   state = update_tri_layer_state(state, L_NAV, L_MEDIA, L_MOUSE);
 #ifdef RGBLIGHT_LAYERS
-  //rgblight_set_layer_state(L_QWER, layer_state_cmp(state, L_QWER));
-  //rgblight_set_layer_state(L_COLDHM, layer_state_cmp(state, L_COLDHM));
   rgblight_set_layer_state(L_NAV, layer_state_cmp(state, L_NAV));
   rgblight_set_layer_state(L_MEDIA, layer_state_cmp(state, L_MEDIA));
-  rgblight_set_layer_state(L_MOUSE, layer_state_cmp(state, L_MOUSE));
   rgblight_set_layer_state(L_NUM, layer_state_cmp(state, L_NUM));
-  //rgblight_set_layer_state(L_WASD, layer_state_cmp(state, L_WASD));
+  rgblight_set_layer_state(L_MOUSE, layer_state_cmp(state, L_MOUSE));
 #else
-#if 0
-  uint8_t layer = biton32(state);
-  if (l_prev != layer) {
-    if (layer == L_MOUSE) {
-      rgblight_mode_noeeprom(RGBLIGHT_MODE_STATIC_LIGHT);
-      rgblight_setrgb_range(RGB_TURQUOISE, 3, 6);
-      rgblight_setrgb_range(RGB_TURQUOISE, 3, 12);
-      rgblight_setrgb_range(RGB_TURQUOISE, 6, 12);
-      rgblight_setrgb_range(RGB_RED, 0, 3);
-      //rgblight_setrgb_at(RGB_TURQUOISE, 11);
-      //rgblight_setrgb_at(RGB_TURQUOISE, 12);
-    }
-    // If we're about to exit L_MEDIA, don't mess with the RGB again, obviously!
-    if (l_prev == L_MEDIA) {
-      rgb_desired = rgblight_get_mode();
-    }
-    if (l_prev == L_MOUSE) {
-      rgblight_mode(rgb_desired);
-    }
-    l_prev = layer;
-  }
-#endif
 #endif
   return state;
 }
@@ -110,16 +74,29 @@ const rgblight_segment_t PROGMEM my_wasd_layer[] = RGBLIGHT_LAYER_SEGMENTS(
     {6, 6, HSV_OFF}
 );
 
+// NOTE: at most 2 elements, last one needs to be RGBLIGHT_END_SEGMENTS
+typedef rgblight_segment_t rgblight_layer_t[3];
+
+const rgblight_layer_t PROGMEM my_rgb_segments[] = {
+  [L_COLM] = {{0, 12, HSV_GREEN}, RGBLIGHT_END_SEGMENTS},
+  [L_QWER] = {{0, 12, HSV_WHITE}, RGBLIGHT_END_SEGMENTS},
+  [L_WASD] = {{0,  6, HSV_RED}, {6, 6, HSV_OFF}, RGBLIGHT_END_SEGMENTS},
+  [L_NAV] =  {{0, 12, HSV_BLUE}, RGBLIGHT_END_SEGMENTS},
+  [L_MEDIA]= {{0, 12, HSV_YELLOW}, RGBLIGHT_END_SEGMENTS},
+  [L_NUM] =  {{0, 12, HSV_ORANGE}, RGBLIGHT_END_SEGMENTS},
+  [L_MOUSE]= {{0, 12, HSV_PURPLE}, RGBLIGHT_END_SEGMENTS},
+};
+
 // Now define the array of layers. Later layers take precedence
-const rgblight_segment_t* const PROGMEM my_rgb_layers[] = RGBLIGHT_LAYERS_LIST(
-    my_qwerty_layer,
-    my_coldhm_layer,
-    my_nav_layer,
-    my_media_layer,
-    my_mouse_layer,
-    my_wasd_layer,
-    my_num_layer
-);
+const rgblight_segment_t* const PROGMEM my_rgb_layers[] = {
+    [L_QWER] = my_rgb_segments[L_QWER],
+    [L_WASD] = my_wasd_layer,
+    [L_COLM] = my_coldhm_layer,
+    [L_NAV] = my_nav_layer,
+    [L_MEDIA] = my_media_layer,
+    [L_NUM] = my_num_layer,
+    [L_MOUSE] = my_mouse_layer,
+};
 #endif
 
 void keyboard_post_init_user(void) {
@@ -223,6 +200,17 @@ const qk_ucis_symbol_t ucis_symbol_table[] = UCIS_TABLE(
 // clang-format off
 const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 
+  [L_COLM] = LAYOUT_5x6(
+     KC_GESC, KC_1  , KC_2  , KC_3  , KC_4  , KC_5  ,                        KC_6  , KC_7  , KC_8  , KC_9  , KC_0  ,KC_BSPC,
+     KC_TAB , KC_Q  , KC_W  , KC_F  , KC_P  , KC_B  ,                        KC_J  , KC_L  , KC_U  , KC_Y  ,KC_SCLN,KC_BSLS,
+     KC_LCTL, KC_A  , KC_R  , KC_S  , KC_T  , KC_G  ,                        KC_M  , KC_N  , KC_E  , KC_I  , KC_O  ,KC_QUOT,
+     KC_LSFT, KC_Z  , KC_X  , KC_C  , KC_D  , KC_V  ,                        KC_K  , KC_H  ,KC_COMM,KC_DOT ,KC_SLSH,RSFT_T(KC_GRV),
+                      KC_LBRC, KC_RBRC,                                                     KC_MINS, KC_EQL,
+                                 MO(L_NAV), KC_SPC,                             KC_ENT, MO(L_MEDIA),
+                                  /* Order is TR, BR, TL, BL             Order is BL, TL, BR, TR */
+                                      KC_LSFT, KC_LEAD,                      KC_LEAD, RSFT_T(KC_S_INS),
+                                      KC_LGUI, KC_LALT,                      KC_RALT, KC_APP
+  ),
   [L_QWER] = LAYOUT_5x6(
      KC_GESC, KC_1  , KC_2  , KC_3  , KC_4  , KC_5  ,                        KC_6  , KC_7  , KC_8  , KC_9  , KC_0  ,KC_BSPC,
      KC_TAB , KC_Q  , KC_W  , KC_E  , KC_R  , KC_T  ,                        KC_Y  , KC_U  , KC_I  , KC_O  , KC_P  ,KC_BSLS,
@@ -230,9 +218,10 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
      KC_LSFT, KC_Z  , KC_X  , KC_C  , KC_V  , KC_B  ,                        KC_N  , KC_M  ,KC_COMM,KC_DOT ,KC_SLSH,RSFT_T(KC_GRV),
                       KC_LBRC, KC_RBRC,                                                     KC_MINS, KC_EQL,
                                  MO(L_NAV), KC_SPC,                             KC_ENT, MO(L_MEDIA),
-                                      /* Order is TR, BR, TL, BL             Order is BL, TL, BR, TR */
-                                      KC_LSFT, KC_LEAD,                      KC_LEAD,RSFT_T(KC_S_INS),
-                                      KC_LALT, KC_LGUI,                      KC_APP, KC_RALT
+                                  /* Order is TR, BR, TL, BL             Order is BL, TL, BR, TR */
+// TODO: drop KC_LEAD and make it MO(L_NUM) instead? do I want to embrace the numblock?
+                                      KC_LSFT, KC_LEAD,                      KC_LEAD, RSFT_T(KC_S_INS),
+                                      KC_LGUI, KC_LALT,                      KC_RALT, KC_APP
                                        /*   Shift                          Shift       *
                                         * Alt   Leader                 Leader  Alt     *
                                         *    Win                            Menu       */
@@ -242,22 +231,26 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
                                           _______,_______,         _______,_______
   */
   ),
-  [L_COLDHM] = LAYOUT_5x6(
-     KC_GESC, KC_1  , KC_2  , KC_3  , KC_4  , KC_5  ,                        KC_6  , KC_7  , KC_8  , KC_9  , KC_0  ,KC_BSPC,
-     KC_TAB , KC_Q  , KC_W  , KC_F  , KC_P  , KC_B  ,                        KC_J  , KC_L  , KC_U  , KC_Y  ,KC_SCLN,KC_BSLS,
-     KC_LCTL, KC_A  , KC_R  , KC_S  , KC_T  , KC_G  ,                        KC_M  , KC_N  , KC_E  , KC_I  , KC_O  ,KC_QUOT,
-     KC_LSFT, KC_Z  , KC_X  , KC_C  , KC_D  , KC_V  ,                        KC_K  , KC_H  ,KC_COMM,KC_DOT ,KC_SLSH,RSFT_T(KC_GRV),
+
+  [L_WASD] = LAYOUT_5x6(
+     KC_ESC ,  KC_1  , KC_2  , KC_3  , KC_4  , KC_5 ,                        KC_6  , KC_7  , KC_8  , KC_9  , KC_0  ,KC_BSPC,
+     KC_T   , KC_TAB , KC_Q  , KC_W  , KC_E  , KC_R ,                        KC_Y  , KC_U  , KC_I  , KC_O  , KC_P  ,KC_BSLS,
+     KC_G   , KC_LSFT, KC_A  , KC_S  , KC_D  , KC_F ,                        KC_H  , KC_J  , KC_K  , KC_L  ,KC_SCLN,KC_QUOT,
+     KC_B   , KC_LCTL, KC_Z  , KC_X  , KC_C  , KC_V ,                        KC_N  , KC_M  ,KC_COMM,KC_DOT ,KC_SLSH,RSFT_T(KC_GRV),
                       KC_LBRC, KC_RBRC,                                                     KC_MINS, KC_EQL,
-                                 MO(L_NAV), KC_SPC,                             KC_ENT, MO(L_MEDIA),
-                                      KC_LSFT, KC_LEAD,                      KC_LEAD,RSFT_T(KC_S_INS),
-                                      KC_LALT, KC_LGUI,                      KC_APP, KC_RALT
+                                  KC_LCTL,KC_SPC,                                _______,_______,
+                                  /* Order is TR, BR, TL, BL             Order is BL, TL, BR, TR */
+                                      KC_LSFT, KC_NO,                        KC_LGUI,DF(L_QWER),
+                                      KC_LGUI, KC_LALT,                      KC_RALT, KC_APP
+
   ),
 
+  // TODO: drop hjkl-like movement in favor of wasd, with Colemak I don't have hjkl anyway?
   [L_NAV] = LAYOUT_5x6(
      KC_TILD,KC_EXLM, KC_AT ,KC_HASH,KC_DLR ,KC_PERC,                        KC_CIRC,KC_AMPR,KC_ASTR,KC_LPRN,KC_RPRN,KC_DEL,
-     _______,KC_WBAK,KC_PGUP, KC_UP ,MS_WHUP,KC_LPRN,                        KC_RPRN,KC_HOME,KC_PGUP,KC_NO  ,KC_A_S_INS,KC_S_INS,  // 2 macros here
-     _______,KC_HOME,KC_LEFT,KC_DOWN,KC_RGHT,KC_END ,                        KC_LEFT,KC_DOWN, KC_UP ,KC_RGHT,KC_NO  ,KC_INS,
-     _______,KC_WFWD,KC_PGDN,_______,MS_WHDN,KC_LBRC,                        KC_RBRC,KC_PGDN, KC_END,KC_NO  ,KC_NO  ,_______,
+     _______,KC_WBAK,KC_PGUP, KC_UP ,MS_WHUP,KC_LPRN,                        KC_RPRN,KC_PGUP, KC_UP ,MS_WHUP,KC_A_S_INS,KC_S_INS,  // 2 macros here
+     _______,KC_HOME,KC_LEFT,KC_DOWN,KC_RGHT,KC_END ,                        KC_HOME,KC_LEFT,KC_DOWN,KC_RGHT,KC_END ,KC_INS,
+     _______,KC_WFWD,KC_PGDN, KC_NO ,MS_WHDN,KC_LBRC,                        KC_RBRC,KC_PGDN, KC_NO, MS_WHDN,KC_NO  ,_______,
                      _______,KC_PSCR,                                                        KC_SLCK,KC_PAUS,
                                      _______,_______,                        _______,_______,
                                      _______,_______,                        _______,_______,
@@ -276,9 +269,22 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
                                      _______,_______,                        _______,_______
   ),
 
-  // TODO: Put all layer switching here? Except need escape hatch from WASD as I can't trilayer in here from there
+  // Numpad. This only works when NumLock is turned on. TODO: turn it on when
+  // entering layer? Or switch to KC_1, etc instead of KC_KP_1 ... This then
+  // looses the Alt-number unicode stuff.
+  [L_NUM] = LAYOUT_5x6(
+     KC_GESC,_______,_______,_______,_______,TG(L_NUM),                      KC_NO, KC_NUMLOCK,KC_KP_SLASH,KC_KP_ASTERISK,KC_KP_MINUS,KC_BSPC,
+     _______,_______,_______,_______,_______,_______,                        KC_NO, KC_KP_7,KC_KP_8,KC_KP_9,KC_KP_PLUS,_______,
+     _______,_______,_______,_______,_______,_______,                        KC_NO, KC_KP_4,KC_KP_5,KC_KP_6,KC_KP_PLUS,_______,
+     _______,_______,_______,_______,_______,_______,                        KC_NO, KC_KP_1,KC_KP_2,KC_KP_3,KC_KP_ENTER,_______,
+                     _______,_______,                                                        KC_KP_0,KC_KP_DOT,
+                                     _______,_______,                        _______,_______,
+                                     _______,_______,                        _______,_______,
+                                     _______,_______,                        _______,_______
+  ),
+
   [L_MOUSE] = LAYOUT_5x6(
-     RGB_TOG,DF(L_QWER),DF(L_COLDHM),DF(L_WASD),_______,TG(L_NUM),           MS_WHLEFT,MS_WHUP,   KC_MS_BTN3,    MS_WHDN,MS_WHRGHT,KC_MS_BTN4,
+     RGB_TOG,DF(L_QWER),DF(L_COLM),DF(L_WASD),_______,TG(L_NUM),           MS_WHLEFT,MS_WHUP,   KC_MS_BTN3,    MS_WHDN,MS_WHRGHT,KC_MS_BTN4,
      RGB_MOD,_______,_______,_______,_______,_______,                        _______,KC_MS_BTN1,KC_MS_UP,   KC_MS_BTN2,  _______,KC_MS_BTN5,
     RGB_RMOD,_______,KC_ACL0,KC_ACL1,KC_ACL2,_______,                        _______,KC_MS_LEFT,KC_MS_DOWN,KC_MS_RIGHT,  _______,_______,
      /* Plain, Breath, Rainbow, Swirl, Snake, KnightRider, Xmas, Gradient */
@@ -288,35 +294,4 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
                                      RGB_HUI,RGB_SAI,                        RGB_VAI,KC_BRIU,
                                      RGB_HUD,RGB_SAD,                        RGB_VAD,KC_BRID
   ),
-
-  // Numpad. This only works when NumLock is turned on. TODO: turn it on when
-  // entering layer? Or switch got KC_1, etc instead of KC_KP_1 ... This then
-  // looses the Alt-number unicode stuff.
-  [L_WASD] = LAYOUT_5x6(
-     KC_ESC ,  KC_1  , KC_2  , KC_3  , KC_4  , KC_5 ,                        KC_6  , KC_7  , KC_8  , KC_9  , KC_0  ,KC_BSPC,
-     KC_T   , KC_TAB , KC_Q  , KC_W  , KC_E  , KC_R ,                        KC_Y  , KC_U  , KC_I  , KC_O  , KC_P  ,KC_BSLS,
-     KC_G   , KC_LSFT, KC_A  , KC_S  , KC_D  , KC_F ,                        KC_H  , KC_J  , KC_K  , KC_L  ,KC_SCLN,KC_QUOT,
-     KC_B   , KC_LCTL, KC_Z  , KC_X  , KC_C  , KC_V ,                        KC_N  , KC_M  ,KC_COMM,KC_DOT ,KC_SLSH,RSFT_T(KC_GRV),
-                      KC_LBRC, KC_RBRC,                                                     KC_MINS, KC_EQL,
-                                      KC_LCTL,KC_SPC,                        _______,_______,
-                                      /* Order is TR, BR, TL, BL             Order is BL, TL, BR, TR */
-                                      KC_LSFT, KC_NO,                        KC_LGUI,DF(L_QWER),
-                                      KC_LALT, KC_NO,                        KC_APP, KC_RALT
-
-                                       /*   Shift                          Shift       *
-                                        * Alt   Nix                      Nix   Alt     *
-                                        *    Win                            Menu       */
-
-  ),
-  [L_NUM] = LAYOUT_5x6(
-     KC_GESC, KC_1  , KC_2  , KC_3  , KC_4  , KC_5  ,                        KC_6  , KC_NUMLOCK,KC_KP_SLASH,KC_KP_ASTERISK,KC_KP_MINUS,KC_BSPC,
-     _______,_______,_______,_______,_______,_______,                        _______,KC_KP_7,KC_KP_8,KC_KP_9,KC_KP_PLUS,_______,
-     _______,_______,_______,_______,_______,_______,                        _______,KC_KP_4,KC_KP_5,KC_KP_6,KC_KP_PLUS,_______,
-     _______,_______,_______,_______,_______,_______,                        _______,KC_KP_1,KC_KP_2,KC_KP_3,KC_KP_ENTER,_______,
-                     _______,_______,                                                        KC_KP_0,KC_KP_DOT,
-                                     _______,_______,                        _______,_______,
-                                     _______,_______,                      TG(L_NUM),_______,
-                                     _______,_______,                        _______,_______
-  ),
-
 };
