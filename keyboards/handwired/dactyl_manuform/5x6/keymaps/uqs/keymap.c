@@ -10,13 +10,14 @@
 // LOG:
 // Jan 2020, got Dactyl Manuform
 // https://play.typeracer.com/  shows about 75-80wpm (en) or ~400cpm (de) on my classic keeb.
+// Feb 2020, switching to Colemak DH
+// mid Feb, 20wpm/87% on monkeytype.com (no punct, numbers)
 
 enum layers {
     L_COLM = 0,  // Colemak DHm
     L_QWER,
     L_WASD,  // wasd gaming
     L_EXTD,
-    L_MEDIA,
     L_NUM,
     L_MOUSE,
     L_LAST, // unused
@@ -38,10 +39,9 @@ layer_state_t default_layer_state_set_user(layer_state_t state) {
 // NOTE have a look at keyboards/jones/v03/keymaps/default_jp/keymap.c for default layers and put WASD there and NUM?
 layer_state_t layer_state_set_user(layer_state_t state) {
   // defining layer L_MOUSE when both keys are pressed
-  state = update_tri_layer_state(state, L_EXTD, L_MEDIA, L_MOUSE);
+  state = update_tri_layer_state(state, L_EXTD, L_NUM, L_MOUSE);
 #ifdef RGBLIGHT_LAYERS
   rgblight_set_layer_state(L_EXTD, layer_state_cmp(state, L_EXTD));
-  rgblight_set_layer_state(L_MEDIA, layer_state_cmp(state, L_MEDIA));
   rgblight_set_layer_state(L_NUM, layer_state_cmp(state, L_NUM));
   rgblight_set_layer_state(L_MOUSE, layer_state_cmp(state, L_MOUSE));
 #else
@@ -58,7 +58,6 @@ const rgblight_layer_t PROGMEM my_rgb_segments[] = {
   [L_QWER] = {{0, 12, HSV_WHITE},  RGBLIGHT_END_SEGMENTS},
   [L_WASD] = {{0,  6, HSV_RED}, {6, 6, HSV_OFF}, RGBLIGHT_END_SEGMENTS},
   [L_EXTD] = {{0, 12, HSV_BLUE},   RGBLIGHT_END_SEGMENTS},
-  [L_MEDIA]= {{0, 12, HSV_YELLOW}, RGBLIGHT_END_SEGMENTS},
   [L_NUM] =  {{0, 12, HSV_ORANGE}, RGBLIGHT_END_SEGMENTS},
   [L_MOUSE]= {{0, 12, HSV_PURPLE}, RGBLIGHT_END_SEGMENTS},
 };
@@ -69,7 +68,6 @@ const rgblight_segment_t* const PROGMEM my_rgb_layers[] = {
     [L_QWER] = my_rgb_segments[L_QWER],
     [L_WASD] = my_rgb_segments[L_WASD],
     [L_EXTD] = my_rgb_segments[L_EXTD],
-    [L_MEDIA]= my_rgb_segments[L_MEDIA],
     [L_NUM]  = my_rgb_segments[L_NUM],
     [L_MOUSE]= my_rgb_segments[L_MOUSE],
 };
@@ -88,38 +86,58 @@ void keyboard_post_init_user(void) {
 // Maybe do something with KC_PASTE instead (or KC_CUT, KC_COPY)
 #define KC_S_INS LSFT(KC_INS)
 #define KC_A_S_INS LALT(LSFT(KC_INS))
+// Note RSFT_T() can only work with the basic layer, supposedly custom macros
+// should work, like given below, except they don't. RSFT_T(KC_S_INS) results
+// in xev seeing Backspace ... A plain KC_S_INS of course works fine.
 
 // Works as well as the above, but only needed for more complex stuff.
-/*
 enum custom_keycodes {
     SHIFT_INS = SAFE_RANGE,
     ALT_SHIFT_INS,
 };
 
+uint16_t key_timer;
 bool process_record_user(uint16_t keycode, keyrecord_t *record) {
     switch (keycode) {
     case SHIFT_INS:
         if (record->event.pressed) {
-            // when keycode is pressed
-            SEND_STRING(SS_LSFT(SS_TAP(X_INS)));
+          // when keycode is pressed
+          //SEND_STRING(SS_LSFT(SS_TAP(X_INS)));  // This doesn't work
+          key_timer = timer_read();
+          // Shift when held ...
+          register_mods(MOD_BIT(KC_RSFT));
         } else {
-            // when keycode is released
+          // If released within the timer, then Shift+Ins
+          if (timer_elapsed(key_timer) < TAPPING_TERM) {
+            //tap_code16(S(KC_INS));
+            tap_code16(KC_INS);
+          }
+          unregister_mods(MOD_BIT(KC_RSFT));
         }
         break;
 
     case ALT_SHIFT_INS:
         if (record->event.pressed) {
-            SEND_STRING(SS_LALT(SS_LSFT(SS_TAP(X_INS))));
+          //SEND_STRING(SS_LALT(SS_LSFT(SS_TAP(X_INS))));
+          key_timer = timer_read();
+          // Shift when held ...
+          register_mods(MOD_BIT(KC_LSFT));
         } else {
+          // If released within the timer, then Shift+Alt+Ins
+          if (timer_elapsed(key_timer) < TAPPING_TERM) {
+            register_mods(MOD_BIT(KC_LALT));
+            tap_code16(/*S*/(KC_INS));
+          }
+          // Note: this makes xev(1) see KeyPress for Meta_L but KeyRelease for Alt_L
+          unregister_mods(MOD_BIT(KC_LSFT) | MOD_BIT(KC_LALT));
         }
         break;
     }
 
     return true;
 };
-*/
 
-#if defined(LEADER_ENABLE) && defined(UCIS_ENABLE)
+#ifdef LEADER_ENABLE
 LEADER_EXTERNS();
 
 void matrix_scan_user(void) {
@@ -127,27 +145,44 @@ void matrix_scan_user(void) {
     leading = false;
     leader_end();
 
-    SEQ_ONE_KEY(KC_F) {
-      // Anything you can do in a macro.
-      SEND_STRING("QMK is awesome.");
-    }
+    //SEQ_ONE_KEY(KC_F) {
+    //  SEND_STRING("QMK is awesome.");
+    //}
+#ifdef UCIS_ENABLE
     SEQ_ONE_KEY(KC_U) {
       qk_ucis_start();
     }
-    SEQ_TWO_KEYS(KC_D, KC_D) {
-      SEND_STRING(SS_LCTL("a") SS_LCTL("c"));
+#endif
+    SEQ_ONE_KEY(KC_D) {
+      send_unicode_string("ಠ_ಠ");
     }
-    //tableflip (LEADER - TF)
+    SEQ_ONE_KEY(KC_L) {
+      send_unicode_string("( ͡° ͜ʖ ͡°)");
+    }
+    SEQ_ONE_KEY(KC_S) {
+      send_unicode_string("¯\\_(ツ)_/¯");
+    }
+    // tableflip (LEADER - TF)
     SEQ_TWO_KEYS(KC_T, KC_F) {
-        set_unicode_input_mode(UC_LNX);
-        send_unicode_hex_string("0028 30CE 0CA0 75CA 0CA0 0029 30CE 5F61 253B 2501 253B");
+      //set_unicode_input_mode(UC_LNX);
+      //send_unicode_hex_string("0028 30CE 0CA0 75CA 0CA0 0029 30CE 5F61 253B 2501 253B");
+      send_unicode_string("(╯°□°）╯︵ ┻━┻");
     }
-    SEQ_THREE_KEYS(KC_D, KC_D, KC_S) {
-      SEND_STRING("https://start.duckduckgo.com\n");
+    SEQ_THREE_KEYS(KC_U, KC_T, KC_F) {
+      //set_unicode_input_mode(UC_LNX);
+      //send_unicode_hex_string("0028 30CE 0CA0 75CA 0CA0 0029 30CE 5F61 253B 2501 253B");
+      send_unicode_string("┬─┬ノ( º _ ºノ)");
     }
+    //SEQ_THREE_KEYS(KC_D, KC_D, KC_S) {
+    //  SEND_STRING("https://start.duckduckgo.com\n");
+    //}
   }
 }
+#else
+#define KC_LEAD KC_NO
+#endif
 
+#ifdef UCIS_ENABLE
 // 3 codepoints at most, otherwise increase UCIS_MAX_CODE_POINTS
 const qk_ucis_symbol_t ucis_symbol_table[] = UCIS_TABLE(
     UCIS_SYM("poop", 0x1F4A9),                // 💩
@@ -163,8 +198,6 @@ const qk_ucis_symbol_t ucis_symbol_table[] = UCIS_TABLE(
 //   <hopeless> = ＼(^o^)／
 //   <idklol> = ¯\(°_o)/¯
 );
-#else
-#define KC_LEAD KC_TRNS
 #endif
 
 // Shorter names
@@ -182,11 +215,15 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
      KC_LCTL, KC_A  , KC_R  , KC_S  , KC_T  , KC_G  ,                        KC_M  , KC_N  , KC_E  , KC_I  , KC_O  ,KC_QUOT,
      KC_LSFT, KC_Z  , KC_X  , KC_C  , KC_D  , KC_V  ,                        KC_K  , KC_H  ,KC_COMM,KC_DOT ,KC_SLSH,RSFT_T(KC_GRV),
                       KC_LBRC, KC_RBRC,                                                     KC_MINS, KC_EQL,
-                                 MO(L_EXTD), KC_SPC,                             KC_ENT, MO(L_MEDIA),
+                          LT(L_EXTD, KC_ESC), KC_SPC,                        KC_ENT, LT(L_NUM, KC_BSPC),
                                   /* Order is TR, BR                     Order is BL, TL,
                                               TL, BL                              BR, TR */
-                           LSFT_T(KC_A_S_INS), KC_LEAD,                      KC_LEAD, RSFT_T(KC_S_INS),
+                                ALT_SHIFT_INS, KC_LEAD,                      KC_LEAD, SHIFT_INS,
                                       KC_LGUI, KC_LALT,                      KC_RALT, KC_APP
+// TODO: drop KC_LEAD and make it MO(L_NUM) instead? do I want to embrace the numblock?
+// TODO: RSFT_T(KC_S_INS) doesn't seem to work, only INS comes through, but
+// KC_PASTE essentially does shift-insert for Linux (mostly, for example not in
+// Qt apps!), does nothing on Windows though, where Shift-Ins works.
   ),
   [L_QWER] = LAYOUT_5x6(
      KC_GESC, KC_1  , KC_2  , KC_3  , KC_4  , KC_5  ,                        KC_6  , KC_7  , KC_8  , KC_9  , KC_0  ,KC_BSPC,
@@ -194,10 +231,9 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
      KC_LCTL, KC_A  , KC_S  , KC_D  , KC_F  , KC_G  ,                        KC_H  , KC_J  , KC_K  , KC_L  ,KC_SCLN,KC_QUOT,
      KC_LSFT, KC_Z  , KC_X  , KC_C  , KC_V  , KC_B  ,                        KC_N  , KC_M  ,KC_COMM,KC_DOT ,KC_SLSH,RSFT_T(KC_GRV),
                       KC_LBRC, KC_RBRC,                                                     KC_MINS, KC_EQL,
-                                 MO(L_EXTD), KC_SPC,                             KC_ENT, MO(L_MEDIA),
+                          LT(L_EXTD, KC_ESC), KC_SPC,                        KC_ENT, LT(L_NUM, KC_BSPC),
                                   /* Order is TR, BR, TL, BL             Order is BL, TL, BR, TR */
-// TODO: drop KC_LEAD and make it MO(L_NUM) instead? do I want to embrace the numblock?
-                           LSFT_T(KC_A_S_INS), KC_LEAD,                      KC_LEAD, RSFT_T(KC_S_INS),
+                                ALT_SHIFT_INS, KC_LEAD,                      KC_LEAD, SHIFT_INS,
                                       KC_LGUI, KC_LALT,                      KC_RALT, KC_APP
   /* Should also consider tapping on some of them, e.g. in keyboards/handwired/dactyl_manuform/6x6/keymaps/happysalada/keymap.c
                      LT(_RIGHT_UP,KC_BSPC),LSFT_T(KC_ESC),         LT(_LEFT, KC_ENT),LT(_LEFT_UP,KC_SPC),
@@ -224,36 +260,25 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
   [L_EXTD] = LAYOUT_5x6(
      KC_F1  , KC_F2 , KC_F3 , KC_F4 , KC_F5 , KC_F6 ,                        KC_F7  , KC_F8 , KC_F9 , KC_F10,KC_F11 ,KC_F12 ,
      _______,KC_ESC ,MS_WHUP,KC_WBAK,KC_WFWD,KC_PGUP,                        KC_PGUP,KC_HOME, KC_UP ,KC_END ,KC_INS ,KC_NO,
-     _______,KC_LALT,MS_WHDN,KC_LSFT,KC_LCTL,KC_PGDN,                        KC_PGDN,KC_LEFT,KC_DOWN,KC_RGHT,KC_DEL ,KC_NO,
-     _______,KC_UNDO,KC_CUT ,KC_COPY,KC_PSTE,MS_WHLEFT,                    MS_WHRGHT,KC_BSPC, KC_NO, KC_NO  ,KC_NO  ,_______,
+     _______,KC_LALT,MS_WHDN,KC_LSFT,KC_LCTL,KC_PGDN,                        KC_PGDN,KC_LEFT,KC_DOWN,KC_RGHT,KC_DEL ,KC_ENT ,
+     _______,KC_UNDO,KC_CUT ,KC_COPY,KC_PSTE, KC_NO ,                        KC_NO  ,KC_BSPC,MS_WHLEFT,MS_WHRGHT,KC_NO ,_______,
                      _______,_______,                                                        KC_PSCR,KC_PAUS,
-                                     _______,_______,                        _______,_______,
+                                     _______,_______,                        KC_DEL ,_______,
                                      _______,_______,                        _______,_______,
                                      _______,_______,                        _______,_______
 
-  ),
-
-  [L_MEDIA] = LAYOUT_5x6(
-     KC_F1  , KC_F2 , KC_F3 , KC_F4 , KC_F5 , KC_F6 ,                        KC_F7  , KC_F8 , KC_F9 , KC_F10,KC_F11 ,KC_F12 ,
-     _______,_______,_______, KC_UP ,_______,_______,                        _______,_______,KC_MSEL,_______,KC_MUTE,KC_VOLU,
-     _______,_______,KC_LEFT,KC_DOWN,KC_RGHT,_______,                        _______,KC_MPRV,KC_MPLY,KC_MNXT,_______,KC_VOLD,
-     _______,_______,_______,_______,_______,_______,                        _______,_______,KC_MSTP,_______,_______,_______,
-                     _______,_______,                                                        _______,_______,
-                                     _______,_______,                        _______,_______,
-                                     _______,_______,                      TG(L_NUM),DF(L_WASD),
-                                     _______,_______,                        _______,_______  //Put other DFs here?
   ),
 
   // Numpad. This only works when NumLock is turned on. TODO: turn it on when
   // entering layer? Or switch to KC_1, etc instead of KC_KP_1 ... This then
   // looses the Alt-number unicode stuff.
   [L_NUM] = LAYOUT_5x6(
-     KC_GESC,_______,_______,_______,_______,TG(L_NUM),                      KC_NO, KC_NUMLOCK,KC_KP_SLASH,KC_KP_ASTERISK,KC_KP_MINUS,KC_BSPC,
-     _______,_______,_______,_______,_______,_______,                        KC_NO, KC_KP_7,KC_KP_8,KC_KP_9,KC_KP_PLUS,_______,
-     _______,_______,_______,_______,_______,_______,                        KC_NO, KC_KP_4,KC_KP_5,KC_KP_6,KC_KP_PLUS,_______,
-     _______,_______,_______,_______,_______,_______,                        KC_NO, KC_KP_1,KC_KP_2,KC_KP_3,KC_KP_ENTER,_______,
+     _______,_______,_______,_______,_______,TG(L_NUM),                   KC_NUMLOCK,KC_NUMLOCK,KC_KP_SLASH,KC_KP_ASTERISK,KC_KP_MINUS,KC_BSPC,
+     _______,_______,_______,_______,_______,KC_VOLU,                        KC_LPRN, KC_KP_7,KC_KP_8,KC_KP_9,KC_KP_PLUS,_______,
+     _______,KC_MSEL,_______,_______,_______,KC_VOLD,                        KC_RPRN, KC_KP_4,KC_KP_5,KC_KP_6,KC_KP_PLUS,_______,
+     _______,KC_MPRV,KC_MPLY,KC_MNXT,_______,KC_MUTE,                        KC_EQL , KC_KP_1,KC_KP_2,KC_KP_3,KC_KP_ENTER,_______,
                      _______,_______,                                                        KC_KP_0,KC_KP_DOT,
-                                     _______,_______,                        _______,_______,
+                                     _______,KC_BSPC,                        _______,_______,
                                      _______,_______,                        _______,_______,
                                      _______,_______,                        _______,_______
   ),
