@@ -145,22 +145,22 @@ void matrix_scan_user(void) {
     leading = false;
     leader_end();
 
-    //SEQ_ONE_KEY(KC_F) {
-    //  SEND_STRING("QMK is awesome.");
-    //}
 #ifdef UCIS_ENABLE
     SEQ_ONE_KEY(KC_U) {
       qk_ucis_start();
     }
 #endif
+    SEQ_ONE_KEY(KC_H) {
+      send_unicode_string("ᕕ( ᐛ )ᕗ");  // happy
+    }
     SEQ_ONE_KEY(KC_D) {
-      send_unicode_string("ಠ_ಠ");
+      send_unicode_string("ಠ_ಠ");  // disapproval
     }
     SEQ_ONE_KEY(KC_L) {
-      send_unicode_string("( ͡° ͜ʖ ͡°)");
+      send_unicode_string("( ͡° ͜ʖ ͡°)");  // lenny
     }
     SEQ_ONE_KEY(KC_S) {
-      send_unicode_string("¯\\_(ツ)_/¯");
+      send_unicode_string("¯\\_(ツ)_/¯");  // shrug
     }
     // tableflip (LEADER - TF)
     SEQ_TWO_KEYS(KC_T, KC_F) {
@@ -168,14 +168,12 @@ void matrix_scan_user(void) {
       //send_unicode_hex_string("0028 30CE 0CA0 75CA 0CA0 0029 30CE 5F61 253B 2501 253B");
       send_unicode_string("(╯°□°）╯︵ ┻━┻");
     }
+    // untableflip
     SEQ_THREE_KEYS(KC_U, KC_T, KC_F) {
       //set_unicode_input_mode(UC_LNX);
       //send_unicode_hex_string("0028 30CE 0CA0 75CA 0CA0 0029 30CE 5F61 253B 2501 253B");
       send_unicode_string("┬─┬ノ( º _ ºノ)");
     }
-    //SEQ_THREE_KEYS(KC_D, KC_D, KC_S) {
-    //  SEND_STRING("https://start.duckduckgo.com\n");
-    //}
   }
 }
 #else
@@ -189,14 +187,6 @@ const qk_ucis_symbol_t ucis_symbol_table[] = UCIS_TABLE(
     UCIS_SYM("rofl", 0x1F923),                // 🤣
     UCIS_SYM("cuba", 0x1F1E8, 0x1F1FA),       // 🇨🇺
     UCIS_SYM("look", 0x0CA0, 0x005F, 0x0CA0)  // ಠ_ಠ
-//   <lenny> = ( ͡° ͜ʖ ͡°)
-//   <shrug> = ¯\_(ツ)_/¯
-//   <fliptable> = (╯°□°）╯︵ ┻━┻
-//   <unfliptable> = ┬─┬ノ( º _ ºノ)
-//   <happy> = ᕕ( ᐛ )ᕗ
-//   <disapproval> = ಠ_ಠ
-//   <hopeless> = ＼(^o^)／
-//   <idklol> = ¯\(°_o)/¯
 );
 #endif
 
@@ -221,9 +211,22 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
                                 ALT_SHIFT_INS, KC_LEAD,                      KC_LEAD, SHIFT_INS,
                                       KC_LGUI, KC_LALT,                      KC_RALT, KC_APP
 // TODO: drop KC_LEAD and make it MO(L_NUM) instead? do I want to embrace the numblock?
-// TODO: RSFT_T(KC_S_INS) doesn't seem to work, only INS comes through, but
+// NOTE: RSFT_T(KC_S_INS) doesn't work, only INS comes through. RSFT_T stuff
+// only works on "simple" keycodes. See process_record_user for how this works,
+// thanks to ridingqwerty on Discord.
 // KC_PASTE essentially does shift-insert for Linux (mostly, for example not in
 // Qt apps!), does nothing on Windows though, where Shift-Ins works.
+//
+// Some people do: NavL | Bspc/Shft | Enter/Fkeys | | Esc | Spc/SymbL | empty
+// but sometimes you have to hold enter or space? or what about shift-enter? hmmm
+// Needs more thinking, there's 3 useful/quick thumb keys after all, would have
+// to move shift-ins stuff someplace else.
+// More thoughts: "I have Shift-Enter on the left big thumb, and Shift-Space on
+// the right. To the left of the left big thumb is LT1-Del and to the right of
+// the right big thumb is LT1-Bspc. My other two outermost thumb keys are
+// Win/Sys on the left and Alt on the right. My LT2 is actually on a pinky,
+// along with CTRL. I have thought about moving CTRL to one of the big thumbs
+// but I like having shift on both."
   ),
   [L_QWER] = LAYOUT_5x6(
      KC_GESC, KC_1  , KC_2  , KC_3  , KC_4  , KC_5  ,                        KC_6  , KC_7  , KC_8  , KC_9  , KC_0  ,KC_BSPC,
@@ -278,7 +281,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
      _______,KC_MSEL,_______,_______,_______,KC_VOLD,                        KC_RPRN, KC_KP_4,KC_KP_5,KC_KP_6,KC_KP_PLUS,_______,
      _______,KC_MPRV,KC_MPLY,KC_MNXT,_______,KC_MUTE,                        KC_EQL , KC_KP_1,KC_KP_2,KC_KP_3,KC_KP_ENTER,_______,
                      _______,_______,                                                        KC_KP_0,KC_KP_DOT,
-                                     _______,KC_BSPC,                        _______,_______,
+                                     _______,KC_SPC ,                        _______,_______,
                                      _______,_______,                        _______,_______,
                                      _______,_______,                        _______,_______
   ),
