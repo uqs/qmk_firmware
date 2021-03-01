@@ -199,10 +199,24 @@ const qk_ucis_symbol_t ucis_symbol_table[] = UCIS_TABLE(
 // clang-format off
 const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 
+// GASC/◆⎇⇧⎈ home row mod, read all about it here:
+// https://precondition.github.io/home-row-mods
+// Left-hand home row mods
+#define KC_G_A LGUI_T(KC_A)
+#define KC_A_R LALT_T(KC_R)
+#define KC_S_S LSFT_T(KC_S)
+#define KC_C_T LCTL_T(KC_T)
+
+// Right-hand home row mods
+#define KC_C_N RCTL_T(KC_N)
+#define KC_S_E RSFT_T(KC_E)
+#define KC_A_I LALT_T(KC_I)
+#define KC_G_O RGUI_T(KC_O)
+
   [L_COLM] = LAYOUT_5x6(
      KC_GESC, KC_1  , KC_2  , KC_3  , KC_4  , KC_5  ,                        KC_6  , KC_7  , KC_8  , KC_9  , KC_0  ,KC_BSPC,
      KC_TAB , KC_Q  , KC_W  , KC_F  , KC_P  , KC_B  ,                        KC_J  , KC_L  , KC_U  , KC_Y  ,KC_SCLN,KC_BSLS,
-     KC_LCTL, KC_A  , KC_R  , KC_S  , KC_T  , KC_G  ,                        KC_M  , KC_N  , KC_E  , KC_I  , KC_O  ,KC_QUOT,
+     KC_LCTL, KC_G_A, KC_A_R, KC_S_S, KC_C_T, KC_G  ,                        KC_M  , KC_C_N, KC_S_E, KC_A_I, KC_G_O,KC_QUOT,
      KC_LSFT, KC_Z  , KC_X  , KC_C  , KC_D  , KC_V  ,                        KC_K  , KC_H  ,KC_COMM,KC_DOT ,KC_SLSH,RSFT_T(KC_GRV),
                       KC_LBRC, KC_RBRC,                                                     KC_MINS, KC_EQL,
                           LT(L_EXTD, KC_ESC), KC_SPC,                        KC_ENT, LT(L_NUM, KC_BSPC),
@@ -210,7 +224,6 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
                                               TL, BL                              BR, TR */
                                 ALT_SHIFT_INS, KC_LEAD,                      KC_LEAD, SHIFT_INS,
                                       KC_LGUI, KC_LALT,                      KC_RALT, KC_APP
-// TODO: drop KC_LEAD and make it MO(L_NUM) instead? do I want to embrace the numblock?
 // NOTE: RSFT_T(KC_S_INS) doesn't work, only INS comes through. RSFT_T stuff
 // only works on "simple" keycodes. See process_record_user for how this works,
 // thanks to ridingqwerty on Discord.
@@ -227,6 +240,10 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 // Win/Sys on the left and Alt on the right. My LT2 is actually on a pinky,
 // along with CTRL. I have thought about moving CTRL to one of the big thumbs
 // but I like having shift on both."
+//
+// Here's what I'll likely do, esp with a Kyria:
+//   L1/Esc  Space  Tab  ||  AltGr  Enter  L2/Bksp
+// with home row mods
   ),
   [L_QWER] = LAYOUT_5x6(
      KC_GESC, KC_1  , KC_2  , KC_3  , KC_4  , KC_5  ,                        KC_6  , KC_7  , KC_8  , KC_9  , KC_0  ,KC_BSPC,
@@ -251,9 +268,9 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
      KC_G   , KC_LSFT, KC_A  , KC_S  , KC_D  , KC_F ,                        KC_H  , KC_J  , KC_K  , KC_L  ,KC_SCLN,KC_QUOT,
      KC_B   , KC_LCTL, KC_Z  , KC_X  , KC_C  , KC_V ,                        KC_N  , KC_M  ,KC_COMM,KC_DOT ,KC_SLSH,RSFT_T(KC_GRV),
                       KC_LBRC, KC_RBRC,                                                     KC_MINS, KC_EQL,
-                                  KC_LCTL,KC_SPC,                                _______,_______,
+                                  KC_SPC,KC_LCTL,                                _______,_______,
                                   /* Order is TR, BR, TL, BL             Order is BL, TL, BR, TR */
-                                      KC_LSFT, KC_NO,                        KC_LGUI,DF(L_QWER),
+                                      KC_LSFT, KC_NO,                        KC_LGUI,DF(L_COLM),
                                       KC_LGUI, KC_LALT,                      KC_RALT, KC_APP
 
   ),
@@ -262,11 +279,11 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
   // TODO: move DEL to thumb for everything? same for INS maybe?
   [L_EXTD] = LAYOUT_5x6(
      KC_F1  , KC_F2 , KC_F3 , KC_F4 , KC_F5 , KC_F6 ,                        KC_F7  , KC_F8 , KC_F9 , KC_F10,KC_F11 ,KC_F12 ,
-     _______,KC_ESC ,MS_WHUP,KC_WBAK,KC_WFWD,KC_PGUP,                        KC_PGUP,KC_HOME, KC_UP ,KC_END ,KC_INS ,KC_NO,
-     _______,KC_LALT,MS_WHDN,KC_LSFT,KC_LCTL,KC_PGDN,                        KC_PGDN,KC_LEFT,KC_DOWN,KC_RGHT,KC_DEL ,KC_ENT ,
-     _______,KC_UNDO,KC_CUT ,KC_COPY,KC_PSTE, KC_NO ,                        KC_NO  ,KC_BSPC,MS_WHLEFT,MS_WHRGHT,KC_NO ,_______,
-                     _______,_______,                                                        KC_PSCR,KC_PAUS,
-                                     _______,_______,                        KC_DEL ,_______,
+     _______, KC_NO , KC_NO ,KC_WBAK,KC_WFWD,KC_PGUP,                        KC_PGUP,KC_HOME, KC_UP ,KC_END ,KC_INS ,KC_BSPC,
+     _______,KC_LGUI,KC_LALT,KC_LSFT,KC_LCTL,KC_PGDN,                        KC_PGDN,KC_LEFT,KC_DOWN,KC_RGHT,KC_DEL ,KC_ENT ,
+     _______,KC_UNDO,KC_CUT ,KC_COPY,KC_PSTE, KC_NO ,                        KC_NO  ,KC_BSPC,KC_PSCR,KC_PAUS,KC_NO ,_______,
+                     MS_WHUP,MS_WHDN,                                                        MS_WHLEFT,MS_WHRGHT,
+                                     _______,_______,                        _______,_______,
                                      _______,_______,                        _______,_______,
                                      _______,_______,                        _______,_______
 
@@ -276,10 +293,10 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
   // entering layer? Or switch to KC_1, etc instead of KC_KP_1 ... This then
   // looses the Alt-number unicode stuff.
   [L_NUM] = LAYOUT_5x6(
-     _______,_______,_______,_______,_______,TG(L_NUM),                   KC_NUMLOCK,KC_NUMLOCK,KC_KP_SLASH,KC_KP_ASTERISK,KC_KP_MINUS,KC_BSPC,
-     _______,_______,_______,_______,_______,KC_VOLU,                        KC_LPRN, KC_KP_7,KC_KP_8,KC_KP_9,KC_KP_PLUS,_______,
+     _______,_______,_______,_______,_______,TG(L_NUM),                   KC_NUMLOCK,KC_NUMLOCK,KC_KP_SLASH,KC_KP_ASTERISK,KC_EQL,KC_BSPC,
+     _______,_______,_______,_______,_______,KC_VOLU,                        KC_LPRN, KC_KP_7,KC_KP_8,KC_KP_9,KC_KP_MINUS,_______,
      _______,KC_MSEL,_______,_______,_______,KC_VOLD,                        KC_RPRN, KC_KP_4,KC_KP_5,KC_KP_6,KC_KP_PLUS,_______,
-     _______,KC_MPRV,KC_MPLY,KC_MNXT,_______,KC_MUTE,                        KC_EQL , KC_KP_1,KC_KP_2,KC_KP_3,KC_KP_ENTER,_______,
+     _______,KC_MPRV,KC_MPLY,KC_MNXT,_______,KC_MUTE,                        KC_COMM, KC_KP_1,KC_KP_2,KC_KP_3,KC_KP_ENTER,_______,
                      _______,_______,                                                        KC_KP_0,KC_KP_DOT,
                                      _______,KC_SPC ,                        _______,_______,
                                      _______,_______,                        _______,_______,
@@ -287,7 +304,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
   ),
 
   [L_MOUSE] = LAYOUT_5x6(
-     RGB_TOG,DF(L_QWER),DF(L_COLM),DF(L_WASD),_______,TG(L_NUM),           MS_WHLEFT,MS_WHUP,   KC_MS_BTN3,    MS_WHDN,MS_WHRGHT,KC_MS_BTN4,
+     RGB_TOG,DF(L_COLM),DF(L_QWER),DF(L_WASD),_______,TG(L_NUM),           MS_WHLEFT,MS_WHUP,   KC_MS_BTN3,    MS_WHDN,MS_WHRGHT,KC_MS_BTN4,
      RGB_MOD,_______,_______,_______,_______,_______,                        _______,KC_MS_BTN1,KC_MS_UP,   KC_MS_BTN2,  _______,KC_MS_BTN5,
     RGB_RMOD,_______,KC_ACL0,KC_ACL1,KC_ACL2,_______,                        _______,KC_MS_LEFT,KC_MS_DOWN,KC_MS_RIGHT,  _______,_______,
      /* Plain, Breath, Rainbow, Swirl, Snake, KnightRider, Xmas, Gradient */

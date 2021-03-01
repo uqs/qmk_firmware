@@ -39,11 +39,18 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #define DYNAMIC_KEYMAP_LAYER_COUNT 6  // default is 4 for VIA builds
 
-#define TAPPING_TOGGLE 2
+#define TAPPING_TOGGLE 2  // number of taps for a toggle-on-tap
+#define TAPPING_TERM 200  // ms to trigger tap
+#define IGNORE_MOD_TAP_INTERRUPT
+// Might have to look at TAPPING_FORCE_HOLD, see https://precondition.github.io/home-row-mods
 
-#define LEADER_TIMEOUT 300
+#define LEADER_TIMEOUT 400
 #define LEADER_PER_KEY_TIMING
 
 #define UNICODE_SELECTED_MODES UC_LNX
 
 //#define PREVENT_STUCK_MODIFIERS
+
+// KC_ACL0 et al work when held.
+#define MK_COMBINED
+#define MOUSEKEY_WHEEL_INTERVAL 30
