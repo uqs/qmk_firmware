@@ -83,6 +83,10 @@ void keyboard_post_init_user(void) {
 #endif
 }
 
+#define KC_ATAB LALT(KC_TAB)
+#define KC_SATAB LALT(LSFT(KC_TAB))
+#define KC_CTAB LCTL(KC_TAB)
+#define KC_SCTAB LCTL(LSFT(KC_TAB))
 // Maybe do something with KC_PASTE instead (or KC_CUT, KC_COPY)
 #define KC_S_INS LSFT(KC_INS)
 #define KC_A_S_INS LALT(LSFT(KC_INS))
@@ -94,6 +98,14 @@ void keyboard_post_init_user(void) {
 enum custom_keycodes {
     SHIFT_INS = SAFE_RANGE,
     ALT_SHIFT_INS,
+    TM_NEXT,
+    TM_PREV,
+    WIN_NEXT,
+    WIN_PREV,
+    WIN_LEFT,
+    WIN_RGHT,
+    WIN_UP,
+    WIN_DN,
 };
 
 uint16_t key_timer;
@@ -102,23 +114,19 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
     case SHIFT_INS:
         if (record->event.pressed) {
           // when keycode is pressed
-          //SEND_STRING(SS_LSFT(SS_TAP(X_INS)));  // This doesn't work
           key_timer = timer_read();
           // Shift when held ...
           register_mods(MOD_BIT(KC_RSFT));
         } else {
           // If released within the timer, then Shift+Ins
           if (timer_elapsed(key_timer) < TAPPING_TERM) {
-            //tap_code16(S(KC_INS));
             tap_code16(KC_INS);
           }
           unregister_mods(MOD_BIT(KC_RSFT));
         }
         break;
-
     case ALT_SHIFT_INS:
         if (record->event.pressed) {
-          //SEND_STRING(SS_LALT(SS_LSFT(SS_TAP(X_INS))));
           key_timer = timer_read();
           // Shift when held ...
           register_mods(MOD_BIT(KC_LSFT));
@@ -126,11 +134,35 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
           // If released within the timer, then Shift+Alt+Ins
           if (timer_elapsed(key_timer) < TAPPING_TERM) {
             register_mods(MOD_BIT(KC_LALT));
-            tap_code16(/*S*/(KC_INS));
+            tap_code16(KC_INS);
           }
           // Note: this makes xev(1) see KeyPress for Meta_L but KeyRelease for Alt_L
           unregister_mods(MOD_BIT(KC_LSFT) | MOD_BIT(KC_LALT));
         }
+        break;
+    case TM_NEXT:
+        if (record->event.pressed) SEND_STRING(SS_LCTRL("a") "n");
+        break;
+    case TM_PREV:
+        if (record->event.pressed) SEND_STRING(SS_LCTRL("a") "p");
+        break;
+    case WIN_NEXT:
+        if (record->event.pressed) SEND_STRING(SS_LCTRL("w") "w");
+        break;
+    case WIN_PREV:
+        if (record->event.pressed) SEND_STRING(SS_LCTRL("w") "W");
+        break;
+    case WIN_LEFT:
+        if (record->event.pressed) SEND_STRING(SS_LCTRL("w") SS_TAP(X_H));
+        break;
+    case WIN_RGHT:
+        if (record->event.pressed) SEND_STRING(SS_LCTRL("w") SS_TAP(X_L));
+        break;
+    case WIN_UP:
+        if (record->event.pressed) SEND_STRING(SS_LCTRL("w") SS_TAP(X_K));
+        break;
+    case WIN_DN:
+        if (record->event.pressed) SEND_STRING(SS_LCTRL("w") SS_TAP(X_J));
         break;
     }
 
@@ -228,7 +260,8 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 // only works on "simple" keycodes. See process_record_user for how this works,
 // thanks to ridingqwerty on Discord.
 // KC_PASTE essentially does shift-insert for Linux (mostly, for example not in
-// Qt apps!), does nothing on Windows though, where Shift-Ins works.
+// Qt apps! Also Chrome makes it copy from Clipboard, not Selection, like XTerm
+// does. Wargh), does nothing on Windows though, where Shift-Ins works.
 //
 // Some people do: NavL | Bspc/Shft | Enter/Fkeys | | Esc | Spc/SymbL | empty
 // but sometimes you have to hold enter or space? or what about shift-enter? hmmm
@@ -279,12 +312,13 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
   // TODO: move DEL to thumb for everything? same for INS maybe?
   [L_EXTD] = LAYOUT_5x6(
      KC_F1  , KC_F2 , KC_F3 , KC_F4 , KC_F5 , KC_F6 ,                        KC_F7  , KC_F8 , KC_F9 , KC_F10,KC_F11 ,KC_F12 ,
-     _______, KC_NO , KC_NO ,KC_WBAK,KC_WFWD,KC_PGUP,                        KC_PGUP,KC_HOME, KC_UP ,KC_END ,KC_INS ,KC_BSPC,
+   _______,WIN_PREV,TM_PREV,WIN_NEXT,TM_NEXT,KC_PGUP,                        KC_PGUP,KC_HOME, KC_UP ,KC_END ,KC_INS ,KC_BSPC,
      _______,KC_LGUI,KC_LALT,KC_LSFT,KC_LCTL,KC_PGDN,                        KC_PGDN,KC_LEFT,KC_DOWN,KC_RGHT,KC_DEL ,KC_ENT ,
-     _______,KC_UNDO,KC_CUT ,KC_COPY,KC_PSTE, KC_NO ,                        KC_NO  ,KC_BSPC,KC_PSCR,KC_PAUS,KC_NO ,_______,
+     //_______,KC_UNDO,KC_CUT ,KC_COPY,KC_PSTE, KC_NO ,                        KC_NO  ,KC_SATAB,KC_ATAB ,KC_SCTAB,KC_CTAB,_______,
+     _______,KC_NO,KC_SCTAB,KC_CTAB,KC_ATAB,KC_SATAB,                        KC_NO  ,KC_SATAB,KC_ATAB ,KC_SCTAB,KC_CTAB,_______,
                      MS_WHUP,MS_WHDN,                                                        MS_WHLEFT,MS_WHRGHT,
                                      _______,_______,                        _______,_______,
-                                     _______,_______,                        _______,_______,
+                                     _______,_______,                        _______,KC_PSTE,  // works in XTerm to emulate middle-click
                                      _______,_______,                        _______,_______
 
   ),
@@ -294,10 +328,10 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
   // looses the Alt-number unicode stuff.
   [L_NUM] = LAYOUT_5x6(
      _______,_______,_______,_______,_______,TG(L_NUM),                   KC_NUMLOCK,KC_NUMLOCK,KC_KP_SLASH,KC_KP_ASTERISK,KC_EQL,KC_BSPC,
-     _______,_______,_______,_______,_______,KC_VOLU,                        KC_LPRN, KC_KP_7,KC_KP_8,KC_KP_9,KC_KP_MINUS,_______,
-     _______,KC_MSEL,_______,_______,_______,KC_VOLD,                        KC_RPRN, KC_KP_4,KC_KP_5,KC_KP_6,KC_KP_PLUS,_______,
+     _______,_______,TM_PREV,WIN_UP,TM_NEXT ,KC_VOLU,                        KC_LPRN, KC_KP_7,KC_KP_8,KC_KP_9,KC_KP_MINUS,_______,
+     _______,KC_MSEL,WIN_LEFT,WIN_DN,WIN_RGHT,KC_VOLD,                        KC_RPRN, KC_KP_4,KC_KP_5,KC_KP_6,KC_KP_PLUS,_______,
      _______,KC_MPRV,KC_MPLY,KC_MNXT,_______,KC_MUTE,                        KC_COMM, KC_KP_1,KC_KP_2,KC_KP_3,KC_KP_ENTER,_______,
-                     _______,_______,                                                        KC_KP_0,KC_KP_DOT,
+                     KC_PSCR,KC_PAUS,                                                        KC_KP_0,KC_KP_DOT,
                                      _______,KC_SPC ,                        _______,_______,
                                      _______,_______,                        _______,_______,
                                      _______,_______,                        _______,_______
