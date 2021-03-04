@@ -106,11 +106,40 @@ enum custom_keycodes {
     WIN_RGHT,
     WIN_UP,
     WIN_DN,
+    LT_EXTD_ESC,
+    ALT_TAB,
+    ALT_STAB,
 };
 
 uint16_t key_timer;
 bool process_record_user(uint16_t keycode, keyrecord_t *record) {
+    static uint16_t ext_layer_timer;
     switch (keycode) {
+        // From https://github.com/qmk/qmk_firmware/issues/6053
+    case LT_EXTD_ESC:
+        if(record->event.pressed){
+            ext_layer_timer = timer_read();
+            layer_on(L_EXTD);
+        } else {
+            layer_off(L_EXTD);
+            unregister_mods(MOD_BIT(KC_LALT));
+            if (timer_elapsed(ext_layer_timer) < TAPPING_TERM) {
+                tap_code(KC_ESC);
+            }
+        }
+        break;
+    case ALT_TAB:
+        if (record->event.pressed) {
+            register_mods(MOD_BIT(KC_LALT));
+            tap_code16(KC_TAB);
+        }
+        break;
+    case ALT_STAB:
+        if (record->event.pressed) {
+            register_mods(MOD_BIT(KC_LALT));
+            tap_code16(LSFT(KC_TAB));
+        }
+        break;
     case SHIFT_INS:
         if (record->event.pressed) {
           // when keycode is pressed
@@ -251,7 +280,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
      KC_LCTL, KC_G_A, KC_A_R, KC_S_S, KC_C_T, KC_G  ,                        KC_M  , KC_C_N, KC_S_E, KC_A_I, KC_G_O,KC_QUOT,
      KC_LSFT, KC_Z  , KC_X  , KC_C  , KC_D  , KC_V  ,                        KC_K  , KC_H  ,KC_COMM,KC_DOT ,KC_SLSH,RSFT_T(KC_GRV),
                       KC_LBRC, KC_RBRC,                                                     KC_MINS, KC_EQL,
-                          LT(L_EXTD, KC_ESC), KC_SPC,                        KC_ENT, LT(L_NUM, KC_BSPC),
+                          LT_EXTD_ESC, KC_SPC,                        KC_ENT, LT(L_NUM, KC_BSPC),
                                   /* Order is TR, BR                     Order is BL, TL,
                                               TL, BL                              BR, TR */
                                 ALT_SHIFT_INS, KC_LEAD,                      KC_LEAD, SHIFT_INS,
@@ -273,10 +302,23 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 // Win/Sys on the left and Alt on the right. My LT2 is actually on a pinky,
 // along with CTRL. I have thought about moving CTRL to one of the big thumbs
 // but I like having shift on both."
-//
-// Here's what I'll likely do, esp with a Kyria:
-//   L1/Esc  Space  Tab  ||  AltGr  Enter  L2/Bksp
-// with home row mods
+
+
+/*
+ * My take on thumb keys:
+ * tappable: tab, ent, del, bkspc, esc, shift-ins, space, AltGr, Leader
+ * holdable: shift, L1, L2 (also, alt, ctrl, win)
+ *
+ * right side: ent, bkpsc, del, shift-ins, altgr
+ * left side:  space, esc, tab, ctrl/alt/win
+ *
+ * Here's what I'll likely do, esp with a Kyria:
+ *   L1/Esc  Space  Tab  ||  AltGr  Enter  L2/Bksp
+ *   L1:                 || Shift-Ins
+ * with home row mods.
+ * Win on home mod is annoying as I use it for dragging windows and I need to
+ * hold-and-delay for several hundreds ms before it registers :/
+ */
   ),
   [L_QWER] = LAYOUT_5x6(
      KC_GESC, KC_1  , KC_2  , KC_3  , KC_4  , KC_5  ,                        KC_6  , KC_7  , KC_8  , KC_9  , KC_0  ,KC_BSPC,
@@ -315,7 +357,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
    _______,WIN_PREV,TM_PREV,WIN_NEXT,TM_NEXT,KC_PGUP,                        KC_PGUP,KC_HOME, KC_UP ,KC_END ,KC_INS ,KC_BSPC,
      _______,KC_LGUI,KC_LALT,KC_LSFT,KC_LCTL,KC_PGDN,                        KC_PGDN,KC_LEFT,KC_DOWN,KC_RGHT,KC_DEL ,KC_ENT ,
      //_______,KC_UNDO,KC_CUT ,KC_COPY,KC_PSTE, KC_NO ,                        KC_NO  ,KC_SATAB,KC_ATAB ,KC_SCTAB,KC_CTAB,_______,
-     _______,KC_NO,KC_SCTAB,KC_CTAB,KC_ATAB,KC_SATAB,                        KC_NO  ,KC_SATAB,KC_ATAB ,KC_SCTAB,KC_CTAB,_______,
+     _______,KC_NO,KC_SCTAB,KC_CTAB,ALT_TAB,ALT_STAB,                        KC_NO  ,KC_SATAB,KC_ATAB ,KC_SCTAB,KC_CTAB,_______,
                      MS_WHUP,MS_WHDN,                                                        MS_WHLEFT,MS_WHRGHT,
                                      _______,_______,                        _______,_______,
                                      _______,_______,                        _______,KC_PSTE,  // works in XTerm to emulate middle-click
