@@ -12,6 +12,7 @@
 // https://play.typeracer.com/  shows about 75-80wpm (en) or ~400cpm (de) on my classic keeb.
 // Feb 2020, switching to Colemak DH
 // mid Feb, 20wpm/87% on monkeytype.com (no punct, numbers)
+// early March, 28wpm/90% on MT (plus punct./numbers); 25wpm on typeracer
 
 enum layers {
     L_COLM = 0,  // Colemak DHm
@@ -98,6 +99,7 @@ void keyboard_post_init_user(void) {
 enum custom_keycodes {
     SHIFT_INS = SAFE_RANGE,
     ALT_SHIFT_INS,
+    ALTGR_QUOT,
     TM_NEXT,
     TM_PREV,
     WIN_NEXT,
@@ -112,12 +114,16 @@ enum custom_keycodes {
 };
 
 uint16_t key_timer;
+bool delkey_registered = false;
+
 bool process_record_user(uint16_t keycode, keyrecord_t *record) {
+    // TODO: why not use key_timer here? is it dynamic or not?
     static uint16_t ext_layer_timer;
+    uint8_t mod_state = get_mods();
     switch (keycode) {
         // From https://github.com/qmk/qmk_firmware/issues/6053
     case LT_EXTD_ESC:
-        if(record->event.pressed){
+        if (record->event.pressed){
             ext_layer_timer = timer_read();
             layer_on(L_EXTD);
         } else {
@@ -127,6 +133,32 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
                 tap_code(KC_ESC);
             }
         }
+        break;
+        // From https://github.com/precondition/dactyl-manuform-keymap/blob/main/keymap.c
+        // TODO: doesn't work with my LT(L_NUM, KC_BSPC) tap action, need to do the LT_EXTD_ESC treatment.
+    case KC_BSPC:
+        if (record->event.pressed) {
+            if (mod_state & MOD_MASK_SHIFT) {
+                // In case only one shift is held
+                // see https://stackoverflow.com/questions/1596668/logical-xor-operator-in-c
+                // This also means that in case of holding both shifts and pressing KC_BSPC,
+                // Shift+Delete is sent (useful in Firefox) since the shift modifiers aren't deleted.
+                if (!(mod_state & MOD_BIT(KC_LSHIFT)) != !(mod_state & MOD_BIT(KC_RSHIFT))) {
+                    del_mods(MOD_MASK_SHIFT);
+                }
+                register_code(KC_DEL);
+                delkey_registered = true;
+                set_mods(mod_state);
+                return false;
+            }
+        } else {
+            if (delkey_registered) {
+                unregister_code(KC_DEL);
+                delkey_registered = false;
+                return false;
+            }
+        }
+        return true;  // fall through to regular handling
         break;
     case ALT_TAB:
         if (record->event.pressed) {
@@ -167,6 +199,13 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
           }
           // Note: this makes xev(1) see KeyPress for Meta_L but KeyRelease for Alt_L
           unregister_mods(MOD_BIT(KC_LSFT) | MOD_BIT(KC_LALT));
+        }
+        break;
+    case ALTGR_QUOT:
+        // Shortcut for composing Umlauts
+        if (record->event.pressed) {
+            tap_code16(KC_RALT);
+            tap_code16(LSFT(KC_QUOT));
         }
         break;
     case TM_NEXT:
@@ -343,7 +382,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
      KC_G   , KC_LSFT, KC_A  , KC_S  , KC_D  , KC_F ,                        KC_H  , KC_J  , KC_K  , KC_L  ,KC_SCLN,KC_QUOT,
      KC_B   , KC_LCTL, KC_Z  , KC_X  , KC_C  , KC_V ,                        KC_N  , KC_M  ,KC_COMM,KC_DOT ,KC_SLSH,RSFT_T(KC_GRV),
                       KC_LBRC, KC_RBRC,                                                     KC_MINS, KC_EQL,
-                                  KC_SPC,KC_LCTL,                                _______,_______,
+                                  KC_LCTL,KC_SPC,                                _______,_______,
                                   /* Order is TR, BR, TL, BL             Order is BL, TL, BR, TR */
                                       KC_LSFT, KC_NO,                        KC_LGUI,DF(L_COLM),
                                       KC_LGUI, KC_LALT,                      KC_RALT, KC_APP
@@ -355,9 +394,9 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
   [L_EXTD] = LAYOUT_5x6(
      KC_F1  , KC_F2 , KC_F3 , KC_F4 , KC_F5 , KC_F6 ,                        KC_F7  , KC_F8 , KC_F9 , KC_F10,KC_F11 ,KC_F12 ,
    _______,WIN_PREV,TM_PREV,WIN_NEXT,TM_NEXT,KC_PGUP,                        KC_PGUP,KC_HOME, KC_UP ,KC_END ,KC_INS ,KC_BSPC,
-     _______,KC_LGUI,KC_LALT,KC_LSFT,KC_LCTL,KC_PGDN,                        KC_PGDN,KC_LEFT,KC_DOWN,KC_RGHT,KC_DEL ,KC_ENT ,
+     _______,KC_LGUI,KC_LALT,KC_LSFT,KC_LCTL,KC_PGDN,                        KC_PGDN,KC_LEFT,KC_DOWN,KC_RGHT,KC_DEL ,ALTGR_QUOT ,
      //_______,KC_UNDO,KC_CUT ,KC_COPY,KC_PSTE, KC_NO ,                        KC_NO  ,KC_SATAB,KC_ATAB ,KC_SCTAB,KC_CTAB,_______,
-     _______,KC_NO,KC_SCTAB,KC_CTAB,ALT_TAB,ALT_STAB,                        KC_NO  ,KC_SATAB,KC_ATAB ,KC_SCTAB,KC_CTAB,_______,
+     _______,KC_NO,KC_SCTAB,KC_CTAB,ALT_TAB,ALT_STAB,                        KC_NO  ,KC_NO,KC_NO ,KC_NO,KC_NO,_______,
                      MS_WHUP,MS_WHDN,                                                        MS_WHLEFT,MS_WHRGHT,
                                      _______,_______,                        _______,_______,
                                      _______,_______,                        _______,KC_PSTE,  // works in XTerm to emulate middle-click
@@ -369,7 +408,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
   // entering layer? Or switch to KC_1, etc instead of KC_KP_1 ... This then
   // looses the Alt-number unicode stuff.
   [L_NUM] = LAYOUT_5x6(
-     _______,_______,_______,_______,_______,TG(L_NUM),                   KC_NUMLOCK,KC_NUMLOCK,KC_KP_SLASH,KC_KP_ASTERISK,KC_EQL,KC_BSPC,
+     _______,_______,_______,_______,_______,TG(L_NUM),                   KC_NUMLOCK,KC_KP_SLASH,KC_KP_ASTERISK,KC_EQL,KC_NO,KC_BSPC,
      _______,_______,TM_PREV,WIN_UP,TM_NEXT ,KC_VOLU,                        KC_LPRN, KC_KP_7,KC_KP_8,KC_KP_9,KC_KP_MINUS,_______,
      _______,KC_MSEL,WIN_LEFT,WIN_DN,WIN_RGHT,KC_VOLD,                        KC_RPRN, KC_KP_4,KC_KP_5,KC_KP_6,KC_KP_PLUS,_______,
      _______,KC_MPRV,KC_MPLY,KC_MNXT,_______,KC_MUTE,                        KC_COMM, KC_KP_1,KC_KP_2,KC_KP_3,KC_KP_ENTER,_______,
