@@ -413,8 +413,8 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
      _______,KC_MSEL,WIN_LEFT,WIN_DN,WIN_RGHT,KC_VOLD,                        KC_RPRN, KC_KP_4,KC_KP_5,KC_KP_6,KC_KP_PLUS,_______,
      _______,KC_MPRV,KC_MPLY,KC_MNXT,_______,KC_MUTE,                        KC_COMM, KC_KP_1,KC_KP_2,KC_KP_3,KC_KP_ENTER,_______,
                      KC_PSCR,KC_PAUS,                                                        KC_KP_0,KC_KP_DOT,
-                                     _______,KC_SPC ,                        _______,_______,
                                      _______,_______,                        _______,_______,
+                                     KC_TAB ,_______,                        _______,_______,
                                      _______,_______,                        _______,_______
   ),
 
