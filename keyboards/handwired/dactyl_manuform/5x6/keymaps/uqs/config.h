@@ -40,7 +40,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #define DYNAMIC_KEYMAP_LAYER_COUNT 6  // default is 4 for VIA builds
 
 #define TAPPING_TOGGLE 2  // number of taps for a toggle-on-tap
-#define TAPPING_TERM 150  // ms to trigger tap
+#define TAPPING_TERM 170  // ms to trigger tap
 #define IGNORE_MOD_TAP_INTERRUPT
 // Might have to look at TAPPING_FORCE_HOLD, see https://precondition.github.io/home-row-mods
 
