@@ -109,6 +109,7 @@ enum custom_keycodes {
     WIN_UP,
     WIN_DN,
     LT_EXTD_ESC,
+    LT_NUM_BSPC,
     ALT_TAB,
     ALT_STAB,
 };
@@ -129,13 +130,37 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
         } else {
             layer_off(L_EXTD);
             unregister_mods(MOD_BIT(KC_LALT));
+            // BUG: this will still send ESC, if layer tap + key tap + release are happening all under TAPPING_TERM
             if (timer_elapsed(ext_layer_timer) < TAPPING_TERM) {
                 tap_code(KC_ESC);
             }
         }
-        break;
+        return true;
+    case LT_NUM_BSPC:
+        if (record->event.pressed){
+            ext_layer_timer = timer_read();
+            layer_on(L_NUM);
+        } else {
+            layer_off(L_NUM);
+            // BUG: this will fire a backspace, even if I pressed something on the num layer, in which case of course that was intended and not sending backspace or delete. Need to check how layer tap is implemented.
+            if (timer_elapsed(ext_layer_timer) < TAPPING_TERM) {
+                if (mod_state & MOD_MASK_SHIFT) {
+                    uint8_t which_shift = mod_state & MOD_MASK_SHIFT;
+                    if (!(mod_state & MOD_BIT(KC_LSHIFT)) != !(mod_state & MOD_BIT(KC_RSHIFT))) {
+                        unregister_mods(MOD_MASK_SHIFT);
+                        tap_code(KC_DEL);
+                        register_mods(which_shift);
+                    } else {
+                        tap_code(KC_DEL);
+                    }
+                    //return false;  // stop processing
+                } else {
+                    tap_code(KC_BSPC);
+                }
+            }
+        }
+        return true;
         // From https://github.com/precondition/dactyl-manuform-keymap/blob/main/keymap.c
-        // TODO: doesn't work with my LT(L_NUM, KC_BSPC) tap action, need to do the LT_EXTD_ESC treatment.
     case KC_BSPC:
         if (record->event.pressed) {
             if (mod_state & MOD_MASK_SHIFT) {
@@ -319,7 +344,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
      KC_LCTL, KC_G_A, KC_A_R, KC_S_S, KC_C_T, KC_G  ,                        KC_M  , KC_C_N, KC_S_E, KC_A_I, KC_G_O,KC_QUOT,
      KC_LSFT, KC_Z  , KC_X  , KC_C  , KC_D  , KC_V  ,                        KC_K  , KC_H  ,KC_COMM,KC_DOT ,KC_SLSH,RSFT_T(KC_GRV),
                       KC_LBRC, KC_RBRC,                                                     KC_MINS, KC_EQL,
-                          LT_EXTD_ESC, KC_SPC,                        KC_ENT, LT(L_NUM, KC_BSPC),
+                                 LT_EXTD_ESC, KC_SPC,                        KC_ENT, LT_NUM_BSPC,
                                   /* Order is TR, BR                     Order is BL, TL,
                                               TL, BL                              BR, TR */
                                 ALT_SHIFT_INS, KC_LEAD,                      KC_LEAD, SHIFT_INS,
@@ -365,7 +390,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
      KC_LCTL, KC_A  , KC_S  , KC_D  , KC_F  , KC_G  ,                        KC_H  , KC_J  , KC_K  , KC_L  ,KC_SCLN,KC_QUOT,
      KC_LSFT, KC_Z  , KC_X  , KC_C  , KC_V  , KC_B  ,                        KC_N  , KC_M  ,KC_COMM,KC_DOT ,KC_SLSH,RSFT_T(KC_GRV),
                       KC_LBRC, KC_RBRC,                                                     KC_MINS, KC_EQL,
-                          LT(L_EXTD, KC_ESC), KC_SPC,                        KC_ENT, LT(L_NUM, KC_BSPC),
+                                 LT_EXTD_ESC, KC_SPC,                        KC_ENT, LT(L_NUM, KC_BSPC),
                                   /* Order is TR, BR, TL, BL             Order is BL, TL, BR, TR */
                                 ALT_SHIFT_INS, KC_LEAD,                      KC_LEAD, SHIFT_INS,
                                       KC_LGUI, KC_LALT,                      KC_RALT, KC_APP
@@ -393,8 +418,8 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
   // TODO: move DEL to thumb for everything? same for INS maybe?
   [L_EXTD] = LAYOUT_5x6(
      KC_F1  , KC_F2 , KC_F3 , KC_F4 , KC_F5 , KC_F6 ,                        KC_F7  , KC_F8 , KC_F9 , KC_F10,KC_F11 ,KC_F12 ,
-   _______,WIN_PREV,TM_PREV,WIN_NEXT,TM_NEXT,KC_PGUP,                        KC_PGUP,KC_HOME, KC_UP ,KC_END ,KC_INS ,KC_BSPC,
-     _______,KC_LGUI,KC_LALT,KC_LSFT,KC_LCTL,KC_PGDN,                        KC_PGDN,KC_LEFT,KC_DOWN,KC_RGHT,KC_DEL ,ALTGR_QUOT ,
+   _______,WIN_PREV,TM_PREV,WIN_NEXT,TM_NEXT,KC_PGUP,                        KC_HOME,KC_PGDN,KC_PGUP,KC_END ,KC_INS ,KC_BSPC,
+     _______,KC_LGUI,KC_LALT,KC_LSFT,KC_LCTL,KC_PGDN,                        KC_LEFT,KC_DOWN, KC_UP, KC_RGHT,KC_DEL ,ALTGR_QUOT ,
      //_______,KC_UNDO,KC_CUT ,KC_COPY,KC_PSTE, KC_NO ,                        KC_NO  ,KC_SATAB,KC_ATAB ,KC_SCTAB,KC_CTAB,_______,
      _______,KC_NO,KC_SCTAB,KC_CTAB,ALT_TAB,ALT_STAB,                        KC_NO  ,KC_NO,KC_NO ,KC_NO,KC_NO,_______,
                      MS_WHUP,MS_WHDN,                                                        MS_WHLEFT,MS_WHRGHT,
