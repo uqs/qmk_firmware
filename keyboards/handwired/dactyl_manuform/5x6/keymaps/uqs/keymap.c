@@ -116,34 +116,46 @@ enum custom_keycodes {
 
 uint16_t key_timer;
 bool delkey_registered = false;
+bool num_layer_was_used = false;
+bool extd_layer_was_used = false;
 
 bool process_record_user(uint16_t keycode, keyrecord_t *record) {
     // TODO: why not use key_timer here? is it dynamic or not?
-    static uint16_t ext_layer_timer;
+    static uint16_t extd_layer_timer;
     uint8_t mod_state = get_mods();
+    if (layer_state_is(L_EXTD) && record->event.pressed) {
+        extd_layer_was_used = true;
+    }
+    if (layer_state_is(L_NUM) && record->event.pressed) {
+        num_layer_was_used = true;
+    }
     switch (keycode) {
         // From https://github.com/qmk/qmk_firmware/issues/6053
     case LT_EXTD_ESC:
         if (record->event.pressed){
-            ext_layer_timer = timer_read();
+            extd_layer_was_used = false;
+            extd_layer_timer = timer_read();
             layer_on(L_EXTD);
         } else {
             layer_off(L_EXTD);
             unregister_mods(MOD_BIT(KC_LALT));
-            // BUG: this will still send ESC, if layer tap + key tap + release are happening all under TAPPING_TERM
-            if (timer_elapsed(ext_layer_timer) < TAPPING_TERM) {
+            // NOTE: need to track whether we made use of the extd layer and
+            // that all happened within the tapping term. Otherwise we'd emit
+            // that layer key code _plus_ an extra Esc.
+            if (timer_elapsed(extd_layer_timer) < TAPPING_TERM && !extd_layer_was_used) {
                 tap_code(KC_ESC);
             }
         }
         return true;
     case LT_NUM_BSPC:
         if (record->event.pressed){
-            ext_layer_timer = timer_read();
+            num_layer_was_used = false;
+            extd_layer_timer = timer_read();
             layer_on(L_NUM);
         } else {
             layer_off(L_NUM);
             // BUG: this will fire a backspace, even if I pressed something on the num layer, in which case of course that was intended and not sending backspace or delete. Need to check how layer tap is implemented.
-            if (timer_elapsed(ext_layer_timer) < TAPPING_TERM) {
+            if (timer_elapsed(extd_layer_timer) < TAPPING_TERM && !num_layer_was_used) {
                 if (mod_state & MOD_MASK_SHIFT) {
                     uint8_t which_shift = mod_state & MOD_MASK_SHIFT;
                     if (!(mod_state & MOD_BIT(KC_LSHIFT)) != !(mod_state & MOD_BIT(KC_RSHIFT))) {
