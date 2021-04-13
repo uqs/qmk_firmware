@@ -13,6 +13,7 @@
 // Feb 2020, switching to Colemak DH
 // mid Feb, 20wpm/87% on monkeytype.com (no punct, numbers)
 // early March, 28wpm/90% on MT (plus punct./numbers); 25wpm on typeracer
+// early April, 35wpm/92% on MT; 41wpm on typeracer
 
 enum layers {
     L_COLM = 0,  // Colemak DHm
@@ -356,7 +357,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
      KC_LCTL, KC_G_A, KC_A_R, KC_S_S, KC_C_T, KC_G  ,                        KC_M  , KC_C_N, KC_S_E, KC_A_I, KC_G_O,KC_QUOT,
      KC_LSFT, KC_Z  , KC_X  , KC_C  , KC_D  , KC_V  ,                        KC_K  , KC_H  ,KC_COMM,KC_DOT ,KC_SLSH,RSFT_T(KC_GRV),
                       KC_LBRC, KC_RBRC,                                                     KC_MINS, KC_EQL,
-                                 LT_EXTD_ESC, KC_SPC,                        KC_ENT, LT_NUM_BSPC,
+                                 LT_EXTD_ESC, KC_SPC,                        KC_ENT, LT(L_NUM, KC_BSPC),
                                   /* Order is TR, BR                     Order is BL, TL,
                                               TL, BL                              BR, TR */
                                 ALT_SHIFT_INS, KC_LEAD,                      KC_LEAD, SHIFT_INS,
@@ -384,13 +385,15 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
  * My take on thumb keys:
  * tappable: tab, ent, del, bkspc, esc, shift-ins, space, AltGr, Leader
  * holdable: shift, L1, L2 (also, alt, ctrl, win)
+ * sometimes holdable: ent, del, bkspc
  *
  * right side: ent, bkpsc, del, shift-ins, altgr
  * left side:  space, esc, tab, ctrl/alt/win
  *
  * Here's what I'll likely do, esp with a Kyria:
- *   L1/Esc  Space  Tab  ||  AltGr  Enter  L2/Bksp
- *   L1:                 || Shift-Ins
+ *        L1/Esc  Space  Tab  ||  AltGr     Enter  L2/Bksp+Del
+ *   L1:                      || Shift-Ins            Bksp+Del (this will break L1+L2 if done wrong)
+ *   L2: no change, need Space/Tab during L2
  * with home row mods.
  * Win on home mod is annoying as I use it for dragging windows and I need to
  * hold-and-delay for several hundreds ms before it registers :/
@@ -406,11 +409,6 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
                                   /* Order is TR, BR, TL, BL             Order is BL, TL, BR, TR */
                                 ALT_SHIFT_INS, KC_LEAD,                      KC_LEAD, SHIFT_INS,
                                       KC_LGUI, KC_LALT,                      KC_RALT, KC_APP
-  /* Should also consider tapping on some of them, e.g. in keyboards/handwired/dactyl_manuform/6x6/keymaps/happysalada/keymap.c
-                     LT(_RIGHT_UP,KC_BSPC),LSFT_T(KC_ESC),         LT(_LEFT, KC_ENT),LT(_LEFT_UP,KC_SPC),
-                                   _______,LCTL_T(KC_DEL),         LGUI_T(KC_TAB),_______,
-                                          _______,_______,         _______,_______
-  */
   ),
 
   [L_WASD] = LAYOUT_5x6(
@@ -421,19 +419,18 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
                       KC_LBRC, KC_RBRC,                                                     KC_MINS, KC_EQL,
                                   KC_LCTL,KC_SPC,                                _______,_______,
                                   /* Order is TR, BR, TL, BL             Order is BL, TL, BR, TR */
-                                      KC_LSFT, KC_NO,                        KC_LGUI,DF(L_COLM),
+                                      KC_R, A(KC_M),                         KC_LGUI,DF(L_COLM),
                                       KC_LGUI, KC_LALT,                      KC_RALT, KC_APP
 
   ),
 
   // Updated with inspiration from https://forum.colemak.com/topic/2014-extend-extra-extreme/
-  // TODO: move DEL to thumb for everything? same for INS maybe?
+  // I like the AltGr trick from https://stevep99.github.io/seniply/ and should probably incorporate some stuff from it.
   [L_EXTD] = LAYOUT_5x6(
      KC_F1  , KC_F2 , KC_F3 , KC_F4 , KC_F5 , KC_F6 ,                        KC_F7  , KC_F8 , KC_F9 , KC_F10,KC_F11 ,KC_F12 ,
    _______,WIN_PREV,TM_PREV,WIN_NEXT,TM_NEXT,KC_PGUP,                        KC_HOME,KC_PGDN,KC_PGUP,KC_END ,KC_INS ,KC_BSPC,
      _______,KC_LGUI,KC_LALT,KC_LSFT,KC_LCTL,KC_PGDN,                        KC_LEFT,KC_DOWN, KC_UP, KC_RGHT,KC_DEL ,ALTGR_QUOT ,
-     //_______,KC_UNDO,KC_CUT ,KC_COPY,KC_PSTE, KC_NO ,                        KC_NO  ,KC_SATAB,KC_ATAB ,KC_SCTAB,KC_CTAB,_______,
-     _______,KC_NO,KC_SCTAB,KC_CTAB,ALT_TAB,ALT_STAB,                        KC_NO  ,KC_NO,KC_NO ,KC_NO,KC_NO,_______,
+     _______,KC_NO,KC_SCTAB,KC_CTAB,ALT_TAB,ALT_STAB,                        WIN_LEFT,WIN_DN,WIN_UP,WIN_RGHT,KC_NO,_______,
                      MS_WHUP,MS_WHDN,                                                        MS_WHLEFT,MS_WHRGHT,
                                      _______,_______,                        _______,_______,
                                      _______,_______,                        _______,KC_PSTE,  // works in XTerm to emulate middle-click
@@ -441,14 +438,14 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 
   ),
 
-  // Numpad. This only works when NumLock is turned on. TODO: turn it on when
-  // entering layer? Or switch to KC_1, etc instead of KC_KP_1 ... This then
-  // looses the Alt-number unicode stuff.
+  // Numpad. This works somehow without turning on Numlock first. I've not
+  // managed to get Alt-codes working under Windows though, might be an
+  // artefact of using US Intl (nope, I'm using UScmpse custom layout)?
   [L_NUM] = LAYOUT_5x6(
-     _______,_______,_______,_______,_______,TG(L_NUM),                   KC_NUMLOCK,KC_KP_SLASH,KC_KP_ASTERISK,KC_EQL,KC_NO,KC_BSPC,
-     _______,_______,TM_PREV,WIN_UP,TM_NEXT ,KC_VOLU,                        KC_LPRN, KC_KP_7,KC_KP_8,KC_KP_9,KC_KP_MINUS,_______,
-     _______,KC_MSEL,WIN_LEFT,WIN_DN,WIN_RGHT,KC_VOLD,                        KC_RPRN, KC_KP_4,KC_KP_5,KC_KP_6,KC_KP_PLUS,_______,
-     _______,KC_MPRV,KC_MPLY,KC_MNXT,_______,KC_MUTE,                        KC_COMM, KC_KP_1,KC_KP_2,KC_KP_3,KC_KP_ENTER,_______,
+     _______,KC_MUTE,KC_VOLD,KC_VOLU,_______,TG(L_NUM),                   KC_NUMLOCK,KC_KP_SLASH,KC_KP_ASTERISK,KC_COMM,KC_EQL,KC_BSPC,
+     _______,_______,_______,_______,_______,KC_LPRN,                        KC_RPRN, KC_KP_7,KC_KP_8,KC_KP_9,KC_KP_MINUS,_______,
+     _______,KC_MSEL,_______,_______,_______,KC_LCBR,                        KC_RCBR, KC_KP_4,KC_KP_5,KC_KP_6,KC_KP_PLUS,_______,
+     _______,KC_MPRV,KC_MPLY,KC_MNXT,_______,KC_LBRC,                        KC_RBRC, KC_KP_1,KC_KP_2,KC_KP_3,KC_KP_ENTER,_______,
                      KC_PSCR,KC_PAUS,                                                        KC_KP_0,KC_KP_DOT,
                                      _______,_______,                        _______,_______,
                                      KC_TAB ,_______,                        _______,_______,
