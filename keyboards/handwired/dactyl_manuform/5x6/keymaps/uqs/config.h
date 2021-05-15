@@ -53,4 +53,4 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 // KC_ACL0 et al work when held.
 #define MK_COMBINED
-#define MOUSEKEY_WHEEL_INTERVAL 30
+#define MOUSEKEY_WHEEL_INTERVAL 40  // default is 50, lower means more scroll events
