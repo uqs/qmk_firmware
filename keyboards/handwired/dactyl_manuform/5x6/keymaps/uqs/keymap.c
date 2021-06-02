@@ -2,6 +2,7 @@
 // vi:et sw=4:
 
 #include QMK_KEYBOARD_H
+#include <tmk_core/common/wait.h>
 
 // Note to self: I should really try Colemak DHm, like https://www.reddit.com/r/MechanicalKeyboards/comments/9weri6/nuclear_data_in_colemak_dhm/
 // Data on it being pretty good: https://github.com/bclnr/kb-layout-evaluation
@@ -17,6 +18,7 @@
 // early March, 28wpm/90% on MT (plus punct./numbers); 25wpm on typeracer
 // early April, 35wpm/92% on MT; 41wpm on typeracer
 // early May, 45wpm/96% on MT; 46wpm on typeracer; my qwerty is deteriorating, I need to look at the keys more and more o_O
+// early June, 49wpm/95% on MT (sigh ...); 50wpm on typeracer;
 
 enum layers {
     L_QWER = 0,
@@ -24,6 +26,7 @@ enum layers {
     L_COLM,  // Colemak DHm
     L_EXTD,
     L_NUM,
+    L_FUNC,
     L_MOUSE,
     L_LAST, // unused
 };
@@ -43,11 +46,12 @@ layer_state_t default_layer_state_set_user(layer_state_t state) {
 
 // NOTE have a look at keyboards/jones/v03/keymaps/default_jp/keymap.c for default layers and put WASD there and NUM?
 layer_state_t layer_state_set_user(layer_state_t state) {
-    // defining layer L_MOUSE when both keys are pressed
-    state = update_tri_layer_state(state, L_EXTD, L_NUM, L_MOUSE);
+    // defining layer L_FUNC when both keys are pressed
+    state = update_tri_layer_state(state, L_EXTD, L_NUM, L_FUNC);
 #ifdef RGBLIGHT_LAYERS
     rgblight_set_layer_state(L_EXTD, layer_state_cmp(state, L_EXTD));
     rgblight_set_layer_state(L_NUM, layer_state_cmp(state, L_NUM));
+    rgblight_set_layer_state(L_FUNC, layer_state_cmp(state, L_FUNC));
     rgblight_set_layer_state(L_MOUSE, layer_state_cmp(state, L_MOUSE));
 #else
 #endif
@@ -64,6 +68,7 @@ const rgblight_layer_t PROGMEM my_rgb_segments[] = {
     [L_COLM] = {{0, 12, HSV_GREEN},  RGBLIGHT_END_SEGMENTS},
     [L_EXTD] = {{0, 12, HSV_BLUE},   RGBLIGHT_END_SEGMENTS},
     [L_NUM] =  {{0, 12, HSV_ORANGE}, RGBLIGHT_END_SEGMENTS},
+    [L_FUNC] = {{0, 12, HSV_YELLOW}, RGBLIGHT_END_SEGMENTS},
     [L_MOUSE]= {{0, 12, HSV_PURPLE}, RGBLIGHT_END_SEGMENTS},
 };
 
@@ -74,6 +79,7 @@ const rgblight_segment_t* const PROGMEM my_rgb_layers[] = {
     [L_COLM] = my_rgb_segments[L_COLM],
     [L_EXTD] = my_rgb_segments[L_EXTD],
     [L_NUM]  = my_rgb_segments[L_NUM],
+    [L_FUNC] = my_rgb_segments[L_FUNC],
     [L_MOUSE]= my_rgb_segments[L_MOUSE],
 };
 #endif
@@ -104,10 +110,12 @@ void keyboard_post_init_user(void) {
 enum custom_keycodes {
     SHIFT_INS = SAFE_RANGE,
     ALT_SHIFT_INS,
+    INS_HARD,
     ALTGR_QUOT,
     KC_A_AE,
     KC_O_OE,
     KC_U_UE,
+    MINS_UNDSCR,
     TM_NEXT,
     TM_PREV,
     WIN_NEXT,
@@ -120,6 +128,7 @@ enum custom_keycodes {
     LT_EXTD_ESC_WIN,
     LT_NUM_BSPC,
     LT_NUM_BSPC_DEL,
+    LT_MOUSE_ALT_SHIFT_INS,
     ALT_TAB,
     ALT_STAB,
 };
@@ -157,6 +166,9 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
         extd_layer_was_used = true;
         // immediately let go off WIN to have proper and regular use of the layer.
         unregister_mods(MOD_BIT(KC_LWIN));
+        // never triggered Win+MSWheel under Linux, but FreeBSD seems to need a
+        // bit more time to let go of the modifier.
+        wait_ms(10);
     }
     if (layer_state_is(L_NUM) && record->event.pressed) {
         num_layer_was_used = true;
@@ -207,22 +219,21 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
             // QMK is fecking stupid. All I want is to send a custom keycode
             // that I bind to Hyper via xmodmap, but this doesn't seem possible
             // according to some reddit search. Maybe I should use F13..F24
-            // intead? Anyway, I'll be using Control_R and rebind that to
+            // instead? Anyway, I'll be using Control_R and rebind that to
             // Hyper_L via xmodmap. Why? So that I can have this magic key
             // trigger Hyper_L when pressed, but unpress it in case I hit any
-            // other key on that layer (might have to check for the fallthrough
-            // key codes, TODO!). This can then be used in combination with the
-            // mouse to move/resize windows. I would use the Win key for this,
-            // but then under Windows that opens the Startmenu, so I need a
-            // modifier that is unknown to windows. A "silent" RCTL tap under
-            // Windows should be benign, I think.
+            // other key on that layer. This can then be used in combination
+            // with the mouse to move/resize windows. I would use the Win key
+            // for this, but then under Windows that opens the Startmenu, so I
+            // need a modifier that is unknown to windows. A "silent" RCTL tap
+            // under Windows should be benign, I think.
             // .xmodmaprc:
             //   remove mod4 = Hyper_L
             //   remove control = Hyper_L
             //   keycode 105 = Hyper_L
             //   add mod3 = Hyper_L
             //
-            // While this works once, re-plugging they keyboard makes the apps
+            // While this works once, re-plugging the keyboard makes the apps
             // no longer see Hyper but Control again. Feck. I probably need to
             // come up with some setxkb magic to have this mapping be more
             // permanent. Or switch to WIN directly, even though that will
@@ -278,6 +289,18 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
             }
         }
         return true;
+    case LT_MOUSE_ALT_SHIFT_INS:
+        if (record->event.pressed) {
+            key_timer = timer_read();
+            layer_on(L_MOUSE);
+        } else {
+            layer_off(L_MOUSE);
+            if (timer_elapsed(key_timer) < TAPPING_TERM) {
+                tap_code16(LALT(LSFT(KC_INS)));
+            }
+        }
+        return true;
+#if 0
         // From https://github.com/precondition/dactyl-manuform-keymap/blob/main/keymap.c
     case KC_BSPC:
         if (record->event.pressed) {
@@ -303,6 +326,7 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
         }
         return true;  // fall through to regular handling
         break;
+#endif
     case KC_A_AE:
         if (record->event.pressed) {
             key_timer = timer_read();
@@ -327,6 +351,17 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
             maybe_send_umlaut(KC_U, &uuml_pressed);
         }
         break;
+    case MINS_UNDSCR:
+        if (record->event.pressed) {
+            key_timer = timer_read();
+        } else {
+            if (timer_elapsed(key_timer) < TAPPING_TERM) {
+                tap_code16(KC_KP_MINUS);
+            } else {
+                tap_code16(KC_UNDERSCORE);
+            }
+        }
+        break;
     case ALT_TAB:
         if (record->event.pressed) {
             register_mods(MOD_BIT(KC_LALT));
@@ -337,6 +372,14 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
         if (record->event.pressed) {
             register_mods(MOD_BIT(KC_LALT));
             tap_code16(LSFT(KC_TAB));
+        }
+        break;
+    case INS_HARD:
+        // Do Alt-Shift-Ins first to have xdotool copy from SELECTION to CLIPBOARD, then Shift-Ins to paste.
+        if (record->event.pressed) {
+            tap_code16(LSFT(LALT(KC_INS)));
+        } else {
+            tap_code16(LSFT(KC_INS));
         }
         break;
     case SHIFT_INS:
@@ -501,19 +544,20 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 // Right-hand home row mods
 #define KC_C_N RCTL_T(KC_N)
 #define KC_S_E RSFT_T(KC_E)
-#define KC_A_I LALT_T(KC_I)  // RALT is special, it's AltGr and the compose key under Win/*nix
+#define KC_A_I LALT_T(KC_I)  // RALT is special, it's AltGr and my compose key under Win (layout UScmpse) and *nix (setxkbmap -option compose:ralt)
 #define KC_G_O RGUI_T(KC_O)
 
   [L_COLM] = LAYOUT_5x6(
      KC_GRV,  KC_1  , KC_2  , KC_3  , KC_4  , KC_5  ,                        KC_6  , KC_7  , KC_8  , KC_9  , KC_0  ,KC_MINS,
      KC_TAB , KC_Q  , KC_W  , KC_F  , KC_P  , KC_B  ,                        KC_J  , KC_L  ,KC_U_UE, KC_Y  ,KC_SCLN,KC_BSLS,
      KC_LCTL,KC_A_AE, KC_A_R, KC_S_S, KC_C_T, KC_G  ,                        KC_M  , KC_C_N, KC_S_E, KC_A_I,KC_O_OE,KC_QUOT,
-     KC_LSFT, KC_Z  , KC_X  , KC_C  , KC_D  , KC_V  ,                        KC_K  , KC_H  ,KC_COMM,KC_DOT ,KC_SLSH,KC_EQL,
-                      KC_LBRC, KC_RBRC,                                                 ALTGR_QUOT, KC_RALT,
+     KC_LSFT, KC_Z  , KC_X  , KC_C  , KC_D  , KC_V  ,                        KC_K  , KC_H  ,KC_COMM,KC_DOT ,KC_SLSH,RSFT_T(KC_GRV),
+                     KC_LBRC,KC_RBRC,                                                 ALTGR_QUOT, KC_RALT,  // not using these two really, make them shift+ins and ctrl-v?
+              /* These two ^^^^  are here for Gmail hotkeys only  */
                              LT_EXTD_ESC_WIN, KC_SPC,                       KC_ENT, LT_NUM_BSPC,
                                   /* Order is TR, BR                     Order is BL, TL,
                                               TL, BL                              BR, TR */
-                                ALT_SHIFT_INS, KC_LEAD,                      KC_LEAD, SHIFT_INS,
+                       LT_MOUSE_ALT_SHIFT_INS, KC_LEAD,                      KC_LEAD, SHIFT_INS,
                                       KC_LGUI, KC_LALT,                      KC_RALT, KC_APP
 // NOTE: RSFT_T(KC_S_INS) doesn't work, only INS comes through. RSFT_T stuff
 // only works on "simple" keycodes. See process_record_user for how this works,
@@ -544,7 +588,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
  * left side:  space, esc, tab, ctrl/alt/win
  *
  * Here's what I'll likely do, esp with a Kyria:
- *        L1/Esc  Space  Tab  ||  AltGr     Enter  L2/Bksp
+ *        L1/Esc  Space  Win  ||  AltGr     Enter  L2/Bksp
  *   L1:                      || Shift-Ins            Bksp
  *   L2: no change, need Space/Tab during L2
  * with home row mods.
@@ -560,10 +604,10 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
   // Updated with inspiration from https://forum.colemak.com/topic/2014-extend-extra-extreme/
   // I like the AltGr trick from https://stevep99.github.io/seniply/ and should probably incorporate some stuff from it.
   [L_EXTD] = LAYOUT_5x6(
-     KC_F1  , KC_F2 , KC_F3 , KC_F4 , KC_F5 , KC_F6 ,                        KC_F7  , KC_F8 , KC_F9 , KC_F10,KC_F11 ,KC_F12 ,
-   _______,WIN_PREV,TM_PREV,WIN_NEXT,TM_NEXT,KC_PGUP,                        KC_HOME,KC_PGDN,KC_PGUP,KC_END ,KC_INS ,KC_BSPC,
-     _______,KC_LGUI,KC_LALT,KC_LSFT,KC_LCTL,KC_PGDN,                        KC_LEFT,KC_DOWN, KC_UP, KC_RGHT,KC_DEL ,ALTGR_QUOT ,
-     _______,KC_NO,KC_SCTAB,KC_CTAB,ALT_TAB,ALT_STAB,                        WIN_LEFT,WIN_DN,WIN_UP,WIN_RGHT,KC_NO,KC_KP_ENTER,
+     KC_F1  , KC_F2 , KC_F3 , KC_F4 , KC_F5 , KC_F6 ,                        KC_F7  , KC_F8 , KC_F9 , KC_F10,KC_F11 ,KC_F12,
+   _______,WIN_PREV,TM_PREV,KC_PGUP,TM_NEXT,WIN_NEXT,                        KC_HOME,KC_PGDN,KC_PGUP,KC_END ,KC_INS ,KC_NO,
+     _______,KC_LGUI,KC_LALT,KC_LSFT,KC_LCTL,KC_RALT,                        KC_LEFT,KC_DOWN, KC_UP, KC_RGHT,KC_DEL ,KC_BSPC  ,
+     _______,ALT_TAB,KC_SCTAB,KC_CTAB,KC_PGDN,INS_HARD,                      WIN_LEFT,WIN_DN,WIN_UP,WIN_RGHT,KC_PASTE,KC_KP_ENTER,
                      MS_WHUP,MS_WHDN,                                                        MS_WHLEFT,MS_WHRGHT,
                                      _______,_______,                        _______,_______,
                                      _______,_______,                        _______,KC_PSTE,  // works in XTerm to emulate middle-click
@@ -571,29 +615,52 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 
   ),
 
-  // Numpad. This works somehow without turning on Numlock first. I've not
+  // Num/Symbol. This works somehow without turning on Numlock first. I've not
   // managed to get Alt-codes working under Windows though, might be an
-  // artefact of using US Intl (nope, I'm using UScmpse custom layout)?
+  // artefact of using US Intl (nope, I'm using USCmpse custom layout)?
+/*
   [L_NUM] = LAYOUT_5x6(
-     _______,KC_MUTE,KC_VOLD,KC_VOLU,_______,TG(L_NUM),                   KC_NUMLOCK,KC_KP_SLASH,KC_KP_ASTERISK,KC_LPRN,KC_RPRN,KC_BSPC,  // gah BSPC moves around :(
-     _______,_______,_______,_______,KC_LPRN,KC_RPRN,                     KC_NO, KC_KP_7,KC_KP_8,KC_KP_9,KC_KP_MINUS,_______,
-     _______,KC_MSEL,_______,_______,KC_LCBR,KC_RCBR,                     KC_NO,KC_KP_4,KC_KP_5,KC_KP_6,KC_KP_PLUS,_______,
-     _______,KC_MPRV,KC_MPLY,KC_MNXT,KC_LBRC,KC_RBRC,                     KC_COLN, KC_KP_1,KC_KP_2,KC_KP_3,KC_COMM,_______,
+     _______, KC_NO , KC_NO , KC_NO , KC_NO ,TG(L_NUM),                   KC_NUMLOCK,KC_KP_SLASH,KC_KP_ASTERISK,KC_LPRN,KC_RPRN,KC_BSPC,
+     _______,KC_EXLM, KC_AT ,KC_HASH,KC_LPRN,KC_RPRN,                     KC_KP_SLASH, KC_KP_7,KC_KP_8,KC_KP_9,MINS_UNDSCR,_______,
+     _______,KC_DLR, KC_PERC,KC_CIRC,KC_LCBR,KC_RCBR,                     KC_KP_ASTERISK,KC_KP_4,KC_KP_5,KC_KP_6,KC_KP_PLUS,_______,
+     _______,KC_AMPR,KC_ASTR,KC_TILD,KC_LBRC,KC_RBRC,                     KC_COLN, KC_KP_1,KC_KP_2,KC_KP_3,KC_COMM,KC_KP_EQUAL,
                      KC_PSCR,KC_PAUS,                                                        KC_KP_0,KC_KP_DOT,
                                      _______,_______,                        _______,_______,
                                      KC_TAB ,_______,                        _______,_______,
                                      _______,_______,                        _______,_______
   ),
+*/
+  [L_NUM] = LAYOUT_5x6(
+     _______, KC_NO , KC_NO , KC_NO , KC_NO ,TG(L_NUM),                   KC_NUMLOCK,KC_KP_SLASH,KC_KP_ASTERISK,KC_LPRN,KC_RPRN,KC_BSPC,
+     _______,KC_EXLM, KC_AT ,KC_HASH,KC_DLR, KC_PERC,                     KC_KP_EQUAL, KC_KP_7,KC_KP_8,KC_KP_9,KC_KP_PLUS,_______,
+     _______,KC_SCLN,KC_COLN,KC_LCBR,KC_LPRN,KC_LBRC,                     KC_KP_ASTERISK,KC_KP_4,KC_KP_5,KC_KP_6,MINS_UNDSCR,_______,
+     _______,KC_CIRC,KC_AMPR,KC_RCBR,KC_RPRN,KC_RBRC,                     KC_KP_0, KC_KP_1,KC_KP_2,KC_KP_3,KC_KP_SLASH,_______,
+                     KC_GRV,KC_TILDE,                                                        KC_COMM,KC_KP_DOT,
+                                     _______,_______,                        _______,_______,
+                                     _______,_______,                        _______,_______,
+                                     _______,_______,                        _______,_______
+  ),
+
+  [L_FUNC] = LAYOUT_5x6(
+     _______,DF(L_COLM),DF(L_QWER),DF(L_WASD),KC_NO,KC_NO,                 KC_NO , KC_NO , KC_NO , KC_NO , KC_NO , KC_NO ,
+     _______, KC_NO , KC_NO , KC_NO , KC_NO , KC_NO ,                     KC_PSCR, KC_F7 , KC_F8 , KC_F9 , KC_F10,_______,
+     _______,KC_LGUI,KC_LALT,KC_LSFT,KC_LCTL, KC_NO ,                     KC_SLCK, KC_F4 , KC_F5 , KC_F6 , KC_F11,_______,
+     _______, KC_NO , KC_NO , KC_NO , KC_NO , KC_NO ,                     KC_PAUS, KC_F1 , KC_F2 , KC_F3 , KC_F12,_______,
+                      KC_NO , KC_NO ,                                                         KC_NO , KC_NO ,
+                                     _______,_______,                        _______,_______,
+                                     _______,_______,                        _______,_______,
+                                     _______,_______,                        _______,_______
+  ),
 
   [L_MOUSE] = LAYOUT_5x6(
-     RGB_TOG,DF(L_COLM),DF(L_QWER),DF(L_WASD),_______,TG(L_NUM),           MS_WHLEFT,MS_WHUP,   KC_MS_BTN3,    MS_WHDN,MS_WHRGHT,KC_MS_BTN4,
-     RGB_MOD,_______,_______,_______,_______,_______,                        _______,KC_MS_BTN1,KC_MS_UP,   KC_MS_BTN2,  _______,KC_MS_BTN5,
-    RGB_RMOD,_______,KC_ACL0,KC_ACL1,KC_ACL2,_______,                        _______,KC_MS_LEFT,KC_MS_DOWN,KC_MS_RIGHT,  _______,_______,
+     RGB_TOG,_______,_______,_______,_______,_______,                    MS_WHLEFT,MS_WHUP,   KC_MS_BTN3,    MS_WHDN,MS_WHRGHT,KC_MS_BTN4,
+     RGB_MOD,RGB_HUI,KC_MUTE,KC_VOLD,KC_VOLU,RGB_SAI,                        _______,KC_MS_BTN1,KC_MS_UP,   KC_MS_BTN2,  _______,KC_MS_BTN5,
+    RGB_RMOD,RGB_HUD,KC_ACL0,KC_ACL1,KC_ACL2,RGB_SAD,                        _______,KC_MS_LEFT,KC_MS_DOWN,KC_MS_RIGHT,  _______,_______,
      /* Plain, Breath, Rainbow, Swirl, Snake, KnightRider, Xmas, Gradient */
      RGB_M_P,RGB_M_B,RGB_M_R,RGB_M_SW,RGB_M_SN,RGB_M_K,                      _______,_______,_______,_______,_______,_______,
                      RGB_M_X,RGB_M_G,                                                        _______,_______,
                                      _______,_______,                        _______,_______,
-                                     RGB_HUI,RGB_SAI,                        RGB_VAI,KC_BRIU,
-                                     RGB_HUD,RGB_SAD,                        RGB_VAD,KC_BRID
+                                     _______,_______,                        RGB_VAI,KC_BRIU,
+                                     _______,_______,                        RGB_VAD,KC_BRID
   ),
 };
