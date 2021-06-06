@@ -129,6 +129,7 @@ enum custom_keycodes {
     LT_NUM_BSPC,
     LT_NUM_BSPC_DEL,
     LT_MOUSE_ALT_SHIFT_INS,
+    OSM_GUI,
     ALT_TAB,
     ALT_STAB,
 };
@@ -300,6 +301,24 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
             }
         }
         return true;
+#if 1
+    case OSM_GUI:
+        /* OSM(MOD_LGUI) is delaying the event, but I need immediate triggering
+         * of the modifier to move windows around with the mouse. If only
+         * tapped, however, have it be a win OSM */
+        if (record->event.pressed) {
+            key_timer = timer_read();
+            register_mods(MOD_BIT(KC_LGUI));
+        } else {
+            unregister_mods(MOD_BIT(KC_LGUI));
+            if (timer_elapsed(key_timer) < TAPPING_TERM) {
+                set_oneshot_mods(MOD_BIT(KC_LGUI));
+            } else {
+                clear_oneshot_mods();
+            }
+        }
+        return true;
+#endif
 #if 0
         // From https://github.com/precondition/dactyl-manuform-keymap/blob/main/keymap.c
     case KC_BSPC:
@@ -548,9 +567,9 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 #define KC_G_O RGUI_T(KC_O)
 
   [L_COLM] = LAYOUT_5x6(
-     KC_GRV,  KC_1  , KC_2  , KC_3  , KC_4  , KC_5  ,                        KC_6  , KC_7  , KC_8  , KC_9  , KC_0  ,KC_MINS,
-     KC_TAB , KC_Q  , KC_W  , KC_F  , KC_P  , KC_B  ,                        KC_J  , KC_L  ,KC_U_UE, KC_Y  ,KC_SCLN,KC_BSLS,
-     KC_LCTL,KC_A_AE, KC_A_R, KC_S_S, KC_C_T, KC_G  ,                        KC_M  , KC_C_N, KC_S_E, KC_A_I,KC_O_OE,KC_QUOT,
+     KC_GRV,  KC_1  , KC_2  , KC_3  , KC_4  , KC_5  ,                        KC_6  , KC_7  , KC_8  , KC_9  , KC_0  ,KC_NO,
+     KC_TAB , KC_Q  , KC_W  , KC_F  , KC_P  , KC_B  ,                        KC_J  , KC_L  ,KC_U_UE, KC_Y  ,KC_QUOT,KC_BSLS,
+     KC_LCTL,KC_A_AE, KC_A_R, KC_S_S, KC_C_T, KC_G  ,                        KC_M  , KC_C_N, KC_S_E, KC_A_I,KC_O_OE,KC_NO,
      KC_LSFT, KC_Z  , KC_X  , KC_C  , KC_D  , KC_V  ,                        KC_K  , KC_H  ,KC_COMM,KC_DOT ,KC_SLSH,RSFT_T(KC_GRV),
                      KC_LBRC,KC_RBRC,                                                 ALTGR_QUOT, KC_RALT,  // not using these two really, make them shift+ins and ctrl-v?
               /* These two ^^^^  are here for Gmail hotkeys only  */
@@ -558,7 +577,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
                                   /* Order is TR, BR                     Order is BL, TL,
                                               TL, BL                              BR, TR */
                        LT_MOUSE_ALT_SHIFT_INS, KC_LEAD,                      KC_LEAD, SHIFT_INS,
-                                      KC_LGUI, KC_LALT,                      KC_RALT, KC_APP
+                                      OSM_GUI, KC_LALT,                      KC_RALT, KC_APP
 // NOTE: RSFT_T(KC_S_INS) doesn't work, only INS comes through. RSFT_T stuff
 // only works on "simple" keycodes. See process_record_user for how this works,
 // thanks to ridingqwerty on Discord.
@@ -607,7 +626,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
      KC_F1  , KC_F2 , KC_F3 , KC_F4 , KC_F5 , KC_F6 ,                        KC_F7  , KC_F8 , KC_F9 , KC_F10,KC_F11 ,KC_F12,
    _______,WIN_PREV,TM_PREV,KC_PGUP,TM_NEXT,WIN_NEXT,                        KC_HOME,KC_PGDN,KC_PGUP,KC_END ,KC_INS ,KC_NO,
      _______,KC_LGUI,KC_LALT,KC_LSFT,KC_LCTL,KC_RALT,                        KC_LEFT,KC_DOWN, KC_UP, KC_RGHT,KC_DEL ,KC_BSPC  ,
-     _______,ALT_TAB,KC_SCTAB,KC_CTAB,KC_PGDN,INS_HARD,                      WIN_LEFT,WIN_DN,WIN_UP,WIN_RGHT,KC_PASTE,KC_KP_ENTER,
+     _______,ALT_TAB,KC_SCTAB,KC_CTAB,KC_PGDN,INS_HARD,                      WIN_LEFT,WIN_DN,WIN_UP,WIN_RGHT,KC_PSTE,KC_KP_ENTER,
                      MS_WHUP,MS_WHDN,                                                        MS_WHLEFT,MS_WHRGHT,
                                      _______,_______,                        _______,_______,
                                      _______,_______,                        _______,KC_PSTE,  // works in XTerm to emulate middle-click
