@@ -650,7 +650,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
   ),
 */
   [L_NUM] = LAYOUT_5x6(
-     _______, KC_NO , KC_NO , KC_NO , KC_NO ,TG(L_NUM),                   KC_NUMLOCK,KC_KP_SLASH,KC_KP_ASTERISK,KC_LPRN,KC_RPRN,KC_BSPC,
+     _______, KC_NO , KC_NO , KC_NO , KC_NO , KC_NO ,                     KC_NUMLOCK,KC_NO,KC_NO,KC_NO,KC_NO,KC_NO,
      _______,KC_EXLM, KC_AT ,KC_HASH,KC_DLR, KC_PERC,                     KC_KP_EQUAL, KC_KP_7,KC_KP_8,KC_KP_9,KC_KP_PLUS,_______,
      _______,KC_SCLN,KC_COLN,KC_LCBR,KC_LPRN,KC_LBRC,                     KC_KP_ASTERISK,KC_KP_4,KC_KP_5,KC_KP_6,MINS_UNDSCR,_______,
      _______,KC_CIRC,KC_AMPR,KC_RCBR,KC_RPRN,KC_RBRC,                     KC_KP_0, KC_KP_1,KC_KP_2,KC_KP_3,KC_KP_SLASH,_______,
@@ -661,10 +661,10 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
   ),
 
   [L_FUNC] = LAYOUT_5x6(
-     _______,DF(L_COLM),DF(L_QWER),DF(L_WASD),KC_NO,KC_NO,                 KC_NO , KC_NO , KC_NO , KC_NO , KC_NO , KC_NO ,
-     _______, KC_NO , KC_NO , KC_NO , KC_NO , KC_NO ,                     KC_PSCR, KC_F7 , KC_F8 , KC_F9 , KC_F10,_______,
-     _______,KC_LGUI,KC_LALT,KC_LSFT,KC_LCTL, KC_NO ,                     KC_SLCK, KC_F4 , KC_F5 , KC_F6 , KC_F11,_______,
-     _______, KC_NO , KC_NO , KC_NO , KC_NO , KC_NO ,                     KC_PAUS, KC_F1 , KC_F2 , KC_F3 , KC_F12,_______,
+     _______, KC_NO , KC_NO , KC_NO , KC_NO , KC_NO ,                      KC_NO , KC_NO , KC_NO , KC_NO , KC_NO , KC_NO ,
+     _______, KC_NO , KC_NO , KC_NO , KC_NO , KC_NO ,                     KC_PSCR, KC_F7 , KC_F8 , KC_F9 , KC_F10,DF(L_WASD),
+     _______,KC_LGUI,KC_LALT,KC_LSFT,KC_LCTL, KC_NO ,                     KC_SLCK, KC_F4 , KC_F5 , KC_F6 , KC_F11,DF(L_QWER),
+     _______, KC_NO , KC_NO , KC_NO , KC_NO , KC_NO ,                     KC_PAUS, KC_F1 , KC_F2 , KC_F3 , KC_F12,DF(L_COLM),
                       KC_NO , KC_NO ,                                                         KC_NO , KC_NO ,
                                      _______,_______,                        _______,_______,
                                      _______,_______,                        _______,_______,
