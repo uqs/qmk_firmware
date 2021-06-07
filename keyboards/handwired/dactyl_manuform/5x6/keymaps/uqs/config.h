@@ -32,7 +32,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #define RGBLED_NUM 12
 #define RGBLED_SPLIT {6,6}
 
-#define RGBLIGHT_ANIMATIONS
+//#define RGBLIGHT_ANIMATIONS
 #define RGBLIGHT_SLEEP
 #define RGBLIGHT_LAYERS
 #define RGBLIGHT_MAX_LAYERS 8  // default is 16
@@ -54,3 +54,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 // KC_ACL0 et al work when held.
 #define MK_COMBINED
 #define MOUSEKEY_WHEEL_INTERVAL 40  // default is 50, lower means more scroll events
+
+// From https://michael.stapelberg.ch/posts/2021-05-08-keyboard-input-latency-qmk-kinesis/
+#define USB_POLLING_INTERVAL_MS 1
