@@ -46,8 +46,10 @@ layer_state_t default_layer_state_set_user(layer_state_t state) {
 
 // NOTE have a look at keyboards/jones/v03/keymaps/default_jp/keymap.c for default layers and put WASD there and NUM?
 layer_state_t layer_state_set_user(layer_state_t state) {
+#if 0
     // defining layer L_FUNC when both keys are pressed
     state = update_tri_layer_state(state, L_EXTD, L_NUM, L_FUNC);
+#endif
 #ifdef RGBLIGHT_LAYERS
     rgblight_set_layer_state(L_EXTD, layer_state_cmp(state, L_EXTD));
     rgblight_set_layer_state(L_NUM, layer_state_cmp(state, L_NUM));
@@ -129,6 +131,7 @@ enum custom_keycodes {
     LT_NUM_BSPC,
     LT_NUM_BSPC_DEL,
     LT_MOUSE_ALT_SHIFT_INS,
+    LT_FUNC_SHIFT_INS,
     OSM_GUI,
     ALT_TAB,
     ALT_STAB,
@@ -301,6 +304,17 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
             }
         }
         return true;
+    case LT_FUNC_SHIFT_INS:
+        if (record->event.pressed) {
+            key_timer = timer_read();
+            layer_on(L_FUNC);
+        } else {
+            layer_off(L_FUNC);
+            if (timer_elapsed(key_timer) < TAPPING_TERM) {
+                tap_code16(LSFT(KC_INS));
+            }
+        }
+        return true;
 #if 1
     case OSM_GUI:
         /* OSM(MOD_LGUI) is delaying the event, but I need immediate triggering
@@ -375,7 +389,8 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
             key_timer = timer_read();
         } else {
             if (timer_elapsed(key_timer) < TAPPING_TERM) {
-                tap_code16(KC_KP_MINUS);
+                // Can't send KC_KP_MINUS, it doesn't compose to, say →
+                tap_code16(KC_MINUS);
             } else {
                 tap_code16(KC_UNDERSCORE);
             }
@@ -535,8 +550,8 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
                       KC_LBRC, KC_RBRC,                                                     KC_MINS, KC_EQL,
                                  LT_EXTD_ESC, KC_SPC,                        KC_ENT, LT_NUM_BSPC,
                                   /* Order is TR, BR, TL, BL             Order is BL, TL, BR, TR */
-                                ALT_SHIFT_INS, KC_LEAD,                      KC_LEAD, SHIFT_INS,
-                                      KC_LGUI, KC_LALT,                      KC_RALT, KC_APP
+                       LT_MOUSE_ALT_SHIFT_INS, KC_LEAD,                      KC_LEAD, LT_FUNC_SHIFT_INS,
+                                      OSM_GUI, KC_LALT,                      KC_RALT, KC_APP
   ),
 
   [L_WASD] = LAYOUT_5x6(
@@ -566,17 +581,20 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 #define KC_A_I LALT_T(KC_I)  // RALT is special, it's AltGr and my compose key under Win (layout UScmpse) and *nix (setxkbmap -option compose:ralt)
 #define KC_G_O RGUI_T(KC_O)
 
+  // TODO: implement CAPS_WORD on the left pinky shift on tap (maybe?) But it
+  // can't actually set caps lock, as I'm rebinding that for a saner laptop
+  // keyboard. See drashna's keymap.
   [L_COLM] = LAYOUT_5x6(
-     KC_GRV,  KC_1  , KC_2  , KC_3  , KC_4  , KC_5  ,                        KC_6  , KC_7  , KC_8  , KC_9  , KC_0  ,KC_NO,
+     _______, KC_NO , KC_NO , KC_NO , KC_NO , KC_NO ,                        KC_NO , KC_NO , KC_NO , KC_NO , KC_NO , KC_NO ,
      KC_TAB , KC_Q  , KC_W  , KC_F  , KC_P  , KC_B  ,                        KC_J  , KC_L  ,KC_U_UE, KC_Y  ,KC_QUOT,KC_BSLS,
-     KC_LCTL,KC_A_AE, KC_A_R, KC_S_S, KC_C_T, KC_G  ,                        KC_M  , KC_C_N, KC_S_E, KC_A_I,KC_O_OE,KC_NO,
+     OSM_GUI,KC_A_AE, KC_A_R, KC_S_S, KC_C_T, KC_G  ,                        KC_M  , KC_C_N, KC_S_E, KC_A_I,KC_O_OE,KC_MINUS,
      KC_LSFT, KC_Z  , KC_X  , KC_C  , KC_D  , KC_V  ,                        KC_K  , KC_H  ,KC_COMM,KC_DOT ,KC_SLSH,RSFT_T(KC_GRV),
-                     KC_LBRC,KC_RBRC,                                                 ALTGR_QUOT, KC_RALT,  // not using these two really, make them shift+ins and ctrl-v?
+                     KC_LBRC,KC_RBRC,                                                 ALTGR_QUOT, SHIFT_INS,
               /* These two ^^^^  are here for Gmail hotkeys only  */
-                             LT_EXTD_ESC_WIN, KC_SPC,                       KC_ENT, LT_NUM_BSPC,
+                            LT_EXTD_ESC, SFT_T(KC_SPC),                      KC_ENT, LT_NUM_BSPC,
                                   /* Order is TR, BR                     Order is BL, TL,
                                               TL, BL                              BR, TR */
-                       LT_MOUSE_ALT_SHIFT_INS, KC_LEAD,                      KC_LEAD, SHIFT_INS,
+                       LT_MOUSE_ALT_SHIFT_INS, KC_LEAD,                      KC_LEAD, LT_FUNC_SHIFT_INS,
                                       OSM_GUI, KC_LALT,                      KC_RALT, KC_APP
 // NOTE: RSFT_T(KC_S_INS) doesn't work, only INS comes through. RSFT_T stuff
 // only works on "simple" keycodes. See process_record_user for how this works,
@@ -620,16 +638,21 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
  */
   ),
 
+// OSMs
+#define OSM_ALT OSM(MOD_LALT)
+#define OSM_SFT OSM(MOD_LSFT)
+#define OSM_CTL OSM(MOD_LCTL)
+
   // Updated with inspiration from https://forum.colemak.com/topic/2014-extend-extra-extreme/
   // I like the AltGr trick from https://stevep99.github.io/seniply/ and should probably incorporate some stuff from it.
   [L_EXTD] = LAYOUT_5x6(
      KC_F1  , KC_F2 , KC_F3 , KC_F4 , KC_F5 , KC_F6 ,                        KC_F7  , KC_F8 , KC_F9 , KC_F10,KC_F11 ,KC_F12,
-   _______,WIN_PREV,TM_PREV,KC_PGUP,TM_NEXT,WIN_NEXT,                        KC_HOME,KC_PGDN,KC_PGUP,KC_END ,KC_INS ,KC_NO,
-     _______,KC_LGUI,KC_LALT,KC_LSFT,KC_LCTL,KC_RALT,                        KC_LEFT,KC_DOWN, KC_UP, KC_RGHT,KC_DEL ,KC_BSPC  ,
-     _______,ALT_TAB,KC_SCTAB,KC_CTAB,KC_PGDN,INS_HARD,                      WIN_LEFT,WIN_DN,WIN_UP,WIN_RGHT,KC_PSTE,KC_KP_ENTER,
+   _______,WIN_PREV,TM_PREV,KC_PGUP,TM_NEXT,WIN_NEXT,                        KC_HOME,KC_PGDN,KC_PGUP,KC_END ,KC_INS ,INS_HARD,
+     _______,OSM_GUI,OSM_ALT,OSM_SFT,OSM_CTL,KC_RALT,                        KC_LEFT,KC_DOWN, KC_UP, KC_RGHT,KC_DEL ,KC_BSPC ,
+     _______,ALT_TAB,KC_SCTAB,KC_CTAB,KC_PGDN, KC_NO,                      WIN_LEFT,WIN_DN,WIN_UP,WIN_RGHT,KC_PSTE,KC_ENTER,  // KC_PSTE works in XTerm to emulate middle-click
                      MS_WHUP,MS_WHDN,                                                        MS_WHLEFT,MS_WHRGHT,
                                      _______,_______,                        _______,_______,
-                                     _______,_______,                        _______,KC_PSTE,  // works in XTerm to emulate middle-click
+                                     _______,_______,                        _______,_______,
                                      _______,_______,                        _______,_______
 
   ),
@@ -649,11 +672,12 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
                                      _______,_______,                        _______,_______
   ),
 */
+  // TODO: maybe swap # with ;, that way I can roll :w or :wq which I need often ...
   [L_NUM] = LAYOUT_5x6(
      _______, KC_NO , KC_NO , KC_NO , KC_NO , KC_NO ,                     KC_NUMLOCK,KC_NO,KC_NO,KC_NO,KC_NO,KC_NO,
      _______,KC_EXLM, KC_AT ,KC_HASH,KC_DLR, KC_PERC,                     KC_KP_EQUAL, KC_KP_7,KC_KP_8,KC_KP_9,KC_KP_PLUS,_______,
      _______,KC_SCLN,KC_COLN,KC_LCBR,KC_LPRN,KC_LBRC,                     KC_KP_ASTERISK,KC_KP_4,KC_KP_5,KC_KP_6,MINS_UNDSCR,_______,
-     _______,KC_CIRC,KC_AMPR,KC_RCBR,KC_RPRN,KC_RBRC,                     KC_KP_0, KC_KP_1,KC_KP_2,KC_KP_3,KC_KP_SLASH,_______,
+     _______,KC_CIRC,KC_AMPR,KC_RCBR,KC_RPRN,KC_RBRC,                     KC_KP_0, KC_KP_1,KC_KP_2,KC_KP_3,KC_KP_SLASH,KC_KP_ENTER,  // Enter here, because thumb is occupied
                      KC_GRV,KC_TILDE,                                                        KC_COMM,KC_KP_DOT,
                                      _______,_______,                        _______,_______,
                                      _______,_______,                        _______,_______,
