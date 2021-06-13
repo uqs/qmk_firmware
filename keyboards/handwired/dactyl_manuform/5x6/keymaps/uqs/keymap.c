@@ -654,6 +654,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
                                      _______,_______,                        _______,_______,
                                      _______,_______,                        _______,_______,
                                      _______,_______,                        _______,_______
+                                  /* ^^^^ can't be used */                /* use these ^^^^ */
 
   ),
 
@@ -679,14 +680,15 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
      _______,KC_SCLN,KC_COLN,KC_LCBR,KC_LPRN,KC_LBRC,                     KC_KP_ASTERISK,KC_KP_4,KC_KP_5,KC_KP_6,MINS_UNDSCR,_______,
      _______,KC_CIRC,KC_AMPR,KC_RCBR,KC_RPRN,KC_RBRC,                     KC_KP_0, KC_KP_1,KC_KP_2,KC_KP_3,KC_KP_SLASH,KC_KP_ENTER,  // Enter here, because thumb is occupied
                      KC_GRV,KC_TILDE,                                                        KC_COMM,KC_KP_DOT,
-                                     _______,_______,                        _______,_______,
-                                     _______,_______,                        _______,_______,
+                                     KC_ESC ,KC_SPC ,                        _______,_______,
+                                     KC_KP_0,_______,                        _______,_______,
                                      _______,_______,                        _______,_______
+                                  /* ^^^^ use these */                      /* ^^^^ can't be used */
   ),
 
   [L_FUNC] = LAYOUT_5x6(
      _______, KC_NO , KC_NO , KC_NO , KC_NO , KC_NO ,                      KC_NO , KC_NO , KC_NO , KC_NO , KC_NO , KC_NO ,
-     _______, KC_NO , KC_NO , KC_NO , KC_NO , KC_NO ,                     KC_PSCR, KC_F7 , KC_F8 , KC_F9 , KC_F10,DF(L_WASD),
+     _______, KC_NO ,KC_MUTE,KC_VOLD,KC_VOLU, KC_NO ,                     KC_PSCR, KC_F7 , KC_F8 , KC_F9 , KC_F10,DF(L_WASD),
      _______,KC_LGUI,KC_LALT,KC_LSFT,KC_LCTL, KC_NO ,                     KC_SLCK, KC_F4 , KC_F5 , KC_F6 , KC_F11,DF(L_QWER),
      _______, KC_NO , KC_NO , KC_NO , KC_NO , KC_NO ,                     KC_PAUS, KC_F1 , KC_F2 , KC_F3 , KC_F12,DF(L_COLM),
                       KC_NO , KC_NO ,                                                         KC_NO , KC_NO ,
@@ -696,13 +698,13 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
   ),
 
   [L_MOUSE] = LAYOUT_5x6(
-     RGB_TOG,_______,_______,_______,_______,_______,                    MS_WHLEFT,MS_WHUP,   KC_MS_BTN3,    MS_WHDN,MS_WHRGHT,KC_MS_BTN4,
-     RGB_MOD,RGB_HUI,KC_MUTE,KC_VOLD,KC_VOLU,RGB_SAI,                        _______,KC_MS_BTN1,KC_MS_UP,   KC_MS_BTN2,  _______,KC_MS_BTN5,
-    RGB_RMOD,RGB_HUD,KC_ACL0,KC_ACL1,KC_ACL2,RGB_SAD,                        _______,KC_MS_LEFT,KC_MS_DOWN,KC_MS_RIGHT,  _______,_______,
+     RGB_TOG,_______,_______,_______,_______,_______,                        _______,_______,_______,_______,_______,_______,
+     RGB_MOD,RGB_HUI,KC_MUTE,KC_VOLD,KC_VOLU,RGB_SAI,                        _______,_______ ,KC_MS_UP, MS_WHUP, _______,_______,
+    RGB_RMOD,RGB_HUD,KC_ACL0,KC_ACL1,KC_ACL2,RGB_SAD,                        MS_WHLEFT,KC_MS_LEFT,KC_MS_DOWN,KC_MS_RIGHT,MS_WHRGHT,_______,
      /* Plain, Breath, Rainbow, Swirl, Snake, KnightRider, Xmas, Gradient */
-     RGB_M_P,RGB_M_B,RGB_M_R,RGB_M_SW,RGB_M_SN,RGB_M_K,                      _______,_______,_______,_______,_______,_______,
+     RGB_M_P,RGB_M_B,RGB_M_R,RGB_M_SW,RGB_M_SN,RGB_M_K,                      _______,MS_WHDN,KC_MS_BTN3,KC_MS_BTN4,KC_MS_BTN5,_______,
                      RGB_M_X,RGB_M_G,                                                        _______,_______,
-                                     _______,_______,                        _______,_______,
+                                     _______,_______,                        KC_MS_BTN1,KC_MS_BTN2,
                                      _______,_______,                        RGB_VAI,KC_BRIU,
                                      _______,_______,                        RGB_VAD,KC_BRID
   ),
