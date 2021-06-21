@@ -599,6 +599,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
      KC_B   , KC_GRV , KC_Z  , KC_X  , KC_C  , KC_V , OSM_GUI, KC_LALT,  KC_RALT, KC_APP,  KC_N  , KC_M  ,KC_COMM,KC_DOT ,KC_SLSH,RSFT_T(KC_GRV),
                             KC_LBRC, KC_RBRC, KC_LCTL, KC_SPC, KC_R,     DF(L_COLM), KC_ENT, KC_BSPC, KC_MINS, KC_EQL
   ),
+
 // GASC/◆⎇⇧⎈ home row mod, read all about it here:
 // https://precondition.github.io/home-row-mods
 // Left-hand home row mods
@@ -687,8 +688,8 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
   [L_NUM] = LAYOUT(
      _______,KC_EXLM, KC_AT ,KC_HASH,KC_DLR, KC_PERC,                                     KC_KP_EQUAL, KC_KP_7,KC_KP_8,KC_KP_9,KC_KP_PLUS,_______,
      _______,KC_SCLN,KC_COLN,KC_LCBR,KC_LPRN,KC_LBRC,                                     KC_KP_ASTERISK,KC_KP_4,KC_KP_5,KC_KP_6,MINS_UNDSCR,_______,
-     _______,KC_CIRC,KC_AMPR,KC_RCBR,KC_RPRN,KC_RBRC, _______,_______,   _______,_______, KC_KP_0, KC_KP_1,KC_KP_2,KC_KP_3,KC_KP_SLASH,KC_KP_ENTER,  // Enter here, because thumb is occupied
-                            KC_GRV,KC_TILDE, KC_ESC ,KC_SPC , KC_KP_0,   _______,_______,_______, KC_COMM,KC_KP_DOT
+     _______,KC_CIRC,KC_AMPR,KC_RCBR,KC_RPRN,KC_RBRC, _______,_______,   _______,_______, KC_KP_DOT, KC_KP_1,KC_KP_2,KC_KP_3,KC_KP_SLASH,KC_KP_ENTER,  // Enter here, because thumb is occupied
+                            KC_GRV,KC_TILDE, KC_ESC ,KC_SPC , KC_KP_0,   _______,_______,_______, KC_KP_0,KC_NO
                                                   /* ^^^^ use these */   /* ^^^^ can't be used */
   ),
 
