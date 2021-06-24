@@ -10,10 +10,10 @@
 // But what about VIM? Use Layers+Cursor instead maybe?
 //
 // LOG:
-// Jan 2020, got Dactyl Manuform
+// late Jan 2020, got Dactyl Manuform 5x6
 // https://play.typeracer.com/  shows about 75-80wpm (en) or ~400cpm (de) on my classic keeb.
-// Never did proper touch typing, basically didn't use ring finger much, mostly index/middle and pinky
-// Feb 2020, switching to Colemak DH
+// Never did proper touch typing, basically didn't use ring finger much, mostly index/middle and pinky (only to hold down modifiers, really).
+// Feb 2020, switching to Colemak DH after 30 years of Qwerty, uh oh...
 // mid Feb, 20wpm/87% on monkeytype.com (no punct, numbers)
 // early March, 28wpm/90% on MT (plus punct./numbers); 25wpm on typeracer
 // early April, 35wpm/92% on MT; 41wpm on typeracer
@@ -683,6 +683,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
                                      _______,_______,                                        _______,_______,
                                      _______,_______,                                        _______,_______,
                                      _______,_______,                                        _______,_______
+                                  /* ^^^^ use these */                                      /* ^^^^ can't be used */
   ),
 
   [L_MOUSE] = LAYOUT_5x6(
@@ -695,5 +696,6 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
                                      _______,_______,                                       KC_MS_BTN1,KC_MS_BTN2,
                                      _______,_______,                                       RGB_VAI,KC_BRIU,
                                      _______,_______,                                       RGB_VAD,KC_BRID
+                                  /* ^^^^ can't be used */                             /* use these ^^^^ */
   ),
 };
