@@ -19,6 +19,7 @@
 // early April, 35wpm/92% on MT; 41wpm on typeracer
 // early May, 45wpm/96% on MT; 46wpm on typeracer; my qwerty is deteriorating, I need to look at the keys more and more o_O
 // early June, 49wpm/95% on MT (sigh ...); 50wpm on typeracer;
+// early July, 50wpm/96% on MT (...); 52wpm/96% on typeracer;
 
 enum layers {
     L_QWER = 0,
@@ -133,6 +134,9 @@ enum custom_keycodes {
     LT_MOUSE_ALT_SHIFT_INS,
     LT_FUNC_SHIFT_INS,
     OSM_GUI,
+    OSM_SFT,
+    OSM_CTL,
+    OSM_ALT,
     ALT_TAB,
     ALT_STAB,
 };
@@ -168,11 +172,13 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
     uint8_t mod_state = get_mods();
     if (layer_state_is(L_EXTD) && record->event.pressed) {
         extd_layer_was_used = true;
-        // immediately let go off WIN to have proper and regular use of the layer.
+#if 0
+        // immediately let go of WIN to have proper and regular use of the layer.
         unregister_mods(MOD_BIT(KC_LWIN));
         // never triggered Win+MSWheel under Linux, but FreeBSD seems to need a
         // bit more time to let go of the modifier.
         wait_ms(10);
+#endif
     }
     if (layer_state_is(L_NUM) && record->event.pressed) {
         num_layer_was_used = true;
@@ -326,12 +332,64 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
         } else {
             unregister_mods(MOD_BIT(KC_LGUI));
             if (timer_elapsed(key_timer) < TAPPING_TERM) {
-                set_oneshot_mods(MOD_BIT(KC_LGUI));
+                add_oneshot_mods(MOD_BIT(KC_LGUI));
             } else {
-                clear_oneshot_mods();
+                del_oneshot_mods(MOD_BIT(KC_LGUI));
             }
         }
         return true;
+        // Why do I have to roll my own? It seems the original ones work on
+        // keyrelease, at which time I might have let go of the layer tap
+        // already, so I cannot roll them fast...
+    case OSM_SFT:
+        if (record->event.pressed) {
+            key_timer = timer_read();
+            register_mods(MOD_BIT(KC_LSFT));
+        } else {
+            unregister_mods(MOD_BIT(KC_LSFT));
+            if (timer_elapsed(key_timer) < TAPPING_TERM) {
+                add_oneshot_mods(MOD_BIT(KC_LSFT));
+            } /*else {
+                del_oneshot_mods(MOD_BIT(KC_LSFT));
+            }*/
+        }
+        return true;
+    case OSM_CTL:
+        // Feck, this breaks holding down CTRL in this layer to do CTRL+Arrow movements.
+        //if (record->event.pressed) {
+        //    add_oneshot_mods(MOD_BIT(KC_LCTL));
+        //} else {
+        //}
+        if (record->event.pressed) {
+            key_timer = timer_read();
+            register_mods(MOD_BIT(KC_LCTL));
+        } else {
+            unregister_mods(MOD_BIT(KC_LCTL));
+            if (timer_elapsed(key_timer) < TAPPING_TERM) {
+                add_oneshot_mods(MOD_BIT(KC_LCTL));
+            } /*else {
+                del_oneshot_mods(MOD_BIT(KC_LCTL));
+            }*/
+        }
+        return true;
+    case OSM_ALT:
+        if (record->event.pressed) {
+            key_timer = timer_read();
+            register_mods(MOD_BIT(KC_LALT));
+        } else {
+            unregister_mods(MOD_BIT(KC_LALT));
+            if (timer_elapsed(key_timer) < TAPPING_TERM) {
+                add_oneshot_mods(MOD_BIT(KC_LALT));
+            } /*else {
+                del_oneshot_mods(MOD_BIT(KC_LALT));
+            }*/
+        }
+        return true;
+#else
+#define OSM_ALT OSM(MOD_LALT)
+#define OSM_CTL OSM(MOD_LCTL)
+#define OSM_GUI OSM(MOD_LGUI)
+#define OSM_SFT OSM(MOD_LSFT)
 #endif
 #if 0
         // From https://github.com/precondition/dactyl-manuform-keymap/blob/main/keymap.c
@@ -588,7 +646,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
      _______, KC_NO , KC_NO , KC_NO , KC_NO , KC_NO ,                                          KC_NO , KC_NO , KC_NO , KC_NO , KC_NO , KC_NO ,
      KC_TAB , KC_Q  , KC_W  , KC_F  , KC_P  , KC_B  ,                                          KC_J  , KC_L  ,KC_U_UE, KC_Y  ,KC_QUOT,KC_BSLS,
      OSM_GUI,KC_A_AE, KC_A_R, KC_S_S, KC_C_T, KC_G  ,                                          KC_M  , KC_C_N, KC_S_E, KC_A_I,KC_O_OE,KC_MINUS,
-     KC_LSFT, KC_Z  , KC_X  , KC_C  , KC_D  , KC_V  ,                                          KC_K  , KC_H  ,KC_COMM,KC_DOT ,KC_SLSH,RSFT_T(KC_GRV),
+OSM(MOD_LSFT),KC_Z  , KC_X  , KC_C  , KC_D  , KC_V  ,                                          KC_K  , KC_H  ,KC_COMM,KC_DOT ,KC_SLSH,RSFT_T(KC_GRV),
                      KC_LBRC,KC_RBRC,                                                                   ALTGR_QUOT, SHIFT_INS,
               /* These two ^^^^  are here for Gmail hotkeys only  */
                             LT_EXTD_ESC, SFT_T(KC_SPC),                                        KC_ENT, LT_NUM_BSPC,
@@ -637,11 +695,6 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
  * movement in Openbox with that.
  */
   ),
-
-// OSMs
-#define OSM_ALT OSM(MOD_LALT)
-#define OSM_SFT OSM(MOD_LSFT)
-#define OSM_CTL OSM(MOD_LCTL)
 
   // Updated with inspiration from https://forum.colemak.com/topic/2014-extend-extra-extreme/
   // I like the AltGr trick from https://stevep99.github.io/seniply/ and should probably incorporate some stuff from it.

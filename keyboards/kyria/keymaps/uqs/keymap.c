@@ -1,4 +1,5 @@
 /* Copyright 2019 Thomas Baart <thomas@splitkb.com>
+// vi:et sw=4:
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -129,6 +130,9 @@ enum custom_keycodes {
     LT_MOUSE_ALT_SHIFT_INS,
     LT_FUNC_SHIFT_INS,
     OSM_GUI,
+    OSM_SFT,
+    OSM_CTL,
+    OSM_ALT,
     ALT_TAB,
     ALT_STAB,
 };
@@ -164,11 +168,13 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
     uint8_t mod_state = get_mods();
     if (layer_state_is(L_EXTD) && record->event.pressed) {
         extd_layer_was_used = true;
-        // immediately let go off WIN to have proper and regular use of the layer.
+#if 0
+        // immediately let go of WIN to have proper and regular use of the layer.
         unregister_mods(MOD_BIT(KC_LWIN));
         // never triggered Win+MSWheel under Linux, but FreeBSD seems to need a
         // bit more time to let go of the modifier.
         wait_ms(10);
+#endif
     }
     if (layer_state_is(L_NUM) && record->event.pressed) {
         num_layer_was_used = true;
@@ -322,12 +328,64 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
         } else {
             unregister_mods(MOD_BIT(KC_LGUI));
             if (timer_elapsed(key_timer) < TAPPING_TERM) {
-                set_oneshot_mods(MOD_BIT(KC_LGUI));
+                add_oneshot_mods(MOD_BIT(KC_LGUI));
             } else {
-                clear_oneshot_mods();
+                del_oneshot_mods(MOD_BIT(KC_LGUI));
             }
         }
         return true;
+        // Why do I have to roll my own? It seems the original ones work on
+        // keyrelease, at which time I might have let go of the layer tap
+        // already, so I cannot roll them fast...
+    case OSM_SFT:
+        if (record->event.pressed) {
+            key_timer = timer_read();
+            register_mods(MOD_BIT(KC_LSFT));
+        } else {
+            unregister_mods(MOD_BIT(KC_LSFT));
+            if (timer_elapsed(key_timer) < TAPPING_TERM) {
+                add_oneshot_mods(MOD_BIT(KC_LSFT));
+            } /*else {
+                del_oneshot_mods(MOD_BIT(KC_LSFT));
+            }*/
+        }
+        return true;
+    case OSM_CTL:
+        // Feck, this breaks holding down CTRL in this layer to do CTRL+Arrow movements.
+        //if (record->event.pressed) {
+        //    add_oneshot_mods(MOD_BIT(KC_LCTL));
+        //} else {
+        //}
+        if (record->event.pressed) {
+            key_timer = timer_read();
+            register_mods(MOD_BIT(KC_LCTL));
+        } else {
+            unregister_mods(MOD_BIT(KC_LCTL));
+            if (timer_elapsed(key_timer) < TAPPING_TERM) {
+                add_oneshot_mods(MOD_BIT(KC_LCTL));
+            } /*else {
+                del_oneshot_mods(MOD_BIT(KC_LCTL));
+            }*/
+        }
+        return true;
+    case OSM_ALT:
+        if (record->event.pressed) {
+            key_timer = timer_read();
+            register_mods(MOD_BIT(KC_LALT));
+        } else {
+            unregister_mods(MOD_BIT(KC_LALT));
+            if (timer_elapsed(key_timer) < TAPPING_TERM) {
+                add_oneshot_mods(MOD_BIT(KC_LALT));
+            } /*else {
+                del_oneshot_mods(MOD_BIT(KC_LALT));
+            }*/
+        }
+        return true;
+#else
+#define OSM_ALT OSM(MOD_LALT)
+#define OSM_CTL OSM(MOD_LCTL)
+#define OSM_GUI OSM(MOD_LGUI)
+#define OSM_SFT OSM(MOD_LSFT)
 #endif
 #if 0
         // From https://github.com/precondition/dactyl-manuform-keymap/blob/main/keymap.c
@@ -516,9 +574,9 @@ void encoder_update_user(uint8_t index, bool clockwise) {
             default:
                 // Volume control.
                 if (clockwise) {
-                    tap_code(KC_VOLU);
-                } else {
                     tap_code(KC_VOLD);
+                } else {
+                    tap_code(KC_VOLU);
                 }
                 break;
         }
@@ -620,7 +678,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
   [L_COLM] = LAYOUT(
      KC_TAB , KC_Q  , KC_W  , KC_F  , KC_P  , KC_B  ,                                          KC_J  , KC_L  ,KC_U_UE, KC_Y  ,KC_QUOT,KC_BSLS,
      OSM_GUI,KC_A_AE, KC_A_R, KC_S_S, KC_C_T, KC_G  ,                                          KC_M  , KC_C_N, KC_S_E, KC_A_I,KC_O_OE,KC_MINUS,
-     KC_LSFT, KC_Z  , KC_X  , KC_C  , KC_D  , KC_V  , OSM_GUI, KC_LALT,      KC_RALT, KC_APP,  KC_K  , KC_H  ,KC_COMM,KC_DOT ,KC_SLSH,RSFT_T(KC_GRV),
+OSM(MOD_LSFT),KC_Z  , KC_X  , KC_C  , KC_D  , KC_V  , OSM_GUI, KC_LALT,      KC_RALT, KC_APP,  KC_K  , KC_H  ,KC_COMM,KC_DOT ,KC_SLSH,RSFT_T(KC_GRV),
        KC_LBRC,KC_RBRC, LT_EXTD_ESC, SFT_T(KC_SPC), LT_MOUSE_ALT_SHIFT_INS,  LT_FUNC_SHIFT_INS, KC_ENT, LT_NUM_BSPC, ALTGR_QUOT, SHIFT_INS
               /* These two ^^^^  are here for Gmail hotkeys only  */
 // NOTE: RSFT_T(KC_S_INS) doesn't work, only INS comes through. RSFT_T stuff
@@ -665,11 +723,6 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
  */
   ),
 
-// OSMs
-#define OSM_ALT OSM(MOD_LALT)
-#define OSM_SFT OSM(MOD_LSFT)
-#define OSM_CTL OSM(MOD_LCTL)
-
   // Updated with inspiration from https://forum.colemak.com/topic/2014-extend-extra-extreme/
   // I like the AltGr trick from https://stevep99.github.io/seniply/ and should probably incorporate some stuff from it.
   [L_EXTD] = LAYOUT(
@@ -688,8 +741,8 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
   [L_NUM] = LAYOUT(
      _______,KC_EXLM, KC_AT ,KC_HASH,KC_DLR, KC_PERC,                                     KC_KP_EQUAL, KC_KP_7,KC_KP_8,KC_KP_9,KC_KP_PLUS,_______,
      _______,KC_SCLN,KC_COLN,KC_LCBR,KC_LPRN,KC_LBRC,                                     KC_KP_ASTERISK,KC_KP_4,KC_KP_5,KC_KP_6,MINS_UNDSCR,_______,
-     _______,KC_CIRC,KC_AMPR,KC_RCBR,KC_RPRN,KC_RBRC, _______,_______,   _______,_______, KC_KP_DOT, KC_KP_1,KC_KP_2,KC_KP_3,KC_KP_SLASH,KC_KP_ENTER,  // Enter here, because thumb is occupied
-                            KC_GRV,KC_TILDE, KC_ESC ,KC_SPC , KC_KP_0,   _______,_______,_______, KC_KP_0,KC_NO
+     _______,KC_CIRC,KC_AMPR,KC_RCBR,KC_RPRN,KC_RBRC, _______,_______,   _______,_______, KC_COMM,KC_KP_1,KC_KP_2,KC_KP_3,KC_KP_SLASH,KC_KP_ENTER,  // Enter here, because thumb is occupied
+                            KC_GRV,KC_TILDE, KC_ESC ,KC_SPC , KC_KP_0,   _______,_______,_______, KC_KP_0,KC_KP_DOT
                                                   /* ^^^^ use these */   /* ^^^^ can't be used */
   ),
 

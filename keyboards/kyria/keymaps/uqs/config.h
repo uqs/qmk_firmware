@@ -56,5 +56,10 @@
 #define MK_COMBINED
 #define MOUSEKEY_WHEEL_INTERVAL 40  // default is 50, lower means more scroll events
 
+#define ENCODER_RESOLUTION 2
+
 // From https://michael.stapelberg.ch/posts/2021-05-08-keyboard-input-latency-qmk-kinesis/
 #define USB_POLLING_INTERVAL_MS 1
+
+// Testing OSM_SHIFT for CAPS_WORDS
+#define ONESHOT_TAP_TOGGLE 2

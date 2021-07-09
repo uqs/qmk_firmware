@@ -57,3 +57,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 // From https://michael.stapelberg.ch/posts/2021-05-08-keyboard-input-latency-qmk-kinesis/
 #define USB_POLLING_INTERVAL_MS 1
+
+// Testing OSM_SHIFT for CAPS_WORDS
+#define ONESHOT_TAP_TOGGLE 2
