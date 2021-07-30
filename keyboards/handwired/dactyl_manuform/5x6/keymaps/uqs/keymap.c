@@ -322,6 +322,9 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
         }
         return true;
 #if 1
+        /* Looks like PERMISSIVE_HOLD on LT and OSM doesn't work properly. This
+         * is probaby https://github.com/qmk/qmk_firmware/issues/8971
+         */
     case OSM_GUI:
         /* OSM(MOD_LGUI) is delaying the event, but I need immediate triggering
          * of the modifier to move windows around with the mouse. If only
@@ -643,16 +646,16 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
   // can't actually set caps lock, as I'm rebinding that for a saner laptop
   // keyboard. See drashna's keymap.
   [L_COLM] = LAYOUT_5x6(
-     _______, KC_NO , KC_NO , KC_NO , KC_NO , KC_NO ,                                          KC_NO , KC_NO , KC_NO , KC_NO , KC_NO , KC_NO ,
-     KC_TAB , KC_Q  , KC_W  , KC_F  , KC_P  , KC_B  ,                                          KC_J  , KC_L  ,KC_U_UE, KC_Y  ,KC_QUOT,KC_BSLS,
-     OSM_GUI,KC_A_AE, KC_A_R, KC_S_S, KC_C_T, KC_G  ,                                          KC_M  , KC_C_N, KC_S_E, KC_A_I,KC_O_OE,KC_MINUS,
-OSM(MOD_LSFT),KC_Z  , KC_X  , KC_C  , KC_D  , KC_V  ,                                          KC_K  , KC_H  ,KC_COMM,KC_DOT ,KC_SLSH,RSFT_T(KC_GRV),
-                     KC_LBRC,KC_RBRC,                                                                   ALTGR_QUOT, SHIFT_INS,
-              /* These two ^^^^  are here for Gmail hotkeys only  */
+     KC_NO , KC_NO , KC_NO , KC_NO , KC_NO , KC_NO ,                                          KC_NO , KC_NO , KC_NO , KC_NO , KC_NO , KC_NO,
+     KC_NO , KC_Q  , KC_W  , KC_F  , KC_P  , KC_B  ,                                          KC_J  , KC_L  ,KC_U_UE, KC_Y  ,KC_QUOT, KC_NO,
+     KC_NO ,KC_A_AE, KC_A_R, KC_S_S, KC_C_T, KC_G  ,                                          KC_M  , KC_C_N, KC_S_E, KC_A_I,KC_O_OE, KC_NO,
+     KC_NO , KC_Z  , KC_X  , KC_C  , KC_D  , KC_V  ,                                          KC_K  , KC_H  ,KC_COMM,KC_DOT ,KC_SLSH, KC_NO,
+                     KC_GRV,KC_RBRC,                                                                   KC_MINUS,KC_BSLS,
+                    /* This ] ^^^^  is here for Gmail hotkeys only  */
                             LT_EXTD_ESC, SFT_T(KC_SPC),                                        KC_ENT, LT_NUM_BSPC,
                                   /* Order is TR, BR                                       Order is BL, TL,
                                               TL, BL                                                BR, TR */
-                       LT_MOUSE_ALT_SHIFT_INS, KC_LEAD,                                        KC_LEAD, LT_FUNC_SHIFT_INS,
+                          LT(L_MOUSE, KC_TAB), KC_LEAD,                                        KC_LEAD, LT_FUNC_SHIFT_INS,
                                       OSM_GUI, KC_LALT,                                        KC_RALT, KC_APP
 // NOTE: RSFT_T(KC_S_INS) doesn't work, only INS comes through. RSFT_T stuff
 // only works on "simple" keycodes. See process_record_user for how this works,
@@ -700,10 +703,10 @@ OSM(MOD_LSFT),KC_Z  , KC_X  , KC_C  , KC_D  , KC_V  ,                           
   // I like the AltGr trick from https://stevep99.github.io/seniply/ and should probably incorporate some stuff from it.
   [L_EXTD] = LAYOUT_5x6(
      KC_F1  , KC_F2 , KC_F3 , KC_F4 , KC_F5 , KC_F6 ,                                     KC_F7  , KC_F8 , KC_F9 , KC_F10,KC_F11 ,KC_F12,
-   _______,WIN_PREV,TM_PREV,KC_PGUP,TM_NEXT,WIN_NEXT,                                     KC_HOME,KC_PGDN,KC_PGUP,KC_END ,KC_INS ,INS_HARD,
-     _______,OSM_GUI,OSM_ALT,OSM_SFT,OSM_CTL,KC_RALT,                                     KC_LEFT,KC_DOWN, KC_UP, KC_RGHT,KC_DEL ,KC_BSPC ,
-     _______,ALT_TAB,KC_SCTAB,KC_CTAB,KC_PGDN, KC_NO,                                   WIN_LEFT,WIN_DN,WIN_UP,WIN_RGHT,KC_PSTE,KC_ENTER,  // KC_PSTE works in XTerm to emulate middle-click
-                     MS_WHUP,MS_WHDN,                                                                     MS_WHLEFT,MS_WHRGHT,
+   _______,WIN_PREV,TM_PREV,KC_PGUP,TM_NEXT,WIN_NEXT,                                     KC_HOME,KC_PGDN,KC_PGUP,KC_END ,KC_INS ,_______,
+     _______,OSM_GUI,OSM_ALT,OSM_SFT,OSM_CTL,KC_RALT,                                     KC_LEFT,KC_DOWN, KC_UP, KC_RGHT,KC_DEL ,_______,
+     _______,ALT_TAB,KC_SCTAB,KC_CTAB,KC_PGDN,LSFT(KC_INS),                               WIN_LEFT,WIN_DN,WIN_UP,WIN_RGHT,KC_PSTE,_______,  // KC_PSTE works in XTerm to emulate middle-click
+                     MS_WHUP,MS_WHDN,                                                                     INS_HARD,KC_ENTER,
                                      _______,_______,                                     _______,KC_BSPC,
                                      _______,_______,                                     _______,_______,
                                      _______,_______,                                     _______,_______
@@ -717,21 +720,21 @@ OSM(MOD_LSFT),KC_Z  , KC_X  , KC_C  , KC_D  , KC_V  ,                           
   // TODO: maybe swap # with ;, that way I can roll :w or :wq which I need often ...
   [L_NUM] = LAYOUT_5x6(
      _______, KC_NO , KC_NO , KC_NO , KC_NO , KC_NO ,                                     KC_NUMLOCK,KC_NO,KC_NO,KC_NO,KC_NO,KC_NO,
-     _______,KC_EXLM, KC_AT ,KC_HASH,KC_DLR, KC_PERC,                                     KC_KP_EQUAL, KC_KP_7,KC_KP_8,KC_KP_9,KC_KP_PLUS,_______,
-     _______,KC_SCLN,KC_COLN,KC_LCBR,KC_LPRN,KC_LBRC,                                     KC_KP_ASTERISK,KC_KP_4,KC_KP_5,KC_KP_6,MINS_UNDSCR,_______,
-     _______,KC_CIRC,KC_AMPR,KC_RCBR,KC_RPRN,KC_RBRC,                                     KC_COMM,KC_KP_1,KC_KP_2,KC_KP_3,KC_KP_SLASH,KC_KP_ENTER,  // Enter here, because thumb is occupied
-                     KC_GRV,KC_TILDE,                                                                        KC_KP_0,KC_KP_DOT,
+     _______,KC_EXLM, KC_AT ,KC_HASH,KC_DLR, KC_PERC,                                     KC_KP_EQUAL, KC_7,KC_8,KC_9,KC_KP_PLUS,_______,
+     _______,KC_SCLN,KC_COLN,KC_LCBR,KC_LPRN,KC_LBRC,                                   KC_KP_ASTERISK,KC_4,KC_5,KC_6,MINS_UNDSCR,_______,
+     _______,KC_CIRC,KC_AMPR,KC_RCBR,KC_RPRN,KC_RBRC,                                     KC_COMM,     KC_1,KC_2,KC_3,KC_KP_SLASH,_______,
+                     KC_GRV,KC_TILDE,                                                                        KC_0,KC_KP_DOT,
                                      KC_ESC ,KC_SPC ,                                        _______,_______,
-                                     KC_KP_0,_______,                                        _______,_______,
+                                     KC_0 ,  _______,                                        _______,_______,
                                      _______,_______,                                        _______,_______
                                   /* ^^^^ use these */                                      /* ^^^^ can't be used */
   ),
 
   [L_FUNC] = LAYOUT_5x6(
      _______, KC_NO , KC_NO , KC_NO , KC_NO , KC_NO ,                                      KC_NO , KC_NO , KC_NO , KC_NO , KC_NO , KC_NO ,
-     _______, KC_NO ,KC_MUTE,KC_VOLD,KC_VOLU, KC_NO ,                                     KC_PSCR, KC_F7 , KC_F8 , KC_F9 , KC_F10,DF(L_WASD),
-     _______,KC_LGUI,KC_LALT,KC_LSFT,KC_LCTL, KC_NO ,                                     KC_SLCK, KC_F4 , KC_F5 , KC_F6 , KC_F11,DF(L_QWER),
-     _______, KC_NO , KC_NO , KC_NO , KC_NO , KC_NO ,                                     KC_PAUS, KC_F1 , KC_F2 , KC_F3 , KC_F12,DF(L_COLM),
+     _______, KC_NO ,KC_MUTE,KC_VOLD,KC_VOLU,DF(L_WASD),                                   KC_PSCR, KC_F7 , KC_F8 , KC_F9 , KC_F10,DF(L_WASD),
+     _______,KC_LGUI,KC_LALT,KC_LSFT,KC_LCTL,DF(L_QWER),                                   KC_SLCK, KC_F4 , KC_F5 , KC_F6 , KC_F11,DF(L_QWER),
+     _______, KC_NO , KC_NO , KC_NO , KC_NO ,DF(L_COLM),                                   KC_PAUS, KC_F1 , KC_F2 , KC_F3 , KC_F12,DF(L_COLM),
                       KC_NO , KC_NO ,                                                                         KC_NO , KC_NO ,
                                      _______,_______,                                        _______,_______,
                                      _______,_______,                                        _______,_______,

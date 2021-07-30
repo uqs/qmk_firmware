@@ -41,7 +41,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #define TAPPING_TOGGLE 2  // number of taps for a toggle-on-tap
 #define TAPPING_TERM 170  // ms to trigger tap
-#define IGNORE_MOD_TAP_INTERRUPT
 // Might have to look at TAPPING_FORCE_HOLD, see https://precondition.github.io/home-row-mods
 
 #define LEADER_TIMEOUT 400
@@ -50,13 +49,15 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #define UNICODE_SELECTED_MODES UC_LNX
 
 //#define PREVENT_STUCK_MODIFIERS
+#define IGNORE_MOD_TAP_INTERRUPT  // needed so rolls on home row don't trigger shift or the like
 
 // KC_ACL0 et al work when held.
 #define MK_COMBINED
 #define MOUSEKEY_WHEEL_INTERVAL 40  // default is 50, lower means more scroll events
 
 // From https://michael.stapelberg.ch/posts/2021-05-08-keyboard-input-latency-qmk-kinesis/
-#define USB_POLLING_INTERVAL_MS 1
+//#define USB_POLLING_INTERVAL_MS 1
+#define TAP_CODE_DELAY 10
 
 // Testing OSM_SHIFT for CAPS_WORDS
 #define ONESHOT_TAP_TOGGLE 2
