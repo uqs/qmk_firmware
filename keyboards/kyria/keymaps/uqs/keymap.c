@@ -1,46 +1,87 @@
-/* Copyright 2019 Thomas Baart <thomas@splitkb.com>
-// vi:et sw=4:
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 2 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
- */
+// vi:et sw=4 cc=5,15,25,35,45,55,65:
 #include "uqs.h"
+
+/*
+ * My custom layout macro that allows for easy diff(1) operations between
+ * various keyboards. It probably doesn't make sense to you.
+ */
+#define LAYOUT_uqs(               \
+    L00, L01, L02, L03, L04, L05, \
+    L12, L13, L14, L15, L16, L17, \
+    L24, L25, L26, L27, L28, L29, \
+              L40, L41,           \
+         L42, L43, L44,           \
+         L30, L31,                \
+    R06, R07, R08, R09, R10, R11, \
+    R18, R19, R20, R21, R22, R23, \
+    R34, R35, R36, R37, R38, R39, \
+              R48, R49,           \
+         R45, R46, R47,           \
+         R32, R33                 \
+)                                 \
+LAYOUT_stack(                     \
+    L00, L01, L02, L03, L04, L05,                   \
+    L12, L13, L14, L15, L16, L17,                   \
+    L24, L25, L26, L27, L28, L29, L30, L31,         \
+                   L40, L41, L42, L43, L44,         \
+                                                    \
+                  R06, R07, R08, R09, R10, R11,     \
+                  R18, R19, R20, R21, R22, R23,     \
+        R32, R33, R34, R35, R36, R37, R38, R39,     \
+        R45, R46, R47, R48, R49                     \
+)
 
 // clang-format off
 const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
-  [L_QWER] = LAYOUT(
-     KC_TAB , KC_Q  , KC_W  , KC_E  , KC_R  , KC_T  ,                                      KC_Y  , KC_U  , KC_I  , KC_O  , KC_P  ,KC_BSLS,
-     KC_LCTL, KC_A  , KC_S  , KC_D  , KC_F  , KC_G  ,                                      KC_H  , KC_J  , KC_K  , KC_L  ,KC_SCLN,KC_QUOT,
-     KC_LSFT, KC_Z  , KC_X  , KC_C  , KC_V  , KC_B  , OSM_GUI, KC_LALT,  KC_RALT, KC_APP,  KC_N  , KC_M  ,KC_COMM,KC_DOT ,KC_SLSH,RSFT_T(KC_GRV),
-         KC_LBRC, KC_RBRC, LT_EXTD_ESC, KC_SPC, LT_MOUSE_ALT_SHIFT_INS,  LT_FUNC_SHIFT_INS, KC_ENT, LT_NUM_BSPC, KC_MINS, KC_EQL
+  [L_QWER] = LAYOUT_uqs(
+     KC_TAB,   KC_Q,     KC_W,     KC_E,     KC_R,     KC_T,
+     KC_LCTL,  KC_A,     KC_S,     KC_D,     KC_F,     KC_G,
+     KC_LSFT,  KC_Z,     KC_X,     KC_C,     KC_V,     KC_B,
+                         KC_LBRC,  KC_RBRC,
+     /*thumb*/ LT_EXTD_ESC, KC_SPC, LT_MOUSE_ALT_SHIFT_INS,
+      /*aux*/  OSM_GUI,  KC_LALT,
+     KC_Y,     KC_U,     KC_I,     KC_O,     KC_P,     KC_BSLS,
+     KC_H,     KC_J,     KC_K,     KC_L,     KC_SCLN,  KC_QUOT,
+     KC_N,     KC_M,     KC_COMM,  KC_DOT,   KC_SLSH,  RSFT_T(KC_GRV),
+                         KC_MINS,  KC_EQL,
+     /*thumb*/ LT_FUNC_SHIFT_INS, KC_ENT, LT_NUM_BSPC,
+      /*aux*/  KC_RALT,  KC_APP
   ),
 
-  [L_WASD] = LAYOUT(
-     KC_T   , KC_TAB , KC_Q  , KC_W  , KC_E  , KC_R ,                                      KC_Y  , KC_U  , KC_I  , KC_O  , KC_P  ,KC_BSLS,
-     KC_G   , KC_LSFT, KC_A  , KC_S  , KC_D  , KC_F ,                                      KC_H  , KC_J  , KC_K  , KC_L  ,KC_SCLN,KC_QUOT,
-     KC_B   , KC_GRV , KC_Z  , KC_X  , KC_C  , KC_V , OSM_GUI, KC_LALT,  KC_RALT, KC_APP,  KC_N  , KC_M  ,KC_COMM,KC_DOT ,KC_SLSH,RSFT_T(KC_GRV),
-                            KC_LBRC, KC_RBRC, KC_LCTL, KC_SPC, KC_R,     DF(L_COLM), KC_ENT, KC_BSPC, KC_MINS, KC_EQL
+  [L_WASD] = LAYOUT_uqs(
+     KC_T,     KC_TAB,   KC_Q,     KC_W,     KC_E,     KC_R,
+     KC_G,     KC_LSFT,  KC_A,     KC_S,     KC_D,     KC_F,
+     KC_B,     KC_GRV,   KC_Z,     KC_X,     KC_C,     KC_V,
+                         KC_LBRC,  KC_RBRC,
+     /*thumb*/ KC_LCTL,  KC_SPC,   KC_R,
+      /*aux*/  OSM_GUI,  KC_LALT,
+     KC_Y,     KC_U,     KC_I,     KC_O,     KC_P,     KC_BSLS,
+     KC_H,     KC_J,     KC_K,     KC_L,     KC_SCLN,  KC_QUOT,
+     KC_N,     KC_M,     KC_COMM,  KC_DOT,   KC_SLSH,  RSFT_T(KC_GRV),
+                         KC_MINS,  KC_EQL,
+     /*thumb*/ DF(L_COLM), KC_ENT, KC_BSPC,
+      /*aux*/  KC_RALT,  KC_APP
   ),
 
   // TODO: implement CAPS_WORD on the left pinky shift on tap (maybe?) But it
   // can't actually set caps lock, as I'm rebinding that for a saner laptop
   // keyboard. See drashna's keymap.
-  [L_COLM] = LAYOUT(
-     KC_NO , KC_Q  , KC_W  , KC_F  , KC_P  , KC_B  ,                                          KC_J  , KC_L  ,KC_U_UE, KC_Y  ,KC_QUOT,KC_NO,
-     KC_NO ,KC_A_AE, KC_A_R, KC_S_S, KC_C_T, KC_G  ,                                          KC_M  , KC_C_N, KC_S_E, KC_A_I,KC_O_OE,KC_NO,
-     KC_NO ,KC_Z  , KC_X  , KC_C  , KC_D  , KC_V  , OSM_GUI, KC_LALT,      KC_RALT, KC_APP,  KC_K  , KC_H  ,KC_COMM,KC_DOT ,KC_SLSH,KC_NO,
-       KC_GRV,KC_RBRC, LT_EXTD_ESC, SFT_T(KC_SPC), LT(L_MOUSE, KC_TAB),  LT_FUNC_SHIFT_INS, KC_ENT, LT_NUM_BSPC, KC_MINUS, KC_BSLS
-      /* This ] ^^^^  is here for Gmail hotkeys only  */
+  [L_COLM] = LAYOUT_uqs(
+     KC_NO,    KC_Q,     KC_W,     KC_F,     KC_P,     KC_B,
+     KC_NO,    KC_A_AE,  KC_A_R,   KC_S_S,   KC_C_T,   KC_G,
+     KC_NO,    KC_Z,     KC_X,     KC_C,     KC_D,     KC_V,
+                         KC_GRV,   KC_RBRC,
+                         /* This ] ^^^^  is here for Gmail hotkeys only */
+     /*thumb*/ LT_EXTD_ESC, SFT_T(KC_SPC), LT(L_MOUSE, KC_TAB),
+      /*aux*/
+               OSM_GUI,  KC_LALT,
+     KC_J,     KC_L,     KC_U_UE,  KC_Y,     KC_QUOT,  KC_NO,
+     KC_M,     KC_C_N,   KC_S_E,   KC_A_I,   KC_O_OE,  KC_NO,
+     KC_K,     KC_H,     KC_COMM,  KC_DOT,   KC_SLSH,  KC_NO,
+                         KC_MINUS, KC_BSLS,
+     /*thumb*/ LT_FUNC_SHIFT_INS, KC_ENT, LT_NUM_BSPC,
+      /*aux*/  KC_RALT,  KC_APP
+
 // NOTE: RSFT_T(KC_S_INS) doesn't work, only INS comes through. RSFT_T stuff
 // only works on "simple" keycodes. See process_record_user for how this works,
 // thanks to ridingqwerty on Discord.
@@ -85,41 +126,79 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 
   // Updated with inspiration from https://forum.colemak.com/topic/2014-extend-extra-extreme/
   // I like the AltGr trick from https://stevep99.github.io/seniply/ and should probably incorporate some stuff from it.
-  [L_EXTD] = LAYOUT(
-   _______,WIN_PREV,TM_PREV,KC_PGUP,TM_NEXT,WIN_NEXT,                                     KC_HOME,KC_PGDN,KC_PGUP,KC_END ,KC_INS ,KC_NO,
-     _______,OSM_GUI,OSM_ALT,OSM_SFT,OSM_CTL,KC_RALT,                                     KC_LEFT,KC_DOWN, KC_UP, KC_RGHT,KC_DEL ,KC_NO,
-     _______,ALT_TAB,KC_SCTAB,KC_CTAB,KC_PGDN,LSFT(KC_INS),_______,_______,   _______,_______, WIN_LEFT,WIN_DN,WIN_UP,WIN_RGHT,KC_PSTE,KC_NO,  // KC_PSTE works in XTerm to emulate middle-click
-                              MS_WHUP,MS_WHDN,_______,_______,_______,   _______,_______, KC_BSPC,INS_HARD,KC_ENTER
-                                              /* ^^^^ can't be used */   /* use these ^^^^ */
-
+  [L_EXTD] = LAYOUT_uqs(
+     _______,  WIN_PREV, TM_PREV,  KC_PGUP,  TM_NEXT,  WIN_NEXT,
+     _______,  OSM_GUI,  OSM_ALT,  OSM_SFT,  OSM_CTL,  KC_RALT,
+     _______,  ALT_TAB,  KC_SCTAB, KC_CTAB,  KC_PGDN,  LSFT(KC_INS),
+                         MS_WHUP,  MS_WHDN,
+     /*thumb*/ _______,  _______,  _______,
+      /*aux*/  _______,  _______,
+               /* ^^^^ can't be used */
+     KC_HOME,  KC_PGDN,  KC_PGUP,  KC_END,   KC_INS,   KC_NO,
+     KC_LEFT,  KC_DOWN,  KC_UP,    KC_RGHT,  KC_DEL,   KC_NO,
+     WIN_LEFT, WIN_DN,   WIN_UP,   WIN_RGHT, KC_PSTE,  KC_NO,  // KC_PSTE works in XTerm to emulate middle-click
+                         INS_HARD, KC_ENTER,
+     /*thumb*/ _______,  _______,  KC_BSPC,
+      /*aux*/  _______,  _______
+               /* ^^^^ use these */
   ),
 
   // Num/Symbol. This works somehow without turning on Numlock first. I've not
   // managed to get Alt-codes working under Windows though, might be an
   // artefact of using US Intl (nope, I'm using USCmpse custom layout)?
   // TODO: maybe swap # with ;, that way I can roll :w or :wq which I need often ...
-  [L_NUM] = LAYOUT(
-     _______,KC_EXLM, KC_AT ,KC_HASH,KC_DLR, KC_PERC,                                     KC_KP_EQUAL, KC_7,KC_8,KC_9,KC_KP_PLUS,_______,
-     _______,KC_SCLN,KC_COLN,KC_LCBR,KC_LPRN,KC_LBRC,                                     KC_KP_ASTERISK,KC_4,KC_5,KC_6,MINS_UNDSCR,_______,
-     _______,KC_CIRC,KC_AMPR,KC_RCBR,KC_RPRN,KC_RBRC, _______,_______,   _______,_______, KC_COMM,KC_1,KC_KP_2,KC_3,KC_KP_SLASH,KC_KP_ENTER,  // Enter here, because thumb is occupied
-                            KC_GRV,KC_TILDE, KC_ESC ,KC_SPC , KC_0,   _______,_______,_______, KC_0,KC_KP_DOT
-                                                  /* ^^^^ use these */   /* ^^^^ can't be used */
+  [L_NUM] = LAYOUT_uqs(
+     _______,  KC_EXLM,  KC_AT,    KC_HASH,  KC_DLR,   KC_PERC,
+     _______,  KC_SCLN,  KC_COLN,  KC_LCBR,  KC_LPRN,  KC_LBRC,
+     _______,  KC_CIRC,  KC_AMPR,  KC_RCBR,  KC_RPRN,  KC_RBRC,
+                         KC_GRV,   KC_TILDE,
+     /*thumb*/ KC_ESC,   KC_SPC,   KC_0,
+      /*aux*/  _______,_______,
+               /* ^^^^ use these */
+
+     KC_KP_EQUAL, KC_7,  KC_8,     KC_9,     KC_KP_PLUS,_______,
+     KC_KP_ASTERISK,KC_4,KC_5,     KC_6,     MINS_UNDSCR,_______,
+     KC_COMM,  KC_1,     KC_2,     KC_3,     KC_KP_SLASH,KC_KP_ENTER,  // Enter here, because thumb is occupied
+                         KC_0,     KC_KP_DOT,
+     /*thumb*/ _______,  _______,  _______,
+               _______,  _______
+               /* ^^^^ can't be used */
   ),
 
-  [L_FUNC] = LAYOUT(
-     _______, KC_NO ,KC_MUTE,KC_VOLD,KC_VOLU, KC_NO ,                                     KC_PSCR, KC_F7 , KC_F8 , KC_F9 , KC_F10,DF(L_WASD),
-     _______,KC_LGUI,KC_LALT,KC_LSFT,KC_LCTL, KC_NO ,                                     KC_SLCK, KC_F4 , KC_F5 , KC_F6 , KC_F11,DF(L_QWER),
-     _______, KC_NO , KC_NO , KC_NO , KC_NO , KC_NO , _______,_______,   _______,_______, KC_PAUS, KC_F1 , KC_F2 , KC_F3 , KC_F12,DF(L_COLM),
-                               KC_NO , KC_NO , KC_NO , KC_NO , KC_NO ,   _______,_______,_______, KC_NO , KC_NO
-                                                  /* ^^^^ use these */   /* ^^^^ can't be used */
+  [L_FUNC] = LAYOUT_uqs(
+     _______,  KC_NO,    KC_MUTE,  KC_VOLD,  KC_VOLU,  DF(L_WASD),
+     _______,  KC_LGUI,  KC_LALT,  KC_LSFT,  KC_LCTL,  DF(L_QWER),
+     _______,  KC_NO,    KC_NO,    KC_NO,    KC_NO,    DF(L_COLM),
+                         KC_NO,    KC_NO,
+     /*thumb*/ KC_NO,    KC_NO,    KC_NO,
+      /*aux*/  _______,  _______,
+               /* ^^^^ use these */
+
+     KC_PSCR,  KC_F7,    KC_F8,    KC_F9,    KC_F10,   DF(L_WASD),
+     KC_SLCK,  KC_F4,    KC_F5,    KC_F6,    KC_F11,   DF(L_QWER),
+     KC_PAUS,  KC_F1,    KC_F2,    KC_F3,    KC_F12,   DF(L_COLM),
+                         KC_NO,    KC_NO,
+     /*thumb*/ _______,  _______,  _______,
+      /*aux*/  _______,  _______
+               /* ^^^^ can't be used */
   ),
 
-  [L_MOUSE] = LAYOUT(
-     RGB_MOD,RGB_HUI,KC_MUTE,KC_VOLD,KC_VOLU,RGB_SAI,                                       _______,_______ ,KC_MS_UP, MS_WHUP, _______,_______,
-    RGB_RMOD,RGB_HUD,KC_ACL0,KC_ACL1,KC_ACL2,RGB_SAD,                                       MS_WHLEFT,KC_MS_LEFT,KC_MS_DOWN,KC_MS_RIGHT,MS_WHRGHT,_______,
+  [L_MOUSE] = LAYOUT_uqs(
+     RGB_MOD,  RGB_HUI,  KC_MUTE,  KC_VOLD,  KC_VOLU,  RGB_SAI,
+     RGB_RMOD, RGB_HUD,  KC_ACL0,  KC_ACL1,  KC_ACL2,  RGB_SAD,
      /* Plain, Breath, Rainbow, Swirl, Snake, KnightRider, Xmas, Gradient */
-     RGB_M_P,RGB_M_B,RGB_M_R,RGB_M_SW,RGB_M_SN,RGB_M_K, _______,_______,   _______,_______, _______,MS_WHDN,KC_MS_BTN3,KC_MS_BTN4,KC_MS_BTN5,_______,
-                                RGB_M_X,RGB_M_G,_______,_______,_______,   KC_NO , KC_MS_BTN1,KC_MS_BTN2, _______,_______
-                                              /* ^^^^ can't be used */   /* use these ^^^^ */
+     RGB_M_P,  RGB_M_B,  RGB_M_R,  RGB_M_SW, RGB_M_SN, RGB_M_K,
+                         RGB_M_X,  RGB_M_G,
+     /*thumb*/ _______,  _______,  _______,
+      /*aux*/  _______,  _______,
+               /* ^^^^ can't be used */
+
+     _______,  _______,  KC_MS_UP, MS_WHUP,  _______,  _______,
+     MS_WHLEFT,KC_MS_L,  KC_MS_D,  KC_MS_R,  MS_WHRGHT,_______,
+     _______,  MS_WHDN,  KC_BTN3,  KC_BTN4,  KC_BTN5,  _______,
+                         _______,  _______,
+     /*thumb*/ KC_NO,    KC_BTN1,  KC_BTN2,
+      /*aux*/  _______,  _______
+               /* use these ^^^^ */
   ),
 };
