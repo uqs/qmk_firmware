@@ -1,6 +1,5 @@
 // vi:et sw=4:
 
-#include QMK_KEYBOARD_H
 #include <tmk_core/common/wait.h>
 #include "uqs.h"
 
