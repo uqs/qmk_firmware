@@ -4,7 +4,7 @@ SRC += uqs.c
 
 RGBLIGHT_ENABLE = yes      # Enable keyboard RGB underglow
 LTO_ENABLE = yes  # disables the legacy TMK Macros and Functions features
-LTO_ENABLE = no  # broken with GCC 10, see https://github.com/qmk/qmk_firmware/issues/9268
+#LTO_ENABLE = no  # broken with GCC 10, see https://github.com/qmk/qmk_firmware/issues/9268
 
 UCIS_ENABLE = yes
 LEADER_ENABLE = yes
