@@ -132,20 +132,20 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
   // Updated with inspiration from https://forum.colemak.com/topic/2014-extend-extra-extreme/
   // I like the AltGr trick from https://stevep99.github.io/seniply/ and should probably incorporate some stuff from it.
   [L_EXTD] = LAYOUT_uqs(
-     KC_F1,    KC_F2,    KC_F3,    KC_F4,    KC_F5,    KC_F6,
-     _______,  WIN_PREV, TM_PREV,  KC_PGUP,  TM_NEXT,  WIN_NEXT,
-     _______,  OSM_GUI,  OSM_ALT,  OSM_SFT,  OSM_CTL,  KC_RALT,
-     _______,  ALT_TAB,  KC_SCTAB, KC_CTAB,  KC_PGDN,  LSFT(KC_INS),
+     KC_F11,   KC_F1,    KC_F2,    KC_F3,    KC_F4,    KC_F5,
+     KC_BTN3,  WIN_PREV, TM_PREV,  KC_PGUP,  TM_NEXT,  WIN_NEXT,
+     KC_BTN2,  OSM_GUI,  OSM_ALT,  OSM_SFT,  OSM_CTL,  KC_RALT,
+     KC_BTN1,  ALT_TAB,  KC_SCTAB, KC_CTAB,  KC_PGDN,  LSFT(KC_INS),
                          MS_WHUP,  MS_WHDN,
      /*thumb*/ _______,  _______,  _______,
       /*aux*/  _______,  _______,  _______,
                /* ^^^^ can't be used */
-     KC_F7,    KC_F8,    KC_F9,    KC_F10,   KC_F11,   KC_F12,
+     KC_F6,    KC_F7,    KC_F8,    KC_F9,    KC_F10,   KC_F12,
      KC_HOME,  KC_PGDN,  KC_PGUP,  KC_END,   KC_INS,   KC_NO,
      KC_LEFT,  KC_DOWN,  KC_UP,    KC_RGHT,  KC_DEL,   KC_NO,
-     WIN_LEFT, WIN_DN,   WIN_UP,   WIN_RGHT, KC_PSTE,  KC_NO,  // KC_PSTE works in XTerm to emulate middle-click
+     WIN_LEFT, WIN_DN,   WIN_UP,   WIN_RGHT, KC_PSTE,  KC_ENTER,  // KC_PSTE works in XTerm to emulate middle-click
                          INS_HARD, KC_ENTER,
-     /*thumb*/ _______,  KC_BSPC,  _______,
+     /*thumb*/ _______,  _______,  KC_BSPC,
       /*aux*/  _______,  _______,  _______
                /* ^^^^ use these */
   ),
@@ -195,10 +195,10 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 
   [L_MOUSE] = LAYOUT_uqs(
      RGB_TOG,  _______,  _______,  _______,  _______,  _______,
-     RGB_MOD,  RGB_HUI,  KC_MUTE,  KC_VOLD,  KC_VOLU,  RGB_SAI,
-     RGB_RMOD, RGB_HUD,  KC_ACL0,  KC_ACL1,  KC_ACL2,  RGB_SAD,
+     RGB_MOD,  RGB_HUI,  KC_BTN2,  KC_BTN3,  KC_BTN1,  KC_VOLU,
+     RGB_RMOD, RGB_HUD,  KC_ACL0,  KC_ACL1,  KC_ACL2,  KC_VOLD,
      /* Plain, Breath, Rainbow, Swirl, Snake, KnightRider, Xmas, Gradient */
-     RGB_M_P,  RGB_M_B,  RGB_M_R,  RGB_M_SW, RGB_M_SN, RGB_M_K,
+     RGB_M_P,  RGB_M_B,  RGB_M_R,  RGB_M_SW, RGB_M_SN, KC_MUTE,
                          RGB_M_X,  RGB_M_G,
      /*thumb*/ _______,  _______,  _______,
       /*aux*/  _______,  _______,  _______,
