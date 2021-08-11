@@ -190,7 +190,6 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
      /*thumb*/ _______,  _______,  _______,
       /*aux*/  _______,  _______,  _______
                /* ^^^^ can't be used */
-
   ),
 
   [L_MOUSE] = LAYOUT_uqs(
