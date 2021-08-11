@@ -1,9 +1,11 @@
 #pragma once
 
-//#define RGBLIGHT_ANIMATIONS
-#define RGBLIGHT_SLEEP
-#define RGBLIGHT_LAYERS
-#define RGBLIGHT_MAX_LAYERS 8  // default is 16
+#ifdef RGBLIGHT_ENABLE
+  //#define RGBLIGHT_ANIMATIONS
+  #define RGBLIGHT_SLEEP
+  #define RGBLIGHT_LAYERS
+  #define RGBLIGHT_MAX_LAYERS 8  // default is 16
+#endif
 
 #define DYNAMIC_KEYMAP_LAYER_COUNT 6  // default is 4 for VIA builds
 

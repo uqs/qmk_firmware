@@ -73,13 +73,13 @@ const rgblight_segment_t* const PROGMEM my_rgb_layers[] = {
 #endif
 
 void keyboard_post_init_user(void) {
+#ifndef KEYBOARD_preonic_rev3
     default_layer_set(1ul << L_COLM);
+#endif
 #ifdef RGBLIGHT_LAYERS
     // Enable the LED layers
     rgblight_layers = my_rgb_layers;
     rgblight_set_layer_state(0, true);
-#else
-    rgb_desired = rgblight_get_mode();
 #endif
 }
 
