@@ -25,7 +25,7 @@
 
 // KC_ACL0 et al work when held.
 #define MK_COMBINED
-#define MOUSEKEY_WHEEL_INTERVAL 40  // default is 50, lower means more scroll events
+#define MOUSEKEY_WHEEL_INTERVAL 40  // default is 50, lower means more scroll events, 40 works ok.
 
 // From https://michael.stapelberg.ch/posts/2021-05-08-keyboard-input-latency-qmk-kinesis/
 #define USB_POLLING_INTERVAL_MS 1
@@ -34,4 +34,6 @@
 // Testing OSM_SHIFT for CAPS_WORDS, doesn't work on the layer I'm triggering
 // it on, while it keeps active, it auto-deactivates after the first key is
 // pressed. So yeah, it toggles, but not in a Caps Lock kinda way.
+// Docs say it can't be used in combination with TAPPING_FORCE_HOLD, but it
+// didn't even work without that set.
 #define ONESHOT_TAP_TOGGLE 2
