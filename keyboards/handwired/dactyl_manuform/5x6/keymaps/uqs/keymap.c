@@ -72,19 +72,19 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
   // can't actually set caps lock, as I'm rebinding that for a saner laptop
   // keyboard. See drashna's keymap.
   [L_COLM] = LAYOUT_uqs(
-     KC_NO,    KC_NO,    KC_NO,    KC_NO,    KC_NO,    KC_NO,
-     KC_NO,    KC_Q,     KC_W,     KC_F,     KC_P,     KC_B,
-     KC_NO,    KC_A_AE,  KC_A_R,   KC_S_S,   KC_C_T,   KC_G,
-     KC_NO,    KC_Z,     KC_X,     KC_C,     KC_D,     KC_V,
-                         KC_GRV,   KC_RBRC,
+     KC_NO,    KC_NO,    KC_BTN3,  KC_BTN2,  KC_BTN1,  KC_NO,
+     KC_BTN2,  KC_Q,     KC_W,     KC_F,     KC_P,     KC_B,
+     KC_BTN1,  KC_A_AE,  KC_A_R,   KC_S_S,   KC_C_T,   KC_G,
+     KC_BTN3,  KC_Z,     KC_X,     KC_C,     KC_D,     KC_V,
+                         KC_NO,    KC_RBRC,
                          /* This ] ^^^^  is here for Gmail hotkeys only */
      /*thumb*/ LT_EXTD_ESC, SFT_T(KC_SPC), LT(L_MOUSE, KC_TAB),
       /*aux*/  KC_LEAD,  OSM_GUI,  KC_LALT,
-     KC_NO,    KC_NO,    KC_NO,    KC_NO,    KC_NO,    KC_NO,
-     KC_J,     KC_L,     KC_U_UE,  KC_Y,     KC_QUOT,  KC_NO,
-     KC_M,     KC_C_N,   KC_S_E,   KC_A_I,   KC_O_OE,  KC_NO,
-     KC_K,     KC_H,     KC_COMM,  KC_DOT,   KC_SLSH,  KC_NO,
-                         KC_MINUS, KC_BSLS,
+     KC_NO,    KC_BTN1,  KC_BTN2,  KC_BTN3,  KC_NO,    KC_NO,
+     KC_J,     KC_L,     KC_U_UE,  KC_Y,     KC_QUOT,  KC_BSLS,
+     KC_M,     KC_C_N,   KC_S_E,   KC_A_I,   KC_O_OE,  KC_MINUS,
+     KC_K,     KC_H,     KC_COMM,  KC_DOT,   KC_SLSH,  KC_GRV,
+                         KC_NO,    KC_NO,
      /*thumb*/ LT_FUNC_SHIFT_INS, KC_ENT, LT_NUM_BSPC,
       /*aux*/  KC_LEAD,  KC_RALT,  KC_APP
 // NOTE: RSFT_T(KC_S_INS) doesn't work, only INS comes through. RSFT_T stuff
@@ -131,20 +131,22 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 
   // Updated with inspiration from https://forum.colemak.com/topic/2014-extend-extra-extreme/
   // I like the AltGr trick from https://stevep99.github.io/seniply/ and should probably incorporate some stuff from it.
+// Back to plain OSM for that one, to see if it works with KC_BTN1
+//#define OSM_CTL OSM(MOD_LCTL)
   [L_EXTD] = LAYOUT_uqs(
-     KC_F11,   KC_F1,    KC_F2,    KC_F3,    KC_F4,    KC_F5,
-     KC_BTN3,  WIN_PREV, TM_PREV,  KC_PGUP,  TM_NEXT,  WIN_NEXT,
-     KC_BTN2,  OSM_GUI,  OSM_ALT,  OSM_SFT,  OSM_CTL,  KC_RALT,
-     KC_BTN1,  ALT_TAB,  KC_SCTAB, KC_CTAB,  KC_PGDN,  LSFT(KC_INS),
+     _______,  _______,  _______,  _______,  _______,  _______,
+     _______,  WIN_PREV, TM_PREV,  KC_PGUP,  TM_NEXT,  WIN_NEXT,
+     _______,  OSM_GUI,  OSM_ALT,  OSM_SFT,  OSM_CTL,  KC_RALT,
+     _______,  ALT_TAB,  KC_SCTAB, KC_CTAB,  KC_PGDN,  INS_HARD,
                          MS_WHUP,  MS_WHDN,
      /*thumb*/ _______,  _______,  _______,
       /*aux*/  _______,  _______,  _______,
                /* ^^^^ can't be used */
-     KC_F6,    KC_F7,    KC_F8,    KC_F9,    KC_F10,   KC_F12,
-     KC_HOME,  KC_PGDN,  KC_PGUP,  KC_END,   KC_INS,   KC_NO,
+     _______,  _______,  _______,  _______,  _______,  _______,
+     KC_HOME,  KC_PGDN,  KC_PGUP,  KC_END,   KC_INS,   LSFT(KC_INS),
      KC_LEFT,  KC_DOWN,  KC_UP,    KC_RGHT,  KC_DEL,   KC_NO,
      WIN_LEFT, WIN_DN,   WIN_UP,   WIN_RGHT, KC_PSTE,  KC_ENTER,  // KC_PSTE works in XTerm to emulate middle-click
-                         INS_HARD, KC_ENTER,
+                         _______,  _______,
      /*thumb*/ _______,  _______,  KC_BSPC,
       /*aux*/  _______,  _______,  _______
                /* ^^^^ use these */
@@ -194,7 +196,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 
   [L_MOUSE] = LAYOUT_uqs(
      RGB_TOG,  _______,  _______,  _______,  _______,  _______,
-     RGB_MOD,  RGB_HUI,  KC_BTN2,  KC_BTN3,  KC_BTN1,  KC_VOLU,
+     RGB_MOD,  RGB_HUI,  KC_BTN3,  KC_BTN2,  KC_BTN1,  KC_VOLU,
      RGB_RMOD, RGB_HUD,  KC_ACL0,  KC_ACL1,  KC_ACL2,  KC_VOLD,
      /* Plain, Breath, Rainbow, Swirl, Snake, KnightRider, Xmas, Gradient */
      RGB_M_P,  RGB_M_B,  RGB_M_R,  RGB_M_SW, RGB_M_SN, KC_MUTE,

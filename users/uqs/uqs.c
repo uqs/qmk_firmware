@@ -19,6 +19,7 @@
 // early May, 45wpm/96% on MT; 46wpm on typeracer; my qwerty is deteriorating, I need to look at the keys more and more o_O
 // early June, 49wpm/95% on MT (sigh ...); 50wpm on typeracer;
 // early July, 50wpm/96% on MT (...); 52wpm/96% on typeracer;
+// early August, 55wpm/96% on MT; 55wpm/98% on typeracer;
 
 
 #ifdef RGBLIGHT_LAYERS
@@ -52,7 +53,7 @@ typedef rgblight_segment_t rgblight_layer_t[3];
 
 const rgblight_layer_t PROGMEM my_rgb_segments[] = {
     [L_QWER] = {{0, RGBLED_NUM, HSV_WHITE},  RGBLIGHT_END_SEGMENTS},
-    [L_WASD] = {{0,  RGBLED_NUM/2, HSV_RED}, {RGBLED_NUM/2, RGBLED_NUM/2, HSV_OFF}, RGBLIGHT_END_SEGMENTS},
+    [L_WASD] = {{0, RGBLED_NUM/2, HSV_RED}, {RGBLED_NUM/2, RGBLED_NUM/2, HSV_OFF}, RGBLIGHT_END_SEGMENTS},
     [L_COLM] = {{0, RGBLED_NUM, HSV_GREEN},  RGBLIGHT_END_SEGMENTS},
     [L_EXTD] = {{0, RGBLED_NUM, HSV_BLUE},   RGBLIGHT_END_SEGMENTS},
     [L_NUM] =  {{0, RGBLED_NUM, HSV_ORANGE}, RGBLIGHT_END_SEGMENTS},

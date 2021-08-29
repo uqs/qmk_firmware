@@ -60,7 +60,6 @@ enum custom_keycodes {
     ALT_STAB,
 };
 
-
 #ifndef LEADER_ENABLE
 #define KC_LEAD KC_NO
 #endif
@@ -70,7 +69,6 @@ enum custom_keycodes {
 #define MS_WHUP KC_MS_WH_UP
 #define MS_WHLEFT KC_MS_WH_LEFT
 #define MS_WHRGHT KC_MS_WH_RIGHT
-
 
 // GASC/◆⎇⇧⎈ home row mod, read all about it here:
 // https://precondition.github.io/home-row-mods
