@@ -20,6 +20,7 @@
 // early June, 49wpm/95% on MT (sigh ...); 50wpm on typeracer;
 // early July, 50wpm/96% on MT (...); 52wpm/96% on typeracer;
 // early August, 55wpm/96% on MT; 55wpm/98% on typeracer;
+// early September, 57wpm/97% on MT; 58wpm/97% on typeracer;
 
 
 #ifdef RGBLIGHT_LAYERS
