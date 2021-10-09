@@ -14,13 +14,14 @@
 // Never did proper touch typing, basically didn't use ring finger much, mostly index/middle and pinky (only to hold down modifiers, really).
 // Feb 2020, switching to Colemak DH after 30 years of Qwerty, uh oh...
 // mid Feb, 20wpm/87% on monkeytype.com (no punct, numbers)
-// early March, 28wpm/90% on MT (plus punct./numbers); 25wpm on typeracer
+// early March, 28wpm/90% on MT (plus punct./numbers from here on); 25wpm on typeracer
 // early April, 35wpm/92% on MT; 41wpm on typeracer
 // early May, 45wpm/96% on MT; 46wpm on typeracer; my qwerty is deteriorating, I need to look at the keys more and more o_O
 // early June, 49wpm/95% on MT (sigh ...); 50wpm on typeracer;
 // early July, 50wpm/96% on MT (...); 52wpm/96% on typeracer;
 // early August, 55wpm/96% on MT; 55wpm/98% on typeracer;
 // early September, 57wpm/97% on MT; 58wpm/97% on typeracer;
+// early October, 59wpm/96% on MT; 61wpm/97% on typeracer;
 
 
 #ifdef RGBLIGHT_LAYERS
