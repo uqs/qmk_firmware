@@ -86,6 +86,71 @@ void keyboard_post_init_user(void) {
 #endif
 }
 
+#ifdef COMBO_ENABLE
+enum combo_events {
+  AW_AE,
+  OY_OE,
+  NU_UE,
+  SZ_SZ,
+  BJ_BSLS,
+  GM_MINUS,
+  VK_GRV,
+  COMBO_LENGTH
+};
+uint16_t COMBO_LEN = COMBO_LENGTH;
+
+const uint16_t PROGMEM auml_combo[] = {KC_G_A, KC_W, COMBO_END};
+const uint16_t PROGMEM ouml_combo[] = {KC_G_O, KC_Y, COMBO_END};
+const uint16_t PROGMEM uuml_combo[] = {KC_C_N, KC_U, COMBO_END};
+const uint16_t PROGMEM ssharp_combo[] = {KC_S_S, KC_Z, COMBO_END};
+const uint16_t PROGMEM bsls_combo[] = {KC_B, KC_J, COMBO_END};
+const uint16_t PROGMEM minus_combo[] = {KC_G, KC_M, COMBO_END};
+const uint16_t PROGMEM grv_combo[] = {KC_V, KC_K, COMBO_END};
+combo_t key_combos[] = {
+  [AW_AE] = COMBO_ACTION(auml_combo),
+  [OY_OE] = COMBO_ACTION(ouml_combo),
+  [NU_UE] = COMBO_ACTION(uuml_combo),
+  [SZ_SZ] = COMBO_ACTION(ssharp_combo),
+  [BJ_BSLS] = COMBO(bsls_combo, KC_BSLS),
+  [GM_MINUS] = COMBO(minus_combo, KC_MINUS),
+  [VK_GRV] = COMBO(grv_combo, KC_GRV),
+};
+/* COMBO_ACTION(x) is same as COMBO(x, KC_NO) */
+
+void process_combo_event(uint16_t combo_index, bool pressed) {
+  switch(combo_index) {
+    case AW_AE:
+      if (pressed) {
+        tap_code16(KC_RALT);
+        tap_code16(LSFT(KC_QUOT));
+        tap_code16(KC_A);
+      }
+      break;
+    case OY_OE:
+      if (pressed) {
+        tap_code16(KC_RALT);
+        tap_code16(LSFT(KC_QUOT));
+        tap_code16(KC_O);
+      }
+      break;
+    case NU_UE:
+      if (pressed) {
+        tap_code16(KC_RALT);
+        tap_code16(LSFT(KC_QUOT));
+        tap_code16(KC_U);
+      }
+      break;
+    case SZ_SZ:
+      if (pressed) {
+        tap_code16(KC_RALT);
+        tap_code16(KC_S);
+        tap_code16(KC_S);
+      }
+      break;
+  }
+}
+#endif
+
 uint16_t key_timer;
 bool delkey_registered;
 bool num_layer_was_used;
@@ -303,11 +368,6 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
         }
         return true;
     case OSM_CTL:
-        // Feck, this breaks holding down CTRL in this layer to do CTRL+Arrow movements.
-        //if (record->event.pressed) {
-        //    add_oneshot_mods(MOD_BIT(KC_LCTL));
-        //} else {
-        //}
         if (record->event.pressed) {
             key_timer = timer_read();
             register_mods(MOD_BIT(KC_LCTL));
