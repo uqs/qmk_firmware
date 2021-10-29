@@ -74,16 +74,16 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
   [L_COLM] = LAYOUT_uqs(
      KC_NO,    KC_NO,    KC_BTN3,  KC_BTN2,  KC_BTN1,  KC_NO,
      KC_BTN2,  KC_Q,     KC_W,     KC_F,     KC_P,     KC_B,
-     KC_BTN1,  KC_A_AE,  KC_A_R,   KC_S_S,   KC_C_T,   KC_G,
+     KC_BTN1,  KC_G_A,   KC_A_R,   KC_S_S,   KC_C_T,   KC_G,
      KC_BTN3,  KC_Z,     KC_X,     KC_C,     KC_D,     KC_V,
                          KC_NO,    KC_RBRC,
                          /* This ] ^^^^  is here for Gmail hotkeys only */
      /*thumb*/ LT_EXTD_ESC, SFT_T(KC_SPC), LT(L_MOUSE, KC_TAB),
       /*aux*/  KC_LEAD,  OSM_GUI,  KC_LALT,
      KC_NO,    KC_BTN1,  KC_BTN2,  KC_BTN3,  KC_NO,    KC_NO,
-     KC_J,     KC_L,     KC_U_UE,  KC_Y,     KC_QUOT,  KC_BSLS,
-     KC_M,     KC_C_N,   KC_S_E,   KC_A_I,   KC_O_OE,  KC_MINUS,
-     KC_K,     KC_H,     KC_COMM,  KC_DOT,   KC_SLSH,  KC_GRV,
+     KC_J,     KC_L,     KC_U,     KC_Y,     KC_QUOT,  KC_NO,
+     KC_M,     KC_C_N,   KC_S_E,   KC_A_I,   KC_G_O,   KC_NO,
+     KC_K,     KC_H,     KC_COMM,  KC_DOT,   KC_SLSH,  KC_NO,
                          KC_NO,    KC_NO,
      /*thumb*/ LT_FUNC_SHIFT_INS, KC_ENT, LT_NUM_BSPC,
       /*aux*/  KC_LEAD,  KC_RALT,  KC_APP
