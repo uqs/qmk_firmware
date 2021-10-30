@@ -95,27 +95,34 @@ enum combo_events {
   BJ_BSLS,
   GM_MINUS,
   VK_GRV,
-  COMBO_LENGTH
+  COMBO_LAST
 };
-uint16_t COMBO_LEN = COMBO_LENGTH;
+uint16_t COMBO_LEN = COMBO_LAST;
 
-const uint16_t PROGMEM auml_combo[] = {KC_G_A, KC_W, COMBO_END};
-const uint16_t PROGMEM ouml_combo[] = {KC_G_O, KC_Y, COMBO_END};
-const uint16_t PROGMEM uuml_combo[] = {KC_C_N, KC_U, COMBO_END};
-const uint16_t PROGMEM ssharp_combo[] = {KC_S_S, KC_Z, COMBO_END};
-const uint16_t PROGMEM bsls_combo[] = {KC_B, KC_J, COMBO_END};
-const uint16_t PROGMEM minus_combo[] = {KC_G, KC_M, COMBO_END};
-const uint16_t PROGMEM grv_combo[] = {KC_V, KC_K, COMBO_END};
-combo_t key_combos[] = {
-  [AW_AE] = COMBO_ACTION(auml_combo),
-  [OY_OE] = COMBO_ACTION(ouml_combo),
-  [NU_UE] = COMBO_ACTION(uuml_combo),
-  [SZ_SZ] = COMBO_ACTION(ssharp_combo),
-  [BJ_BSLS] = COMBO(bsls_combo, KC_BSLS),
-  [GM_MINUS] = COMBO(minus_combo, KC_MINUS),
-  [VK_GRV] = COMBO(grv_combo, KC_GRV),
+const uint16_t PROGMEM my_combos[][3] = {
+    [AW_AE] = {KC_G_A, KC_W, COMBO_END},
+    [OY_OE] = {KC_G_O, KC_Y, COMBO_END},
+    [NU_UE] = {KC_C_N, KC_U, COMBO_END},
+    [SZ_SZ] = {KC_S_S, KC_Z, COMBO_END},
+    [BJ_BSLS] = {KC_B, KC_J, COMBO_END},
+    [GM_MINUS] = {KC_G, KC_M, COMBO_END},
+    [VK_GRV] = {KC_V, KC_K, COMBO_END},
 };
-/* COMBO_ACTION(x) is same as COMBO(x, KC_NO) */
+
+#define MY_COMBO(ck, ca) \
+    [ck] = { .keys = &(my_combos[ck][0]), .keycode = (ca) }
+#define MY_COMBO_ACTION(ck) \
+    [ck] = { .keys = &(my_combos[ck][0])}
+
+combo_t key_combos[] = {
+  MY_COMBO_ACTION(AW_AE),
+  MY_COMBO_ACTION(OY_OE),
+  MY_COMBO_ACTION(NU_UE),
+  MY_COMBO_ACTION(SZ_SZ),
+  MY_COMBO(BJ_BSLS, KC_BSLS),
+  MY_COMBO(GM_MINUS, KC_MINUS),
+  MY_COMBO(VK_GRV, KC_GRV),
+};
 
 void process_combo_event(uint16_t combo_index, bool pressed) {
   switch(combo_index) {
