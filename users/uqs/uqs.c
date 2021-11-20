@@ -3,14 +3,9 @@
 #include <tmk_core/common/wait.h>
 #include "uqs.h"
 
-// Note to self: I should really try Colemak DHm, like https://www.reddit.com/r/MechanicalKeyboards/comments/9weri6/nuclear_data_in_colemak_dhm/
-// Data on it being pretty good: https://github.com/bclnr/kb-layout-evaluation
-// "Hands Down" might be good for minimal split keebs, https://sites.google.com/alanreiser.com/handsdown
-// But what about VIM? Use Layers+Cursor instead maybe?
-//
 // LOG:
 // late Jan 2020, got Dactyl Manuform 5x6
-// https://play.typeracer.com/  shows about 75-80wpm (en) or ~400cpm (de) on my classic keeb.
+// https://play.typeracer.com shows about 75-80wpm (en) or ~400cpm (de) on my classic keeb.
 // Never did proper touch typing, basically didn't use ring finger much, mostly index/middle and pinky (only to hold down modifiers, really).
 // Feb 2020, switching to Colemak DH after 30 years of Qwerty, uh oh...
 // mid Feb, 20wpm/87% on monkeytype.com (no punct, numbers)
@@ -22,6 +17,7 @@
 // early August, 55wpm/96% on MT; 55wpm/98% on typeracer;
 // early September, 57wpm/97% on MT; 58wpm/97% on typeracer;
 // early October, 59wpm/96% on MT; 61wpm/97% on typeracer;
+// November, 56wpm/97% on MT; 62wpm/98% on typeracer;
 
 
 #ifdef RGBLIGHT_LAYERS
@@ -88,73 +84,103 @@ void keyboard_post_init_user(void) {
 
 #ifdef COMBO_ENABLE
 enum combo_events {
-  AW_AE,
-  OY_OE,
-  NU_UE,
-  SZ_SZ,
-  BJ_BSLS,
-  GM_MINUS,
-  VK_GRV,
-  COMBO_LAST
-};
-uint16_t COMBO_LEN = COMBO_LAST;
-
-const uint16_t PROGMEM my_combos[][3] = {
-    [AW_AE] = {KC_G_A, KC_W, COMBO_END},
-    [OY_OE] = {KC_G_O, KC_Y, COMBO_END},
-    [NU_UE] = {KC_C_N, KC_U, COMBO_END},
-    [SZ_SZ] = {KC_S_S, KC_Z, COMBO_END},
-    [BJ_BSLS] = {KC_B, KC_J, COMBO_END},
-    [GM_MINUS] = {KC_G, KC_M, COMBO_END},
-    [VK_GRV] = {KC_V, KC_K, COMBO_END},
+  C_AUML,
+  C_OUML,
+  C_UUML,
+  C_SZ,
 };
 
-#define MY_COMBO(ck, ca) \
-    [ck] = { .keys = &(my_combos[ck][0]), .keycode = (ca) }
-#define MY_COMBO_ACTION(ck) \
-    [ck] = { .keys = &(my_combos[ck][0])}
+// Could split this into combos and action_combos
+const uint16_t PROGMEM my_combos[][4] = {
+    [C_AUML] = {KC_G_A, KC_W, COMBO_END, KC_NO},
+    [C_OUML] = {KC_G_O, KC_Y, COMBO_END, KC_NO},
+    [C_UUML] = {KC_C_N, KC_U, COMBO_END, KC_NO},
+    [C_SZ]   = {KC_S_S, KC_Z, COMBO_END, KC_NO},
+    {KC_F, KC_P, COMBO_END, KC_LPRN},
+    {KC_C, KC_D, COMBO_END, KC_RPRN},
+    {KC_W, KC_F, COMBO_END, KC_LCBR},
+    {KC_X, KC_C, COMBO_END, KC_RCBR},
 
+    {KC_G_A, KC_A_R, COMBO_END, KC_TAB},
+    {KC_B, KC_J, COMBO_END, KC_BSLS},
+    {KC_P, KC_L, COMBO_END, LSFT(KC_BSLS)},
+    {KC_C_T, KC_C_N, COMBO_END, KC_MINUS},
+    {KC_D, KC_H, COMBO_END, LSFT(KC_MINUS)},
+    {KC_Q, KC_W, COMBO_END, KC_GRV},
+    {KC_G, KC_M, COMBO_END, LSFT(KC_GRV)},
+
+    {KC_BTN1, KC_BTN2, COMBO_END, KC_BTN3},
+    {KC_BTN2, KC_BTN3, COMBO_END, KC_BTN1},
+};
+
+// TODO: should probably have the keycode come first ...
+#define MY_COMBO(ck) \
+    [ck] = { .keys = &(my_combos[ck][0]), .keycode = my_combos[ck][3] }
+
+// Maybe use this?
+// #define COMBO_ONLY_FROM_LAYER L_COLM
+
+// TODO: fill this at runtime with a loop?
 combo_t key_combos[] = {
-  MY_COMBO_ACTION(AW_AE),
-  MY_COMBO_ACTION(OY_OE),
-  MY_COMBO_ACTION(NU_UE),
-  MY_COMBO_ACTION(SZ_SZ),
-  MY_COMBO(BJ_BSLS, KC_BSLS),
-  MY_COMBO(GM_MINUS, KC_MINUS),
-  MY_COMBO(VK_GRV, KC_GRV),
+  MY_COMBO(0),
+  MY_COMBO(1),
+  MY_COMBO(2),
+  MY_COMBO(3),
+  MY_COMBO(4),
+  MY_COMBO(5),
+  MY_COMBO(6),
+  MY_COMBO(7),
+  MY_COMBO(8),
+  MY_COMBO(9),
+  MY_COMBO(10),
+  MY_COMBO(11),
+  MY_COMBO(12),
+  MY_COMBO(13),
+  MY_COMBO(14),
+  MY_COMBO(15),
+  MY_COMBO(16),
 };
+const uint16_t COMBO_LEN = sizeof(key_combos) / sizeof(key_combos[0]);
+_Static_assert(sizeof(key_combos) / sizeof(key_combos[0]) == sizeof(my_combos) / sizeof(my_combos[0]), "Number of combo definitions does not match up!");
 
 void process_combo_event(uint16_t combo_index, bool pressed) {
-  switch(combo_index) {
-    case AW_AE:
-      if (pressed) {
-        tap_code16(KC_RALT);
-        tap_code16(LSFT(KC_QUOT));
-        tap_code16(KC_A);
-      }
-      break;
-    case OY_OE:
-      if (pressed) {
-        tap_code16(KC_RALT);
-        tap_code16(LSFT(KC_QUOT));
-        tap_code16(KC_O);
-      }
-      break;
-    case NU_UE:
-      if (pressed) {
-        tap_code16(KC_RALT);
-        tap_code16(LSFT(KC_QUOT));
-        tap_code16(KC_U);
-      }
-      break;
-    case SZ_SZ:
-      if (pressed) {
-        tap_code16(KC_RALT);
-        tap_code16(KC_S);
-        tap_code16(KC_S);
-      }
-      break;
-  }
+    // Why does get_combo_term() have combo, but this one doesn't?
+    /*
+    switch (combo->keycode) {
+        case KC_X:
+            return 50;
+    }
+    */
+    switch (combo_index) {
+        case C_AUML:
+            if (pressed) {
+                tap_code16(KC_RALT);
+                tap_code16(LSFT(KC_QUOT));
+                tap_code16(KC_A);
+            }
+            break;
+        case C_OUML:
+            if (pressed) {
+                tap_code16(KC_RALT);
+                tap_code16(LSFT(KC_QUOT));
+                tap_code16(KC_O);
+            }
+            break;
+        case C_UUML:
+            if (pressed) {
+                tap_code16(KC_RALT);
+                tap_code16(LSFT(KC_QUOT));
+                tap_code16(KC_U);
+            }
+            break;
+        case C_SZ:
+            if (pressed) {
+                tap_code16(KC_RALT);
+                tap_code16(KC_S);
+                tap_code16(KC_S);
+            }
+            break;
+    }
 }
 #endif
 
