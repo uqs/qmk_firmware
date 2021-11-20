@@ -72,19 +72,18 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
   // can't actually set caps lock, as I'm rebinding that for a saner laptop
   // keyboard. See drashna's keymap.
   [L_COLM] = LAYOUT_uqs(
-     KC_NO,    KC_NO,    KC_BTN3,  KC_BTN2,  KC_BTN1,  KC_NO,
+     KC_NO,    KC_NO,    KC_BTN2,  KC_BTN3,  KC_BTN1,  KC_NO,
      KC_BTN2,  KC_Q,     KC_W,     KC_F,     KC_P,     KC_B,
      KC_BTN1,  KC_G_A,   KC_A_R,   KC_S_S,   KC_C_T,   KC_G,
      KC_BTN3,  KC_Z,     KC_X,     KC_C,     KC_D,     KC_V,
-                         KC_NO,    KC_RBRC,
-                         /* This ] ^^^^  is here for Gmail hotkeys only */
+                         KC_GRV,   KC_NO,
      /*thumb*/ LT_EXTD_ESC, SFT_T(KC_SPC), LT(L_MOUSE, KC_TAB),
       /*aux*/  KC_LEAD,  OSM_GUI,  KC_LALT,
      KC_NO,    KC_BTN1,  KC_BTN2,  KC_BTN3,  KC_NO,    KC_NO,
      KC_J,     KC_L,     KC_U,     KC_Y,     KC_QUOT,  KC_NO,
      KC_M,     KC_C_N,   KC_S_E,   KC_A_I,   KC_G_O,   KC_NO,
      KC_K,     KC_H,     KC_COMM,  KC_DOT,   KC_SLSH,  KC_NO,
-                         KC_NO,    KC_NO,
+                         KC_NO,    KC_BSLS,
      /*thumb*/ LT_FUNC_SHIFT_INS, KC_ENT, LT_NUM_BSPC,
       /*aux*/  KC_LEAD,  KC_RALT,  KC_APP
 // NOTE: RSFT_T(KC_S_INS) doesn't work, only INS comes through. RSFT_T stuff
@@ -135,7 +134,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 //#define OSM_CTL OSM(MOD_LCTL)
   [L_EXTD] = LAYOUT_uqs(
      _______,  _______,  _______,  _______,  _______,  _______,
-     _______,  WIN_PREV, TM_PREV,  KC_PGUP,  TM_NEXT,  WIN_NEXT,
+     _______,  KC_BTN1,  KC_NO,    KC_PGUP,  KC_NO,    KC_NO,
      _______,  OSM_GUI,  OSM_ALT,  OSM_SFT,  OSM_CTL,  KC_RALT,
      _______,  ALT_TAB,  KC_SCTAB, KC_CTAB,  KC_PGDN,  INS_HARD,
                          MS_WHUP,  MS_WHDN,
@@ -166,7 +165,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
       /*aux*/  _______,  _______,  _______,
                /* ^^^^ use these */
      KC_NUMLOCK,KC_NO,   KC_NO,    KC_NO,    KC_NO,    KC_NO,
-     KC_KP_EQUAL, KC_7,  KC_8,     KC_9,     KC_KP_PLUS,_______,
+     KC_EQUAL, KC_7,     KC_8,     KC_9,     KC_KP_PLUS,_______,
      KC_KP_ASTERISK,KC_4,KC_5,     KC_6,     MINS_UNDSCR,_______,
      KC_COMM,  KC_1,     KC_2,     KC_3,     KC_KP_SLASH,KC_KP_ENTER,  // Enter here, because thumb is occupied
                          KC_0,     KC_KP_DOT,
@@ -185,9 +184,9 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
       /*aux*/  _______,  _______,  _______,
                /* ^^^^ use these */
      KC_NO,    KC_NO,    KC_NO,    KC_NO,    KC_NO,    KC_NO,
-     KC_PSCR,  KC_F7,    KC_F8,    KC_F9,    KC_F10,   DF(L_WASD),
-     KC_SLCK,  KC_F4,    KC_F5,    KC_F6,    KC_F11,   DF(L_QWER),
-     KC_PAUS,  KC_F1,    KC_F2,    KC_F3,    KC_F12,   DF(L_COLM),
+     KC_PSCR,  KC_F7,    KC_F8,    KC_F9,    KC_F10,   KC_NO,
+     KC_SLCK,  KC_F4,    KC_F5,    KC_F6,    KC_F11,   KC_NO,
+     KC_PAUS,  KC_F1,    KC_F2,    KC_F3,    KC_F12,   KC_NO,
                          KC_NO,    KC_NO,
      /*thumb*/ _______,  _______,  _______,
       /*aux*/  _______,  _______,  _______
