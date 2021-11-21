@@ -90,6 +90,10 @@ enum combo_events {
   C_SZ,
 };
 
+// Maybe use this?
+// #define COMBO_ONLY_FROM_LAYER L_COLM
+
+#if 1
 // Could split this into combos and action_combos
 const uint16_t PROGMEM my_combos[][4] = {
     [C_AUML] = {KC_G_A, KC_W, COMBO_END, KC_NO},
@@ -117,9 +121,8 @@ const uint16_t PROGMEM my_combos[][4] = {
 #define MY_COMBO(ck) \
     [ck] = { .keys = &(my_combos[ck][0]), .keycode = my_combos[ck][3] }
 
-// Maybe use this?
-// #define COMBO_ONLY_FROM_LAYER L_COLM
-
+// XXX: this will crash the firmware after a couple of keypresses! wat?
+//const combo_t PROGMEM key_combos[] = { ...
 // TODO: fill this at runtime with a loop?
 combo_t key_combos[] = {
   MY_COMBO(0),
@@ -140,8 +143,48 @@ combo_t key_combos[] = {
   MY_COMBO(15),
   MY_COMBO(16),
 };
-const uint16_t COMBO_LEN = sizeof(key_combos) / sizeof(key_combos[0]);
+
 _Static_assert(sizeof(key_combos) / sizeof(key_combos[0]) == sizeof(my_combos) / sizeof(my_combos[0]), "Number of combo definitions does not match up!");
+
+#else
+
+#define MY_COMBO(x, ...) \
+    { .keycode = x, .keys = (const uint16_t[]) { __VA_ARGS__, COMBO_END } }
+#define MY_COMBO_ACTION(...) MY_COMBO(KC_NO, __VA_ARGS__)
+
+// Can't use PROGMEM, as that'll crash the firmware, and somehow the whole
+// thing doesn't work anyway. Testing on a regular ELF binary, the const
+// my_combos ends up in .rodata and the rest in .data. No idea what the
+// microcontroller needs here.
+// I think
+// https://www.avrfreaks.net/forum/using-progmem-put-array-structures-flash
+// applies here and I don't understand why flash or RAM should make a
+// difference. Sigh.
+combo_t /*PROGMEM*/ key_combos[] = {
+    [C_AUML] = MY_COMBO_ACTION(KC_G_A, KC_W),
+    [C_OUML] = MY_COMBO_ACTION(KC_G_O, KC_Y),
+    [C_UUML] = MY_COMBO_ACTION(KC_C_N, KC_U),
+    [C_SZ]   = MY_COMBO_ACTION(KC_S_S, KC_Z),
+
+    MY_COMBO(KC_LPRN, KC_F, KC_P),
+    MY_COMBO(KC_RPRN, KC_C, KC_D),
+    MY_COMBO(KC_LCBR, KC_W, KC_F),
+    MY_COMBO(KC_RCBR, KC_X, KC_C),
+
+    MY_COMBO(KC_TAB, KC_G_A, KC_A_R),
+    MY_COMBO(KC_BSLS, KC_B, KC_J),
+    MY_COMBO(LSFT(KC_BSLS), KC_P, KC_L),
+    MY_COMBO(KC_MINUS, KC_C_T, KC_C_N),
+    MY_COMBO(LSFT(KC_MINUS), KC_D, KC_H),
+    MY_COMBO(KC_GRV, KC_Q, KC_W),
+    MY_COMBO(LSFT(KC_GRV), KC_G, KC_M),
+
+    MY_COMBO(KC_BTN3, KC_BTN1, KC_BTN2),
+    MY_COMBO(KC_BTN1, KC_BTN2, KC_BTN3),
+};
+#endif
+
+const uint16_t COMBO_LEN = sizeof(key_combos) / sizeof(key_combos[0]);
 
 void process_combo_event(uint16_t combo_index, bool pressed) {
     // Why does get_combo_term() have combo, but this one doesn't?
