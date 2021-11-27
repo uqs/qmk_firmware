@@ -88,6 +88,7 @@ enum combo_events {
   C_OUML,
   C_UUML,
   C_SZ,
+  C_PRN,
 };
 
 // Maybe use this?
@@ -100,6 +101,7 @@ const uint16_t PROGMEM my_combos[][4] = {
     [C_OUML] = {KC_G_O, KC_Y, COMBO_END, KC_NO},
     [C_UUML] = {KC_C_N, KC_U, COMBO_END, KC_NO},
     [C_SZ]   = {KC_S_S, KC_Z, COMBO_END, KC_NO},
+    [C_PRN]  = {KC_LCBR, KC_LPRN, COMBO_END, KC_NO},
     {KC_F, KC_P, COMBO_END, KC_LPRN},
     {KC_C, KC_D, COMBO_END, KC_RPRN},
     {KC_W, KC_F, COMBO_END, KC_LCBR},
@@ -107,10 +109,12 @@ const uint16_t PROGMEM my_combos[][4] = {
 
     {KC_G_A, KC_A_R, COMBO_END, KC_TAB},
     {KC_B, KC_J, COMBO_END, KC_BSLS},
+    {KC_F, KC_U, COMBO_END, KC_BSLS},
     {KC_P, KC_L, COMBO_END, LSFT(KC_BSLS)},
     {KC_C_T, KC_C_N, COMBO_END, KC_MINUS},
     {KC_D, KC_H, COMBO_END, LSFT(KC_MINUS)},
     {KC_Q, KC_W, COMBO_END, KC_GRV},
+    {KC_C, KC_COMM, COMBO_END, KC_GRV},
     {KC_G, KC_M, COMBO_END, LSFT(KC_GRV)},
 
     {KC_BTN1, KC_BTN2, COMBO_END, KC_BTN3},
@@ -142,6 +146,9 @@ combo_t key_combos[] = {
   MY_COMBO(14),
   MY_COMBO(15),
   MY_COMBO(16),
+  MY_COMBO(17),
+  MY_COMBO(18),
+  MY_COMBO(19),
 };
 
 _Static_assert(sizeof(key_combos) / sizeof(key_combos[0]) == sizeof(my_combos) / sizeof(my_combos[0]), "Number of combo definitions does not match up!");
@@ -221,6 +228,13 @@ void process_combo_event(uint16_t combo_index, bool pressed) {
                 tap_code16(KC_RALT);
                 tap_code16(KC_S);
                 tap_code16(KC_S);
+            }
+            break;
+        case C_PRN:
+            if (pressed) {
+                tap_code16(KC_LPRN);
+                tap_code16(KC_RPRN);
+                tap_code16(KC_LEFT);
             }
             break;
     }
