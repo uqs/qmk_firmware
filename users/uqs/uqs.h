@@ -37,7 +37,7 @@ enum custom_keycodes {
     KC_A_AE,
     KC_O_OE,
     KC_U_UE,
-    MINS_UNDSCR,
+    MINS_UNDSCR,  // obsoleted by combos, remove this!
     TM_NEXT,
     TM_PREV,
     WIN_NEXT,

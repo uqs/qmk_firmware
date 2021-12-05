@@ -113,12 +113,12 @@ const uint16_t PROGMEM my_combos[][4] = {
     {KC_W, KC_F, COMBO_END, KC_LCBR},
     {KC_X, KC_C, COMBO_END, KC_RCBR},
     {KC_G_A, KC_A_R, COMBO_END, KC_TAB},
-    {KC_B, KC_J, COMBO_END, KC_BSLS},
+    {KC_B, KC_J, COMBO_END, KC_BSLS},  // remove this?
     {KC_F, KC_U, COMBO_END, KC_BSLS},
     {KC_P, KC_L, COMBO_END, LSFT(KC_BSLS)},
     {KC_C_T, KC_C_N, COMBO_END, KC_MINUS},
     {KC_D, KC_H, COMBO_END, LSFT(KC_MINUS)},
-    {KC_Q, KC_W, COMBO_END, KC_GRV},
+    {KC_Q, KC_W, COMBO_END, KC_GRV},  // remove this?
     {KC_C, KC_COMM, COMBO_END, KC_GRV},
     {KC_G, KC_M, COMBO_END, LSFT(KC_GRV)},
     {KC_BTN1, KC_BTN2, COMBO_END, KC_BTN3},
@@ -182,12 +182,10 @@ combo_t /*PROGMEM*/ key_combos[] = {
     [C_OUML] = MY_COMBO_ACTION(KC_G_O, KC_Y),
     [C_UUML] = MY_COMBO_ACTION(KC_C_N, KC_U),
     [C_SZ]   = MY_COMBO_ACTION(KC_S_S, KC_Z),
-
     MY_COMBO(KC_LPRN, KC_F, KC_P),
     MY_COMBO(KC_RPRN, KC_C, KC_D),
     MY_COMBO(KC_LCBR, KC_W, KC_F),
     MY_COMBO(KC_RCBR, KC_X, KC_C),
-
     MY_COMBO(KC_TAB, KC_G_A, KC_A_R),
     MY_COMBO(KC_BSLS, KC_B, KC_J),
     MY_COMBO(LSFT(KC_BSLS), KC_P, KC_L),
@@ -195,7 +193,6 @@ combo_t /*PROGMEM*/ key_combos[] = {
     MY_COMBO(LSFT(KC_MINUS), KC_D, KC_H),
     MY_COMBO(KC_GRV, KC_Q, KC_W),
     MY_COMBO(LSFT(KC_GRV), KC_G, KC_M),
-
     MY_COMBO(KC_BTN3, KC_BTN1, KC_BTN2),
     MY_COMBO(KC_BTN1, KC_BTN2, KC_BTN3),
 };
@@ -204,13 +201,6 @@ combo_t /*PROGMEM*/ key_combos[] = {
 const uint16_t COMBO_LEN = sizeof(key_combos) / sizeof(key_combos[0]);
 
 void process_combo_event(uint16_t combo_index, bool pressed) {
-    // Why does get_combo_term() have combo, but this one doesn't?
-    /*
-    switch (combo->keycode) {
-        case KC_X:
-            return 50;
-    }
-    */
     switch (combo_index) {
         case C_AUML:
             if (pressed) {

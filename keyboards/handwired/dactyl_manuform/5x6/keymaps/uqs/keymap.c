@@ -76,14 +76,14 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
      KC_BTN2,  KC_Q,     KC_W,     KC_F,     KC_P,     KC_B,
      KC_BTN1,  KC_G_A,   KC_A_R,   KC_S_S,   KC_C_T,   KC_G,
      KC_BTN3,  KC_Z,     KC_X,     KC_C,     KC_D,     KC_V,
-                         KC_GRV,   KC_NO,
+                         MS_WHUP,  MS_WHDN,
      /*thumb*/ LT_EXTD_ESC, SFT_T(KC_SPC), LT(L_MOUSE, KC_TAB),
       /*aux*/  KC_LEAD,  OSM_GUI,  KC_LALT,
      KC_NO,    KC_BTN1,  KC_BTN2,  KC_BTN3,  KC_NO,    KC_NO,
      KC_J,     KC_L,     KC_U,     KC_Y,     KC_QUOT,  KC_NO,
      KC_M,     KC_C_N,   KC_S_E,   KC_A_I,   KC_G_O,   KC_NO,
      KC_K,     KC_H,     KC_COMM,  KC_DOT,   KC_SLSH,  KC_NO,
-                         KC_NO,    KC_BSLS,
+                         KC_NO,    KC_NO,
      /*thumb*/ LT_FUNC_SHIFT_INS, KC_ENT, LT_NUM_BSPC,
       /*aux*/  KC_LEAD,  KC_RALT,  KC_APP
 // NOTE: RSFT_T(KC_S_INS) doesn't work, only INS comes through. RSFT_T stuff
@@ -134,17 +134,17 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 //#define OSM_CTL OSM(MOD_LCTL)
   [L_EXTD] = LAYOUT_uqs(
      _______,  _______,  _______,  _______,  _______,  _______,
-     _______,  KC_BTN1,  KC_NO,    KC_PGUP,  KC_NO,    KC_NO,
+     _______,  KC_BTN1,  KC_SCTAB, KC_PGUP,  KC_CTAB,  KC_LEAD,
      _______,  OSM_GUI,  OSM_ALT,  OSM_SFT,  OSM_CTL,  KC_RALT,
-     _______,  ALT_TAB,  KC_SCTAB, KC_CTAB,  KC_PGDN,  INS_HARD,
-                         MS_WHUP,  MS_WHDN,
+     _______,  ALT_TAB,  MS_WHUP,  MS_WHDN,  KC_PGDN,  INS_HARD,
+                         _______,  _______,
      /*thumb*/ _______,  _______,  _______,
       /*aux*/  _______,  _______,  _______,
                /* ^^^^ can't be used */
      _______,  _______,  _______,  _______,  _______,  _______,
-     KC_HOME,  KC_PGDN,  KC_PGUP,  KC_END,   KC_INS,   LSFT(KC_INS),
+     KC_HOME,  KC_PGDN,  KC_PGUP,  KC_END,   KC_INS,   KC_NO,
      KC_LEFT,  KC_DOWN,  KC_UP,    KC_RGHT,  KC_DEL,   KC_NO,
-     WIN_LEFT, WIN_DN,   WIN_UP,   WIN_RGHT, KC_PSTE,  KC_ENTER,  // KC_PSTE works in XTerm to emulate middle-click
+     WIN_LEFT, WIN_DN,   WIN_UP,   WIN_RGHT, KC_PSTE,  KC_NO,  // KC_PSTE works in XTerm to emulate middle-click
                          _______,  _______,
      /*thumb*/ _______,  _______,  KC_BSPC,
       /*aux*/  _______,  _______,  _______
