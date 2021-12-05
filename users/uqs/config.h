@@ -3,8 +3,11 @@
 #ifdef RGBLIGHT_ENABLE
   //#define RGBLIGHT_ANIMATIONS
   #define RGBLIGHT_SLEEP
-  #define RGBLIGHT_LAYERS
-  #define RGBLIGHT_MAX_LAYERS 8  // default is 16
+  // Disable these to save loads of space in the EEPROM
+  //#define RGBLIGHT_LAYERS
+  //#define RGBLIGHT_MAX_LAYERS 8  // default is 16
+  #define RGBLIGHT_DISABLE_KEYCODES  // RGB_foo keys no longer work, saves 600 bytes
+  #define RGBLIGHT_DEFAULT_HUE 15
 #endif
 
 #define DYNAMIC_KEYMAP_LAYER_COUNT 6  // default is 4 for VIA builds
@@ -31,9 +34,3 @@
 #define USB_POLLING_INTERVAL_MS 1
 //#define TAP_CODE_DELAY 10
 
-// Testing OSM_SHIFT for CAPS_WORDS, doesn't work on the layer I'm triggering
-// it on, while it keeps active, it auto-deactivates after the first key is
-// pressed. So yeah, it toggles, but not in a Caps Lock kinda way.
-// Docs say it can't be used in combination with TAPPING_FORCE_HOLD, but it
-// didn't even work without that set.
-#define ONESHOT_TAP_TOGGLE 2
