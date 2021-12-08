@@ -17,16 +17,8 @@ enum layers {
 _Static_assert(DYNAMIC_KEYMAP_LAYER_COUNT >= L_LAST, "VIA enabled, but not enough DYNAMIC_KEYMAP_LAYER_COUNT for all layers");
 #endif
 
-#define KC_ATAB LALT(KC_TAB)
-#define KC_SATAB LALT(LSFT(KC_TAB))
 #define KC_CTAB LCTL(KC_TAB)
 #define KC_SCTAB LCTL(LSFT(KC_TAB))
-// Maybe do something with KC_PASTE instead (or KC_CUT, KC_COPY)
-#define KC_S_INS LSFT(KC_INS)
-#define KC_A_S_INS LALT(LSFT(KC_INS))
-// Note RSFT_T() can only work with the basic layer, supposedly custom macros
-// should work, like given below, except they don't. RSFT_T(KC_S_INS) results
-// in xev seeing Backspace ... A plain KC_S_INS of course works fine.
 
 // Works as well as the above, but only needed for more complex stuff.
 enum custom_keycodes {
@@ -49,7 +41,6 @@ enum custom_keycodes {
     LT_EXTD_ESC,
     LT_EXTD_ESC_WIN,
     LT_NUM_BSPC,
-    LT_NUM_BSPC_DEL,
     LT_MOUSE_ALT_SHIFT_INS,
     LT_FUNC_SHIFT_INS,
     OSM_GUI,

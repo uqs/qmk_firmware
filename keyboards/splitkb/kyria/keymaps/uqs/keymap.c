@@ -68,85 +68,41 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
   // keyboard. See drashna's keymap.
   [L_COLM] = LAYOUT_uqs(
      KC_BTN2,  KC_Q,     KC_W,     KC_F,     KC_P,     KC_B,
-     KC_BTN1,  KC_A_AE,  KC_A_R,   KC_S_S,   KC_C_T,   KC_G,
+     KC_BTN1,  KC_G_A,   KC_A_R,   KC_S_S,   KC_C_T,   KC_G,
      KC_BTN3,  KC_Z,     KC_X,     KC_C,     KC_D,     KC_V,
-                         KC_NO,    KC_RBRC,
-                         /* This ] ^^^^  is here for Gmail hotkeys only */
+                         MS_WHUP,  MS_WHDN,
      /*thumb*/ LT_EXTD_ESC, SFT_T(KC_SPC), LT(L_MOUSE, KC_TAB),
       /*aux*/
                OSM_GUI,  KC_LALT,
-     KC_J,     KC_L,     KC_U_UE,  KC_Y,     KC_QUOT,  KC_BSLS,
-     KC_M,     KC_C_N,   KC_S_E,   KC_A_I,   KC_O_OE,  KC_MINUS,
+     KC_J,     KC_L,     KC_U,     KC_Y,     KC_QUOT,  KC_BSLS,
+     KC_M,     KC_C_N,   KC_S_E,   KC_A_I,   KC_G_O,   KC_MINUS,
      KC_K,     KC_H,     KC_COMM,  KC_DOT,   KC_SLSH,  KC_GRV,
                          KC_NO,    KC_NO,
      /*thumb*/ LT_FUNC_SHIFT_INS, KC_ENT, LT_NUM_BSPC,
       /*aux*/  KC_RALT,  KC_APP
-
-// NOTE: RSFT_T(KC_S_INS) doesn't work, only INS comes through. RSFT_T stuff
-// only works on "simple" keycodes. See process_record_user for how this works,
-// thanks to ridingqwerty on Discord.
-// KC_PASTE essentially does shift-insert for Linux (mostly, for example not in
-// Qt apps! Also Chrome makes it copy from Clipboard, not Selection, like XTerm
-// does. Wargh), does nothing on Windows though, where Shift-Ins works.
-//
-// Some people do: NavL | Bspc/Shft | Enter/Fkeys | | Esc | Spc/SymbL | empty
-// but sometimes you have to hold enter or space? or what about shift-enter? hmmm
-// Needs more thinking, there's 3 useful/quick thumb keys after all, would have
-// to move shift-ins stuff someplace else.
-// More thoughts: "I have Shift-Enter on the left big thumb, and Shift-Space on
-// the right. To the left of the left big thumb is LT1-Del and to the right of
-// the right big thumb is LT1-Bspc. My other two outermost thumb keys are
-// Win/Sys on the left and Alt on the right. My LT2 is actually on a pinky,
-// along with CTRL. I have thought about moving CTRL to one of the big thumbs
-// but I like having shift on both."
-
-
-/*
- * My take on thumb keys:
- * tappable: tab, ent, del, bkspc, esc, shift-ins, space, AltGr, Leader
- * holdable: shift, L1, L2 (also, alt, ctrl, win)
- * sometimes holdable: ent, del, bkspc
- *
- * right side: ent, bkpsc, del, shift-ins, altgr
- * left side:  space, esc, tab, ctrl/alt/win
- *
- * Here's what I'll likely do, esp with a Kyria:
- *        L1/Esc  Space  Win  ||  AltGr     Enter  L2/Bksp
- *   L1:                      || Shift-Ins            Bksp
- *   L2: no change, need Space/Tab during L2
- * with home row mods.
- * Win on home mod is annoying as I use it for dragging windows and I need to
- * hold-and-delay for several hundreds ms before it registers :/
- *
- * Update: I moved Win off the home row, to get ä/ö on them with long presses.
- * TODO: Produce a proper Hyper key (as in xmodmap, not QMK!) and use window
- * movement in Openbox with that.
- */
   ),
 
   // Updated with inspiration from https://forum.colemak.com/topic/2014-extend-extra-extreme/
   // I like the AltGr trick from https://stevep99.github.io/seniply/ and should probably incorporate some stuff from it.
   [L_EXTD] = LAYOUT_uqs(
-     _______,  WIN_PREV, TM_PREV,  KC_PGUP,  TM_NEXT,  WIN_NEXT,
+     _______,  KC_BTN1,  KC_SCTAB, KC_PGUP,  KC_CTAB,  KC_LEAD,
      _______,  OSM_GUI,  OSM_ALT,  OSM_SFT,  OSM_CTL,  KC_RALT,
-     _______,  ALT_TAB,  KC_SCTAB, KC_CTAB,  KC_PGDN,  INS_HARD,
-                         MS_WHUP,  MS_WHDN,
+     _______,  ALT_TAB,  MS_WHUP,  MS_WHDN,  KC_PGDN,  INS_HARD,
+                         _______,  _______,
      /*thumb*/ _______,  _______,  _______,
       /*aux*/  _______,  _______,
                /* ^^^^ can't be used */
-     KC_HOME,  KC_PGDN,  KC_PGUP,  KC_END,   KC_INS,   LSFT(KC_INS),
+     KC_HOME,  KC_PGDN,  KC_PGUP,  KC_END,   KC_INS,   KC_NO,
      KC_LEFT,  KC_DOWN,  KC_UP,    KC_RGHT,  KC_DEL,   KC_NO,
-     WIN_LEFT, WIN_DN,   WIN_UP,   WIN_RGHT, KC_PSTE,  KC_ENTER,  // KC_PSTE works in XTerm to emulate middle-click
+     WIN_LEFT, WIN_DN,   WIN_UP,   WIN_RGHT, KC_PSTE,  KC_NO,  // KC_PSTE works in XTerm to emulate middle-click
                          _______,  _______,
      /*thumb*/ _______,  _______,  KC_BSPC,
       /*aux*/  _______,  _______
                /* ^^^^ use these */
   ),
 
-  // Num/Symbol. This works somehow without turning on Numlock first. I've not
-  // managed to get Alt-codes working under Windows though, might be an
-  // artefact of using US Intl (nope, I'm using USCmpse custom layout)?
-  // TODO: maybe swap # with ;, that way I can roll :w or :wq which I need often ...
+  // TODO: maybe swap # with ;, that way I can roll :w or :wq which I need
+  // often ... probably better to add a combo?
   [L_NUM] = LAYOUT_uqs(
      _______,  KC_EXLM,  KC_AT,    KC_HASH,  KC_DLR,   KC_PERC,
      _______,  KC_SCLN,  KC_COLN,  KC_LCBR,  KC_LPRN,  KC_LBRC,
@@ -156,12 +112,12 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
       /*aux*/  _______,_______,
                /* ^^^^ use these */
 
-     KC_KP_EQUAL, KC_7,  KC_8,     KC_9,     KC_KP_PLUS,_______,
+     KC_EQUAL, KC_7,     KC_8,     KC_9,     KC_KP_PLUS,_______,
      KC_KP_ASTERISK,KC_4,KC_5,     KC_6,     MINS_UNDSCR,_______,
      KC_COMM,  KC_1,     KC_2,     KC_3,     KC_KP_SLASH,KC_KP_ENTER,  // Enter here, because thumb is occupied
                          KC_0,     KC_KP_DOT,
      /*thumb*/ _______,  _______,  _______,
-               _______,  _______
+      /*aux*/  _______,  _______
                /* ^^^^ can't be used */
   ),
 
@@ -174,9 +130,9 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
       /*aux*/  _______,  _______,
                /* ^^^^ use these */
 
-     KC_PSCR,  KC_F7,    KC_F8,    KC_F9,    KC_F10,   DF(L_WASD),
-     KC_SLCK,  KC_F4,    KC_F5,    KC_F6,    KC_F11,   DF(L_QWER),
-     KC_PAUS,  KC_F1,    KC_F2,    KC_F3,    KC_F12,   DF(L_COLM),
+     KC_PSCR,  KC_F7,    KC_F8,    KC_F9,    KC_F10,   KC_NO,
+     KC_SLCK,  KC_F4,    KC_F5,    KC_F6,    KC_F11,   KC_NO,
+     KC_PAUS,  KC_F1,    KC_F2,    KC_F3,    KC_F12,   KC_NO,
                          KC_NO,    KC_NO,
      /*thumb*/ _______,  _______,  _______,
       /*aux*/  _______,  _______
@@ -184,11 +140,10 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
   ),
 
   [L_MOUSE] = LAYOUT_uqs(
-     RGB_MOD,  RGB_HUI,  KC_BTN3,  KC_BTN2,  KC_BTN1,  KC_VOLU,
-     RGB_RMOD, RGB_HUD,  KC_ACL0,  KC_ACL1,  KC_ACL2,  KC_VOLD,
-     /* Plain, Breath, Rainbow, Swirl, Snake, KnightRider, Xmas, Gradient */
-     RGB_M_P,  RGB_M_B,  RGB_M_R,  RGB_M_SW, RGB_M_SN, KC_MUTE,
-                         RGB_M_X,  RGB_M_G,
+     _______,  KC_NO,    KC_BTN2,  KC_BTN3,  KC_BTN1,  KC_VOLU,
+     _______,  KC_NO,    KC_ACL0,  KC_ACL1,  KC_ACL2,  KC_VOLD,
+     _______,  KC_NO,    KC_NO,    KC_NO,    KC_NO,    KC_MUTE,
+                         KC_NO,    KC_NO,
      /*thumb*/ _______,  _______,  _______,
       /*aux*/  _______,  _______,
                /* ^^^^ can't be used */
@@ -196,7 +151,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
      _______,  _______,  KC_MS_UP, MS_WHUP,  _______,  _______,
      MS_WHLEFT,KC_MS_L,  KC_MS_D,  KC_MS_R,  MS_WHRGHT,_______,
      _______,  MS_WHDN,  KC_BTN3,  KC_BTN4,  KC_BTN5,  _______,
-                         _______,  _______,
+                         KC_NO,    KC_NO,
      /*thumb*/ KC_NO,    KC_BTN1,  KC_BTN2,
       /*aux*/  _______,  _______
                /* use these ^^^^ */
