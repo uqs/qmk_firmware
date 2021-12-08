@@ -45,18 +45,18 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
   ),
   [L_EXTD] = LAYOUT_uqs(
      KC_F11,   KC_F1,    KC_F2,    KC_F3,    KC_F4,    KC_F5,
-     _______,  WIN_PREV, TM_PREV,  KC_PGUP,  TM_NEXT,  WIN_NEXT,
+     _______,  KC_BTN1,  KC_SCTAB, KC_PGUP,  KC_CTAB,  KC_LEAD,
      _______,  OSM_GUI,  OSM_ALT,  OSM_SFT,  OSM_CTL,  KC_RALT,
-     _______,  ALT_TAB,  KC_SCTAB, KC_CTAB,  KC_PGDN,  INS_HARD,
+     _______,  ALT_TAB,  MS_WHUP,  MS_WHDN,  KC_PGDN,  INS_HARD,
      /*thumb*/ _______,  _______,
       /*aux*/  _______,  _______,  _______,
                /* ^^^^ can't be used */
      KC_F6,    KC_F7,    KC_F8,    KC_F9,    KC_F10,   KC_F12,
-     KC_HOME,  KC_PGDN,  KC_PGUP,  KC_END,   KC_INS,   LSFT(KC_INS),
+     KC_HOME,  KC_PGDN,  KC_PGUP,  KC_END,   KC_INS,   KC_NO,
      KC_LEFT,  KC_DOWN,  KC_UP,    KC_RGHT,  KC_DEL,   KC_NO,
      WIN_LEFT, WIN_DN,   WIN_UP,   WIN_RGHT, KC_PSTE,  KC_NO,
      /*thumb*/ _______,  KC_BSPC,
-      /*aux*/  _______,  _______,  KC_ENTER  // KC_PSTE works in XTerm to emulate middle-click
+      /*aux*/  _______,  _______,  KC_ENTER
                /* ^^^^ use these */
   ),
 
@@ -69,7 +69,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
       /*aux*/  _______,  _______,  _______,
                /* ^^^^ use these */
      KC_F6,    KC_F7,    KC_F8,    KC_F9,    KC_F10,   KC_F12,
-     KC_KP_EQUAL, KC_7,  KC_8,     KC_9,     KC_KP_PLUS,_______,
+     KC_EQUAL, KC_7,     KC_8,     KC_9,     KC_KP_PLUS,_______,
      KC_KP_ASTERISK,KC_4,KC_5,     KC_6,     MINS_UNDSCR,_______,
      KC_COMM,  KC_1,     KC_2,     KC_3,     KC_KP_SLASH,KC_KP_ENTER,  // Enter here, because thumb is occupied
      /*thumb*/ _______,  _______,
@@ -96,7 +96,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 
   [L_MOUSE] = LAYOUT_uqs(
      KC_NO,    _______,  _______,  _______,  _______,  _______,
-     KC_NO,    KC_NO,    KC_BTN3,  KC_BTN2,  KC_BTN1,  KC_VOLU,
+     KC_NO,    KC_NO,    KC_BTN2,  KC_BTN3,  KC_BTN1,  KC_VOLU,
      KC_NO,    KC_NO,    KC_ACL0,  KC_ACL1,  KC_ACL2,  KC_VOLD,
      KC_NO,    KC_NO,    KC_NO,    KC_NO,    KC_NO,    KC_MUTE,
      /*thumb*/ _______,  _______,

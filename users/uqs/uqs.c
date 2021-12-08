@@ -1,6 +1,6 @@
 // vi:et sw=4:
 
-#include <tmk_core/common/wait.h>
+#include <wait.h>
 #include "uqs.h"
 
 // LOG:
@@ -18,6 +18,7 @@
 // early September, 57wpm/97% on MT; 58wpm/97% on typeracer;
 // early October, 59wpm/96% on MT; 61wpm/97% on typeracer;
 // November, 56wpm/97% on MT; 62wpm/98% on typeracer;
+// December, 62wpm/96% on MT; 66wpm/98% on typeracer;
 
 
 #ifdef RGBLIGHT_LAYERS
@@ -283,16 +284,8 @@ void maybe_send_umlaut(uint16_t keycode, bool *is_pressed) {
 bool process_record_user(uint16_t keycode, keyrecord_t *record) {
     // TODO: why not use key_timer here? is it dynamic or not?
     static uint16_t extd_layer_timer;
-    uint8_t mod_state = get_mods();
     if (layer_state_is(L_EXTD) && record->event.pressed) {
         extd_layer_was_used = true;
-#if 0
-        // immediately let go of WIN to have proper and regular use of the layer.
-        unregister_mods(MOD_BIT(KC_LWIN));
-        // never triggered Win+MSWheel under Linux, but FreeBSD seems to need a
-        // bit more time to let go of the modifier.
-        wait_ms(10);
-#endif
     }
     if (layer_state_is(L_NUM) && record->event.pressed) {
         num_layer_was_used = true;
@@ -385,31 +378,6 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
             // NOTE: Custom LT method so that any press of a key on that layer will prevent the backspace.
             if (timer_elapsed(extd_layer_timer) < TAPPING_TERM && !num_layer_was_used) {
                 tap_code(KC_BSPC);
-            }
-        }
-        return true;
-    case LT_NUM_BSPC_DEL:
-        if (record->event.pressed){
-            num_layer_was_used = false;
-            extd_layer_timer = timer_read();
-            layer_on(L_NUM);
-        } else {
-            layer_off(L_NUM);
-            // BUG: this will fire a backspace, even if I pressed something on the num layer, in which case of course that was intended and not sending backspace or delete. Need to check how layer tap is implemented.
-            if (timer_elapsed(extd_layer_timer) < TAPPING_TERM && !num_layer_was_used) {
-                if (mod_state & MOD_MASK_SHIFT) {
-                    uint8_t which_shift = mod_state & MOD_MASK_SHIFT;
-                    if (!(mod_state & MOD_BIT(KC_LSHIFT)) != !(mod_state & MOD_BIT(KC_RSHIFT))) {
-                        unregister_mods(MOD_MASK_SHIFT);
-                        tap_code(KC_DEL);
-                        register_mods(which_shift);
-                    } else {
-                        tap_code(KC_DEL);
-                    }
-                    //return false;  // stop processing
-                } else {
-                    tap_code(KC_BSPC);
-                }
             }
         }
         return true;

@@ -86,6 +86,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
                          KC_NO,    KC_NO,
      /*thumb*/ LT_FUNC_SHIFT_INS, KC_ENT, LT_NUM_BSPC,
       /*aux*/  KC_LEAD,  KC_RALT,  KC_APP
+  ),
 // NOTE: RSFT_T(KC_S_INS) doesn't work, only INS comes through. RSFT_T stuff
 // only works on "simple" keycodes. See process_record_user for how this works,
 // thanks to ridingqwerty on Discord.
@@ -93,45 +94,9 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 // Qt apps! Also Chrome makes it copy from Clipboard, not Selection, like XTerm
 // does. Wargh), does nothing on Windows though, where Shift-Ins works.
 //
-// Some people do: NavL | Bspc/Shft | Enter/Fkeys | | Esc | Spc/SymbL | empty
-// but sometimes you have to hold enter or space? or what about shift-enter? hmmm
-// Needs more thinking, there's 3 useful/quick thumb keys after all, would have
-// to move shift-ins stuff someplace else.
-// More thoughts: "I have Shift-Enter on the left big thumb, and Shift-Space on
-// the right. To the left of the left big thumb is LT1-Del and to the right of
-// the right big thumb is LT1-Bspc. My other two outermost thumb keys are
-// Win/Sys on the left and Alt on the right. My LT2 is actually on a pinky,
-// along with CTRL. I have thought about moving CTRL to one of the big thumbs
-// but I like having shift on both."
-
-
-/*
- * My take on thumb keys:
- * tappable: tab, ent, del, bkspc, esc, shift-ins, space, AltGr, Leader
- * holdable: shift, L1, L2 (also, alt, ctrl, win)
- * sometimes holdable: ent, del, bkspc
- *
- * right side: ent, bkpsc, del, shift-ins, altgr
- * left side:  space, esc, tab, ctrl/alt/win
- *
- * Here's what I'll likely do, esp with a Kyria:
- *        L1/Esc  Space  Win  ||  AltGr     Enter  L2/Bksp
- *   L1:                      || Shift-Ins            Bksp
- *   L2: no change, need Space/Tab during L2
- * with home row mods.
- * Win on home mod is annoying as I use it for dragging windows and I need to
- * hold-and-delay for several hundreds ms before it registers :/
- *
- * Update: I moved Win off the home row, to get ä/ö on them with long presses.
- * TODO: Produce a proper Hyper key (as in xmodmap, not QMK!) and use window
- * movement in Openbox with that.
- */
-  ),
 
   // Updated with inspiration from https://forum.colemak.com/topic/2014-extend-extra-extreme/
   // I like the AltGr trick from https://stevep99.github.io/seniply/ and should probably incorporate some stuff from it.
-// Back to plain OSM for that one, to see if it works with KC_BTN1
-//#define OSM_CTL OSM(MOD_LCTL)
   [L_EXTD] = LAYOUT_uqs(
      _______,  _______,  _______,  _______,  _______,  _______,
      _______,  KC_BTN1,  KC_SCTAB, KC_PGUP,  KC_CTAB,  KC_LEAD,
@@ -151,10 +116,8 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
                /* ^^^^ use these */
   ),
 
-  // Num/Symbol. This works somehow without turning on Numlock first. I've not
-  // managed to get Alt-codes working under Windows though, might be an
-  // artefact of using US Intl (nope, I'm using USCmpse custom layout)?
-  // TODO: maybe swap # with ;, that way I can roll :w or :wq which I need often ...
+  // TODO: maybe swap # with ;, that way I can roll :w or :wq which I need
+  // often ... probably better to add a combo?
   [L_NUM] = LAYOUT_uqs(
      _______,  KC_NO,    KC_NO,    KC_NO,    KC_NO,    KC_NO,
      _______,  KC_EXLM,  KC_AT,    KC_HASH,  KC_DLR,   KC_PERC,
@@ -194,12 +157,11 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
   ),
 
   [L_MOUSE] = LAYOUT_uqs(
-     RGB_TOG,  _______,  _______,  _______,  _______,  _______,
-     RGB_MOD,  RGB_HUI,  KC_BTN3,  KC_BTN2,  KC_BTN1,  KC_VOLU,
-     RGB_RMOD, RGB_HUD,  KC_ACL0,  KC_ACL1,  KC_ACL2,  KC_VOLD,
-     /* Plain, Breath, Rainbow, Swirl, Snake, KnightRider, Xmas, Gradient */
-     RGB_M_P,  RGB_M_B,  RGB_M_R,  RGB_M_SW, RGB_M_SN, KC_MUTE,
-                         RGB_M_X,  RGB_M_G,
+     _______,  _______,  _______,  _______,  _______,  _______,
+     _______,  KC_NO,    KC_BTN2,  KC_BTN3,  KC_BTN1,  KC_VOLU,
+     _______,  KC_NO,    KC_ACL0,  KC_ACL1,  KC_ACL2,  KC_VOLD,
+     _______,  KC_NO,    KC_NO,    KC_NO,    KC_NO,    KC_MUTE,
+                         KC_NO,    KC_NO,
      /*thumb*/ _______,  _______,  _______,
       /*aux*/  _______,  _______,  _______,
                /* ^^^^ can't be used */
@@ -207,9 +169,9 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
      _______,  _______,  KC_MS_UP, MS_WHUP,  _______,  _______,
      MS_WHLEFT,KC_MS_L,  KC_MS_D,  KC_MS_R,  MS_WHRGHT,_______,
      _______,  MS_WHDN,  KC_BTN3,  KC_BTN4,  KC_BTN5,  _______,
-                         _______,  _______,
-     /*thumb*/ KC_BRIU,  KC_BTN1,  KC_BTN2,
-      /*aux*/  RGB_VAI,  RGB_VAD,  KC_BRID
+                         KC_NO,    KC_NO,
+     /*thumb*/ KC_NO,    KC_BTN1,  KC_BTN2,
+      /*aux*/  _______,  _______,  _______
                /* use these ^^^^ */
   ),
 };
