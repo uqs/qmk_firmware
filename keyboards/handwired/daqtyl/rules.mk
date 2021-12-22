@@ -1,11 +1,7 @@
 # MCU name
-MCU  = cortex-m4
-MCU_FAMILY = MIMXRT1062
-MCU_SERIES = MIMXRT1062
-MCU_LDSCRIPT = MIMXRT1062
-MCU_STARTUP = MIMXRT1062
-BOARD = IC_TEENSY_4_1
-ARMV = 7
+MCU = atmega32u4
+
+BOOTLOADER = atmel-dfu
 
 ## Build Options
 ##   change yes to no to disable
@@ -13,7 +9,7 @@ ARMV = 7
 #BOOTMAGIC_ENABLE = yes      # Enable Bootmagic Lite
 MOUSEKEY_ENABLE = yes       # Mouse keys
 #EXTRAKEY_ENABLE = yes       # Audio control and System control
-#CONSOLE_ENABLE = yes         # Console for debug
+CONSOLE_ENABLE = yes         # Console for debug
 #COMMAND_ENABLE = no         # Commands for debug and configuration
 ## Do not enable SLEEP_LED_ENABLE. it uses the same timer as BACKLIGHT_ENABLE
 #SLEEP_LED_ENABLE = no       # Breathing sleep LED during USB suspend

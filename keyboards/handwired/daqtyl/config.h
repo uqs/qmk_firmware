@@ -41,8 +41,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *                  ROW2COL = ROW = Anode (+), COL = Cathode (-, marked on diode)
  *
  */
-#define MATRIX_ROW_PINS { LINE_PIN3, LINE_PIN4 }
-#define MATRIX_COL_PINS { LINE_PIN19, LINE_PIN20 }
+#define MATRIX_ROW_PINS { D0, D4 }
+#define MATRIX_COL_PINS { D1, C6 }
 #define UNUSED_PINS
 
 /* COL2ROW, ROW2COL */
@@ -57,14 +57,17 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 /* EVQWGD001 encoders are apparently A, B, C, - as seem from the 2 switch pins.
  */
-#define ENCODERS_PAD_A { LINE_PIN16 /*, LINE_PIN14 */ }
-#define ENCODERS_PAD_B { LINE_PIN15 /*, LINE_PIN37 */ }
+#define ENCODERS_PAD_A { F5 /*, LINE_PIN14 */ }
+#define ENCODERS_PAD_B { F6 /*, LINE_PIN37 */ }
 #define ENCODER_RESOLUTION 2
 
 /* PMW3360 sensor(s)
  */
 //#define PMW3360_CS_PIN SPI_SS_PIN //LINE_PIN10
-#define PMW3360_CS_PIN LINE_PIN10
+#define PMW3360_CS_PIN B6
+#define PMW3360_CS_PIN2 B6
+#define PMW3360_CS_PINS { B5, B6 }
+#define POINTING_DEVICE_INVERT_Y
 
 #define PERMISSIVE_HOLD
 #define IGNORE_MOD_TAP_INTERRUPT
