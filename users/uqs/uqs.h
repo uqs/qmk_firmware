@@ -32,8 +32,8 @@ enum custom_keycodes {
     MINS_UNDSCR,  // obsoleted by combos, remove this!
     TM_NEXT,
     TM_PREV,
-    WIN_NEXT,
-    WIN_PREV,
+    VIM_NEXT,
+    VIM_PREV,
     WIN_LEFT,
     WIN_RGHT,
     WIN_UP,
