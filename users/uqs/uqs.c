@@ -498,6 +498,7 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
         return true;  // fall through to regular handling
         break;
 #endif
+    // Obsoleted by using combos for umlauts now.
     case KC_A_AE:
         if (record->event.pressed) {
             key_timer = timer_read();
@@ -540,12 +541,14 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
             tap_code16(KC_TAB);
         }
         break;
+/* no longer needed, will work fine with Shift+ALT_TAB
     case ALT_STAB:
         if (record->event.pressed) {
             register_mods(MOD_BIT(KC_LALT));
             tap_code16(LSFT(KC_TAB));
         }
         break;
+*/
     case INS_HARD:
         // Do Alt-Shift-Ins first to have xdotool copy from SELECTION to CLIPBOARD, then Shift-Ins to paste.
         if (record->event.pressed) {
@@ -590,17 +593,22 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
             tap_code16(LSFT(KC_QUOT));
         }
         break;
+/*
+ * Obsoleted by making tmux understand Ctrl-Pgup/down natively.
     case TM_NEXT:
         if (record->event.pressed) SEND_STRING(SS_LCTRL("a") "n");
         break;
     case TM_PREV:
         if (record->event.pressed) SEND_STRING(SS_LCTRL("a") "p");
         break;
-    case WIN_NEXT:
-        if (record->event.pressed) SEND_STRING(SS_LCTRL("w") "w");
+*/
+        // TODO use overrides to turn, e.g. Win+Ctrl-Tab into something that switches vim tabs left and right
+        // Probably should use Alt-Pgup/down inside vim ...
+    case VIM_NEXT:
+        if (record->event.pressed) SEND_STRING(SS_LCTRL("a") "n");
         break;
-    case WIN_PREV:
-        if (record->event.pressed) SEND_STRING(SS_LCTRL("w") "W");
+    case VIM_PREV:
+        if (record->event.pressed) SEND_STRING(SS_LCTRL("a") "p");
         break;
     case WIN_LEFT:
         if (record->event.pressed) SEND_STRING(SS_LCTRL("w") SS_TAP(X_H));
