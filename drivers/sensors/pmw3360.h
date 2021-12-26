@@ -52,8 +52,13 @@
 #    define ROTATIONAL_TRANSFORM_ANGLE 0x00
 #endif
 
+// XXX this doesn't pick up the define in keyboards/handwired/daqtyl/config.h, why?
+#ifndef PMW3360_CS_PINS
 #ifndef PMW3360_CS_PIN
-#    error "No chip select pin defined -- missing PMW3360_CS_PIN"
+#    error "No chip select pin defined -- missing PMW3360_CS_PIN or PMW3360_CS_PINS"
+#else
+#define PMW3360_CS_PINS { PMW3360_CS_PIN }
+#endif
 #endif
 
 /*
@@ -77,9 +82,11 @@ typedef struct {
     int8_t  mdy;
 } report_pmw3360_t;
 
+// TODO separate internal report from what we return to quantum/pointing_device_drivers.c to save space.
+
 bool             pmw3360_init(void);
-void             pmw3360_upload_firmware(void);
-bool             pmw3360_check_signature(void);
+void             pmw3360_upload_firmware(pin_t pin);
+bool             pmw3360_check_signature(pin_t pin);
 uint16_t         pmw3360_get_cpi(void);
 void             pmw3360_set_cpi(uint16_t cpi);
 /* Reads and clears the current delta values on the sensor */
