@@ -1,5 +1,5 @@
 /*
-Copyright 2021 Ulrich Spörlein
+Copyright 2022 Ulrich Spörlein
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -53,7 +53,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * algorithm, this debounce latency only affects key releases (not key
  * presses). */
 #undef DEBOUNCE
-#define DEBOUNCE 20
+#define DEBOUNCE 10
 
 /* EVQWGD001 encoders are apparently A, B, C, - as seem from the 2 switch pins.
  */
@@ -63,11 +63,14 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 /* PMW3360 sensor(s)
  */
-//#define PMW3360_CS_PIN SPI_SS_PIN //LINE_PIN10
-#define PMW3360_CS_PIN B6
-#define PMW3360_CS_PIN2 B6
+//#define PMW3360_CS_PIN B5
 #define PMW3360_CS_PINS { B5, B6 }
-#define POINTING_DEVICE_INVERT_Y
+// global defs
+//#define POINTING_DEVICE_INVERT_X
+//#define ROTATIONAL_TRANSFORM_ANGLE 90
+// per sensor defs
+#define POINTING_DEVICE_ROTATION_pwm3360 { 90, 180 }
+#define POINTING_DEVICE_INVERT_pwm3360 { { true, false }, {false, true } }
 
 #define PERMISSIVE_HOLD
 #define IGNORE_MOD_TAP_INTERRUPT
@@ -82,12 +85,3 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 // Reduce input latency by lowering the USB polling interval
 // from its 10ms default to the 125μs minimum that USB 2.x (High Speed) allows:
 #define USB_POLLING_INTERVAL_MS 1
-
-/* We use the i.MX RT1060 high-speed GPIOs (GPIO6-9) which are connected to the
- * AHB bus (AHB_CLK_ROOT), which runs at the same speed as the ARM Core Clock,
- * i.e. 600 MHz. See MIMXRT1062, page 949, 12.1 Chip-specific GPIO information.
- * No additional delay is necessary. */
-
-// in clock cycles
-#define GPIO_INPUT_PIN_DELAY 0
-

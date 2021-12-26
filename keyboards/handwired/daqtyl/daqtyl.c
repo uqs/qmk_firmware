@@ -1,4 +1,4 @@
-/* Copyright 2021 Ulrich Spörlein
+/* Copyright 2022 Ulrich Spörlein
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,7 +19,11 @@
 #ifdef POINTING_DEVICE_ENABLE
 void pointing_device_init_kb(void) {
     //pointing_device_init_user();
-    pointing_device_set_cpi(255);
+    pointing_device_set_cpi(1000);
+    debug_enable = true;
+    debug_matrix = true;
+    debug_mouse = true;
+    //debug_encoder = true;
 }
 
 //report_mouse_t pointing_device_task_kb(report_mouse_t mouse_report) {
