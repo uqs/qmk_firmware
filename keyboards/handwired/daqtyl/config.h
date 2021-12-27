@@ -69,8 +69,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //#define POINTING_DEVICE_INVERT_X
 //#define ROTATIONAL_TRANSFORM_ANGLE 90
 // per sensor defs
-#define POINTING_DEVICE_ROTATION_pwm3360 { 90, 180 }
-#define POINTING_DEVICE_INVERT_pwm3360 { { true, false }, {false, true } }
+#define POINTING_DEVICE_ROTATION_pwm3360 { 90, 270 }
+#define POINTING_DEVICE_INVERT_XY_pwm3360 { { true, false }, { true, false } }
 
 #define PERMISSIVE_HOLD
 #define IGNORE_MOD_TAP_INTERRUPT

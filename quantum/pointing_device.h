@@ -72,6 +72,13 @@ typedef enum {
     POINTING_DEVICE_BUTTON8,
 } pointing_device_buttons_t;
 
+typedef enum {
+    POINTING_DEVICE_ROTATION_0   = 0,
+    POINTING_DEVICE_ROTATION_90  = 1,
+    POINTING_DEVICE_ROTATION_180 = 2,
+    POINTING_DEVICE_ROTATION_270 = 3,  // POINTING_DEVICE_ROTATION_90 | POINTING_DEVICE_ROTATION_270
+} pointing_device_rotation_t;
+
 void           pointing_device_init(void);
 void           pointing_device_task(void);
 void           pointing_device_send(void);
