@@ -260,12 +260,33 @@ void pmw3360_set_cpi(uint16_t cpi) {
     }
 }
 
+static int16_t convertDeltaToInt(uint8_t high, uint8_t low) {
+    // join bytes into twos compliment
+    uint16_t twos_comp = (high << 8) | low;
+
+    // convert twos comp to int
+    if (twos_comp & 0x8000) return -1 * (~twos_comp + 1);
+
+    return twos_comp;
+}
+
+static int16_t signed_sat_add16(int16_t a, int16_t b) {
+    int16_t res;
+    bool overflow = __builtin_add_overflow(a, b, &res);
+    if (overflow) {
+        // if b was positive, this will return INT16_MAX, if b was negative,
+        // it'll slap its negative sign bit onto INT16_MAX, returning
+        // INT16_MIN.
+        return ((uint16_t)b >> 15) + INT16_MAX;
+    }
+    return res;
+}
+
 report_pmw3360_t pmw3360_read_burst(void) {
     report_pmw3360_t report = {0};
 
     for (size_t i=0; i<NUMBER_OF_SENSORS; i++) {
         const pin_t pin = pins[i];
-        report_pmw3360_t sensor_report = {0};
         if (!_inBurst[i]) {
 #ifdef CONSOLE_ENABLE
             dprintf("burst on");
@@ -278,69 +299,79 @@ report_pmw3360_t pmw3360_read_burst(void) {
         spi_write(REG_Motion_Burst);
         wait_us(35);  // waits for tSRAD_MOTBR
 
-        sensor_report.motion = spi_read();
+        uint8_t motion = spi_read();
         spi_read();  // skip Observation
-        sensor_report.dx  = spi_read();
-        sensor_report.mdx = spi_read();
-        sensor_report.dy  = spi_read();
-        sensor_report.mdy = spi_read();
+        // delta registers
+        uint8_t delta_x_l = spi_read();
+        uint8_t delta_x_h = spi_read();
+        uint8_t delta_y_l = spi_read();
+        uint8_t delta_y_h = spi_read();
 
         spi_stop();
 
 #ifdef CONSOLE_ENABLE
         if (debug_mouse) {
             dprintf("sensor %d: ", i);
-            print_byte(sensor_report.motion);
-            print_byte(sensor_report.dx);
-            print_byte(sensor_report.mdx);
-            print_byte(sensor_report.dy);
-            print_byte(sensor_report.mdy);
+            print_byte(motion);
+            print_byte(delta_x_l);
+            print_byte(delta_x_h);
+            print_byte(delta_y_l);
+            print_byte(delta_y_h);
             dprintf("\n");
         }
 #endif
 
-        if (sensor_report.motion & 0b111) {  // panic recovery, sometimes burst mode works weird.
+        if (motion & 0b111) {  // panic recovery, sometimes burst mode works weird.
             _inBurst[i] = false;
         }
 
-        sensor_report.isMotion    = (sensor_report.motion & 0x80) != 0;
-        sensor_report.isOnSurface = (sensor_report.motion & 0x08) == 0;
-        sensor_report.dx |= (sensor_report.mdx << 8);
-        sensor_report.dx = sensor_report.dx * -1;
-        sensor_report.dy |= (sensor_report.mdy << 8);
-        sensor_report.dy = sensor_report.dy * -1;
+        const bool isMotion    = (motion & 0x80) != 0;
+        const bool isOnSurface = (motion & 0x08) == 0;
 
+        if (!isMotion) {
+            continue;
+        }
+
+        int16_t dx, dy;
         // We need to be able to rotate and invert per sensor, so the single global defines won't do.
 #ifdef POINTING_DEVICE_ROTATION_pwm3360
-        const int16_t rotation[] = POINTING_DEVICE_ROTATION_pwm3360;
+        // 16bits for 4 potential combinatins, ugh, use an enum or so.
+        static const int16_t rotation[] = POINTING_DEVICE_ROTATION_pwm3360;
         _Static_assert(NUMBER_OF_SENSORS == sizeof(rotation)/sizeof(rotation[0]));
-        int16_t dx = sensor_report.dx, dy = sensor_report.dy;
         switch (rotation[i]) {
             case 90:
-                sensor_report.dx = dy;
-                sensor_report.dy = -dx;
+                dx = convertDeltaToInt(delta_y_h, delta_y_l);
+                dy = -convertDeltaToInt(delta_x_h, delta_x_l);
+                break;
             case 180:
-                sensor_report.dx = -dx;
-                sensor_report.dy = -dy;
+                dx = -convertDeltaToInt(delta_x_h, delta_x_l);
+                dy = -convertDeltaToInt(delta_y_h, delta_y_l);
+                break;
             case 270:
-                sensor_report.dx = -dy;
-                sensor_report.dy = dx;
+                dx = -convertDeltaToInt(delta_y_h, delta_y_l);
+                dy = convertDeltaToInt(delta_x_h, delta_x_l);
+                break;
+            default:
+                dx = convertDeltaToInt(delta_x_h, delta_x_l);
+                dy = convertDeltaToInt(delta_y_h, delta_y_l);
         }
+#else
+        dx = convertDeltaToInt(delta_x_h, delta_x_l);
+        dy = convertDeltaToInt(delta_y_h, delta_y_l);
 #endif
 #ifdef POINTING_DEVICE_INVERT_pwm3360
-        const bool invert[][2] = POINTING_DEVICE_INVERT_pwm3360;
+        static const bool invert[][2] = POINTING_DEVICE_INVERT_pwm3360;
         _Static_assert(NUMBER_OF_SENSORS == sizeof(invert)/sizeof(invert[0]));
         if (invert[i][0])
-                sensor_report.dx = -sensor_report.dx;
+                dx = -dx;
         if (invert[i][1])
-                sensor_report.dy = -sensor_report.dy;
+                dy = -dy;
 #endif
 
-        // XXX how to handle overflow?
-        report.isMotion |= sensor_report.isMotion;
-        report.isOnSurface |= sensor_report.isOnSurface;
-        report.dx += sensor_report.dx;
-        report.dy += sensor_report.dy;
+        report.isMotion |= isMotion;
+        report.isOnSurface |= isOnSurface;
+        report.dx = signed_sat_add16(report.dx, dx);
+        report.dy = signed_sat_add16(report.dy, dy);
     }
 
     return report;

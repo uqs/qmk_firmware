@@ -73,16 +73,11 @@ This should work for the 3390 and 3391 too, in theory.
 #endif
 
 typedef struct {
-    int8_t  motion;
     bool    isMotion;     // True if a motion is detected.
     bool    isOnSurface;  // True when a chip is on a surface
-    int16_t dx;           // displacement on x directions. Unit: Count. (CPI * Count = Inch value)
-    int8_t  mdx;
+    int16_t dx;  // displacement on x directions. Unit: Count. (CPI * Count = Inch value)
     int16_t dy;  // displacement on y directions.
-    int8_t  mdy;
 } report_pmw3360_t;
-
-// TODO separate internal report from what we return to quantum/pointing_device_drivers.c to save space.
 
 bool             pmw3360_init(void);
 void             pmw3360_upload_firmware(pin_t pin);
