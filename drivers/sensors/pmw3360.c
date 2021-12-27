@@ -149,6 +149,9 @@ uint8_t pmw3360_read(pin_t pin, uint8_t reg_addr) {
 bool pmw3360_init(void) {
     bool init_success = true;
 
+    static const int16_t rotation[] = POINTING_DEVICE_ROTATION_pwm3360;
+    _Static_assert(NUMBER_OF_SENSORS == sizeof(rotation)/sizeof(rotation[0]));
+
     spi_init();
     for (size_t i=0; i<NUMBER_OF_SENSORS; i++) {
         const pin_t pin = pins[i];
@@ -185,7 +188,20 @@ bool pmw3360_init(void) {
 
         wait_ms(1);
 
-        // XXX write the 90/180/270 degree angle to REG_Control??
+        // write the 90/180/270 degree angle to REG_Control
+        int8_t rot = 0;
+        switch (rotation[i]) {
+            case 90:
+                rot = 0b11000000;
+                break;
+            case 180:
+                rot = 0b01100000;
+                break;
+            case 270:
+                rot = 0b10100000;
+                break;
+        }
+        pmw3360_write(pin, REG_Control, rot);
 
         // XXX data sheet only shows from -30 deg to 30deg, using values 0xe2 for -30, 0x00 for 0, 0x1e for +30
         pmw3360_write(pin, REG_Angle_Tune, constrain(ROTATIONAL_TRANSFORM_ANGLE, -127, 127));
@@ -334,7 +350,7 @@ report_pmw3360_t pmw3360_read_burst(void) {
 
         int16_t dx, dy;
         // We need to be able to rotate and invert per sensor, so the single global defines won't do.
-#ifdef POINTING_DEVICE_ROTATION_pwm3360
+#ifdef POINTING_DEVICE_ROTATION_pwm3360_XXX
         // 16bits for 4 potential combinatins, ugh, use an enum or so.
         static const int16_t rotation[] = POINTING_DEVICE_ROTATION_pwm3360;
         _Static_assert(NUMBER_OF_SENSORS == sizeof(rotation)/sizeof(rotation[0]));
@@ -359,8 +375,8 @@ report_pmw3360_t pmw3360_read_burst(void) {
         dx = convertDeltaToInt(delta_x_h, delta_x_l);
         dy = convertDeltaToInt(delta_y_h, delta_y_l);
 #endif
-#ifdef POINTING_DEVICE_INVERT_pwm3360
-        static const bool invert[][2] = POINTING_DEVICE_INVERT_pwm3360;
+#ifdef POINTING_DEVICE_INVERT_XY_pwm3360
+        static const bool invert[][2] = POINTING_DEVICE_INVERT_XY_pwm3360;
         _Static_assert(NUMBER_OF_SENSORS == sizeof(invert)/sizeof(invert[0]));
         if (invert[i][0])
                 dx = -dx;
