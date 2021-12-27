@@ -79,8 +79,12 @@
 #define CPI_STEP          100
 // clang-format on
 
+// limits to 0--119, resulting in a CPI range of 100 -- 12000 (as only steps of 100 are possible).
+// Note that for the PMW3389DM chip, the step size is 50 and supported range is
+// up to 16000. The datasheet does not indicate the minimum CPI though, neither
+// whether this uses 2 bytes (as 16000/50 == 320)
 #ifndef MAX_CPI
-#    define MAX_CPI 0x77  // limits to 0--119, should be max cpi/100
+#    define MAX_CPI 0x77
 #endif
 
 static const pin_t pins[] = PMW3360_CS_PINS;
@@ -95,6 +99,7 @@ void print_byte(uint8_t byte) { dprintf("%c%c%c%c%c%c%c%c|", (byte & 0x80 ? '1' 
 
 bool pmw3360_spi_start(pin_t pin) {
     bool status = spi_start(pin, PMW3360_SPI_LSBFIRST, PMW3360_SPI_MODE, PMW3360_SPI_DIVISOR);
+    // tNCS-SCLK, 120ns
     wait_us(1);
     return status;
 }
@@ -115,12 +120,12 @@ spi_status_t pmw3360_write(pin_t pin, uint8_t reg_addr, uint8_t data) {
     spi_status_t status = spi_write(reg_addr | 0x80);
     status              = spi_write(data);
 
-    // tSCLK-NCS for write operation
-    wait_us(20);
-
-    // tSWW/tSWR (=120us) minus tSCLK-NCS. Could be shortened, but is looks like a safe lower bound
-    wait_us(100);
+    // tSCLK-NCS for write operation is 35us
+    wait_us(35);
     spi_stop();
+
+    // tSWW/tSWR (=180us) minus tSCLK-NCS. Could be shortened, but is looks like a safe lower bound
+    wait_us(145);
     return status;
 }
 
@@ -128,26 +133,26 @@ uint8_t pmw3360_read(pin_t pin, uint8_t reg_addr) {
     pmw3360_spi_start(pin);
     // send adress of the register, with MSBit = 0 to indicate it's a read
     spi_write(reg_addr & 0x7f);
+    // tSRAD (=160us)
+    wait_us(160);
     uint8_t data = spi_read();
 
     // tSCLK-NCS for read operation is 120ns
     wait_us(1);
+    spi_stop();
 
     //  tSRW/tSRR (=20us) minus tSCLK-NCS
     wait_us(19);
-
-    spi_stop();
     return data;
 }
 
 bool pmw3360_init(void) {
     bool init_success = true;
 
+    spi_init();
     for (size_t i=0; i<NUMBER_OF_SENSORS; i++) {
         const pin_t pin = pins[i];
         setPinOutput(pin);
-
-        spi_init();
 
         spi_stop();
         pmw3360_spi_start(pin);
@@ -160,8 +165,7 @@ bool pmw3360_init(void) {
         wait_us(40);
         spi_stop();
         wait_us(40);
-
-        // reboot
+        // power up, need to first drive NCS high then low, see above.
         pmw3360_write(pin, REG_Power_Up_Reset, 0x5a);
         wait_ms(50);
 
@@ -181,8 +185,9 @@ bool pmw3360_init(void) {
 
         wait_ms(1);
 
-        pmw3360_write(pin, REG_Config2, 0x00);
+        // XXX write the 90/180/270 degree angle to REG_Control??
 
+        // XXX data sheet only shows from -30 deg to 30deg, using values 0xe2 for -30, 0x00 for 0, 0x1e for +30
         pmw3360_write(pin, REG_Angle_Tune, constrain(ROTATIONAL_TRANSFORM_ANGLE, -127, 127));
 
         pmw3360_write(pin, REG_Lift_Config, PMW3360_LIFTOFF_DISTANCE);
@@ -203,6 +208,9 @@ bool pmw3360_init(void) {
 }
 
 void pmw3360_upload_firmware(pin_t pin) {
+    // Datasheet claims we need to disable REST mode first, but during startup
+    // it's already disabled and we're not turning it on ...
+    //pmw3360_write(pin, REG_Config2, 0x00);  // disable REST mode
     pmw3360_write(pin, REG_SROM_Enable, 0x1d);
 
     wait_ms(10);
@@ -268,10 +276,10 @@ report_pmw3360_t pmw3360_read_burst(void) {
 
         pmw3360_spi_start(pin);
         spi_write(REG_Motion_Burst);
-        wait_us(35);  // waits for tSRAD
+        wait_us(35);  // waits for tSRAD_MOTBR
 
         sensor_report.motion = spi_read();
-        spi_write(0x00);  // skip Observation
+        spi_read();  // skip Observation
         sensor_report.dx  = spi_read();
         sensor_report.mdx = spi_read();
         sensor_report.dy  = spi_read();
@@ -290,6 +298,10 @@ report_pmw3360_t pmw3360_read_burst(void) {
             dprintf("\n");
         }
 #endif
+
+        if (sensor_report.motion & 0b111) {  // panic recovery, sometimes burst mode works weird.
+            _inBurst[i] = false;
+        }
 
         sensor_report.isMotion    = (sensor_report.motion & 0x80) != 0;
         sensor_report.isOnSurface = (sensor_report.motion & 0x08) == 0;
@@ -315,8 +327,6 @@ report_pmw3360_t pmw3360_read_burst(void) {
                 sensor_report.dy = dx;
         }
 #endif
-        // TODO: use int8_t to save stack space (allows coalescing with the above maybe?)
-        // or have users specify it like: { { .x = true, .y = false }, {...} } ??
 #ifdef POINTING_DEVICE_INVERT_pwm3360
         const bool invert[][2] = POINTING_DEVICE_INVERT_pwm3360;
         _Static_assert(NUMBER_OF_SENSORS == sizeof(invert)/sizeof(invert[0]));
@@ -331,10 +341,6 @@ report_pmw3360_t pmw3360_read_burst(void) {
         report.isOnSurface |= sensor_report.isOnSurface;
         report.dx += sensor_report.dx;
         report.dy += sensor_report.dy;
-
-        if (sensor_report.motion & 0b111) {  // panic recovery, sometimes burst mode works weird.
-            _inBurst[i] = false;
-        }
     }
 
     return report;
