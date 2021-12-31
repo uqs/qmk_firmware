@@ -79,10 +79,10 @@ typedef struct {
     int16_t dy;  // displacement on y directions.
 } report_pmw3360_t;
 
-bool             pmw3360_init(void);
-void             pmw3360_upload_firmware(pin_t pin);
-bool             pmw3360_check_signature(pin_t pin);
+bool             pmw3360_init(int8_t index);
+void             pmw3360_upload_firmware(int8_t index);
+bool             pmw3360_check_signature(int8_t index);
 uint16_t         pmw3360_get_cpi(void);
 void             pmw3360_set_cpi(uint16_t cpi);
 /* Reads and clears the current delta values on the sensor */
-report_pmw3360_t pmw3360_read_burst(void);
+report_pmw3360_t pmw3360_read_burst(int8_t index);

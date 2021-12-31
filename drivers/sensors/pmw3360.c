@@ -97,23 +97,18 @@ void print_byte(uint8_t byte) { dprintf("%c%c%c%c%c%c%c%c|", (byte & 0x80 ? '1' 
 #endif
 #define constrain(amt, low, high) ((amt) < (low) ? (low) : ((amt) > (high) ? (high) : (amt)))
 
-bool pmw3360_spi_start(pin_t pin) {
-    bool status = spi_start(pin, PMW3360_SPI_LSBFIRST, PMW3360_SPI_MODE, PMW3360_SPI_DIVISOR);
+bool pmw3360_spi_start(int8_t index) {
+    bool status = spi_start(pins[index], PMW3360_SPI_LSBFIRST, PMW3360_SPI_MODE, PMW3360_SPI_DIVISOR);
     // tNCS-SCLK, 120ns
     wait_us(1);
     return status;
 }
 
-spi_status_t pmw3360_write(pin_t pin, uint8_t reg_addr, uint8_t data) {
-    pmw3360_spi_start(pin);
+spi_status_t pmw3360_write(int8_t index, uint8_t reg_addr, uint8_t data) {
+    pmw3360_spi_start(index);
 
     if (reg_addr != REG_Motion_Burst) {
-        // Search for the proper index to reset, urgs.
-        for (size_t i=0; i<NUMBER_OF_SENSORS; i++) {
-            if (pin == pins[i]) {
-                _inBurst[i] = false;
-            }
-        }
+        _inBurst[index] = false;
     }
 
     // send address of the register, with MSBit = 1 to indicate it's a write
@@ -124,13 +119,13 @@ spi_status_t pmw3360_write(pin_t pin, uint8_t reg_addr, uint8_t data) {
     wait_us(35);
     spi_stop();
 
-    // tSWW/tSWR (=180us) minus tSCLK-NCS. Could be shortened, but is looks like a safe lower bound
+    // tSWW/tSWR (=180us) minus tSCLK-NCS. Could be shortened, but it looks like a safe lower bound
     wait_us(145);
     return status;
 }
 
-uint8_t pmw3360_read(pin_t pin, uint8_t reg_addr) {
-    pmw3360_spi_start(pin);
+uint8_t pmw3360_read(int8_t index, uint8_t reg_addr) {
+    pmw3360_spi_start(index);
     // send adress of the register, with MSBit = 0 to indicate it's a read
     spi_write(reg_addr & 0x7f);
     // tSRAD (=160us)
@@ -146,71 +141,66 @@ uint8_t pmw3360_read(pin_t pin, uint8_t reg_addr) {
     return data;
 }
 
-bool pmw3360_init(void) {
-    bool init_success = true;
-
+bool pmw3360_init(int8_t index) {
     static const int16_t rotation[] = POINTING_DEVICE_ROTATION_pwm3360;
     _Static_assert(NUMBER_OF_SENSORS == sizeof(rotation)/sizeof(rotation[0]));
 
     spi_init();
-    for (size_t i=0; i<NUMBER_OF_SENSORS; i++) {
-        const pin_t pin = pins[i];
-        setPinOutput(pin);
+    //setPinOutput(pins[index]);
 
-        spi_stop();
-        pmw3360_spi_start(pin);
-        spi_stop();
+    //spi_stop();
+    //pmw3360_spi_start(index);
+    //spi_stop();
 
-        pmw3360_write(pin, REG_Shutdown, 0xb6);  // Shutdown first
-        wait_ms(300);
+    //pmw3360_write(index, REG_Shutdown, 0xb6);  // Shutdown first
+    //wait_ms(300);
 
-        pmw3360_spi_start(pin);
-        wait_us(40);
-        spi_stop();
-        wait_us(40);
-        // power up, need to first drive NCS high then low, see above.
-        pmw3360_write(pin, REG_Power_Up_Reset, 0x5a);
-        wait_ms(50);
+    // power up, need to first drive NCS high then low.
+    pmw3360_spi_start(index);
+    wait_us(40);
+    spi_stop();
+    wait_us(40);
+    pmw3360_write(index, REG_Power_Up_Reset, 0x5a);
+    wait_ms(50);
 
-        // read registers and discard
-        pmw3360_read(pin, REG_Motion);
-        pmw3360_read(pin, REG_Delta_X_L);
-        pmw3360_read(pin, REG_Delta_X_H);
-        pmw3360_read(pin, REG_Delta_Y_L);
-        pmw3360_read(pin, REG_Delta_Y_H);
+    // read registers and discard
+    pmw3360_read(index, REG_Motion);
+    pmw3360_read(index, REG_Delta_X_L);
+    pmw3360_read(index, REG_Delta_X_H);
+    pmw3360_read(index, REG_Delta_Y_L);
+    pmw3360_read(index, REG_Delta_Y_H);
 
-        pmw3360_upload_firmware(pin);
+    pmw3360_upload_firmware(index);
 
-        spi_stop();
+    spi_stop();
 
-        wait_ms(10);
-        pmw3360_set_cpi(PMW3360_CPI);
+    wait_ms(10);
+    pmw3360_set_cpi(PMW3360_CPI);
 
-        wait_ms(1);
+    wait_ms(1);
 
-        // write the 90/180/270 degree angle to REG_Control
-        int8_t rot = 0;
-        switch (rotation[i]) {
-            case 90:
-                rot = 0b11000000;
-                break;
-            case 180:
-                rot = 0b01100000;
-                break;
-            case 270:
-                rot = 0b10100000;
-                break;
-        }
-        pmw3360_write(pin, REG_Control, rot);
-
-        // XXX data sheet only shows from -30 deg to 30deg, using values 0xe2 for -30, 0x00 for 0, 0x1e for +30
-        pmw3360_write(pin, REG_Angle_Tune, constrain(ROTATIONAL_TRANSFORM_ANGLE, -127, 127));
-
-        pmw3360_write(pin, REG_Lift_Config, PMW3360_LIFTOFF_DISTANCE);
-
-        init_success &= pmw3360_check_signature(pin);
-        writePinLow(pin);
+    // write the 90/180/270 degree angle to REG_Control
+    int8_t rot = 0;
+    switch (rotation[index]) {
+        case 90:
+            rot = 0b11000000;
+            break;
+        case 180:
+            rot = 0b01100000;
+            break;
+        case 270:
+            rot = 0b10100000;
+            break;
     }
+    pmw3360_write(index, REG_Control, rot);
+
+    // XXX data sheet only shows from -30 deg to 30deg, using values 0xe2 for -30, 0x00 for 0, 0x1e for +30
+    pmw3360_write(index, REG_Angle_Tune, constrain(ROTATIONAL_TRANSFORM_ANGLE, -127, 127));
+
+    pmw3360_write(index, REG_Lift_Config, PMW3360_LIFTOFF_DISTANCE);
+
+    bool init_success = pmw3360_check_signature(index);
+    //writePinLow(pins[index]);
 
 #ifdef CONSOLE_ENABLE
     if (init_success) {
@@ -223,17 +213,17 @@ bool pmw3360_init(void) {
     return init_success;
 }
 
-void pmw3360_upload_firmware(pin_t pin) {
+void pmw3360_upload_firmware(int8_t index) {
     // Datasheet claims we need to disable REST mode first, but during startup
     // it's already disabled and we're not turning it on ...
-    //pmw3360_write(pin, REG_Config2, 0x00);  // disable REST mode
-    pmw3360_write(pin, REG_SROM_Enable, 0x1d);
+    //pmw3360_write(index, REG_Config2, 0x00);  // disable REST mode
+    pmw3360_write(index, REG_SROM_Enable, 0x1d);
 
     wait_ms(10);
 
-    pmw3360_write(pin, REG_SROM_Enable, 0x18);
+    pmw3360_write(index, REG_SROM_Enable, 0x18);
 
-    pmw3360_spi_start(pin);
+    pmw3360_spi_start(index);
     spi_write(REG_SROM_Load_Burst | 0x80);
     wait_us(15);
 
@@ -245,22 +235,22 @@ void pmw3360_upload_firmware(pin_t pin) {
     }
     wait_us(200);
 
-    pmw3360_read(pin, REG_SROM_ID);
-    pmw3360_write(pin, REG_Config2, 0x00);
+    pmw3360_read(index, REG_SROM_ID);
+    pmw3360_write(index, REG_Config2, 0x00);
 }
 
-bool pmw3360_check_signature(pin_t pin) {
-    uint8_t pid      = pmw3360_read(pin, REG_Product_ID);
-    uint8_t iv_pid   = pmw3360_read(pin, REG_Inverse_Product_ID);
-    uint8_t SROM_ver = pmw3360_read(pin, REG_SROM_ID);
+bool pmw3360_check_signature(int8_t index) {
+    uint8_t pid      = pmw3360_read(index, REG_Product_ID);
+    uint8_t iv_pid   = pmw3360_read(index, REG_Inverse_Product_ID);
+    uint8_t SROM_ver = pmw3360_read(index, REG_SROM_ID);
     return (pid == firmware_signature[0] && iv_pid == firmware_signature[1] && SROM_ver == firmware_signature[2]);  // signature for SROM 0x04
 }
 
 uint16_t pmw3360_get_cpi(void) {
-    uint8_t cpival = pmw3360_read(pins[0], REG_Config1);
+    uint8_t cpival = pmw3360_read(0, REG_Config1);
 #ifdef CONSOLE_ENABLE
     for (size_t i=1; i<NUMBER_OF_SENSORS; i++) {
-        uint8_t othercpival = pmw3360_read(pins[i], REG_Config1);
+        uint8_t othercpival = pmw3360_read(i, REG_Config1);
         if (cpival != othercpival) {
             dprintf("pmw3360 cpivals differ: %d vs %d", cpival, othercpival);
         }
@@ -272,7 +262,7 @@ uint16_t pmw3360_get_cpi(void) {
 void pmw3360_set_cpi(uint16_t cpi) {
     uint8_t cpival = constrain((cpi / CPI_STEP) - 1, 0, MAX_CPI);
     for (size_t i=0; i<NUMBER_OF_SENSORS; i++) {
-        pmw3360_write(pins[i], REG_Config1, cpival);
+        pmw3360_write(i, REG_Config1, cpival);
     }
 }
 
@@ -298,97 +288,94 @@ static int16_t signed_sat_add16(int16_t a, int16_t b) {
     return res;
 }
 
-report_pmw3360_t pmw3360_read_burst(void) {
+report_pmw3360_t pmw3360_read_burst(int8_t index) {
     report_pmw3360_t report = {0};
 
-    for (size_t i=0; i<NUMBER_OF_SENSORS; i++) {
-        const pin_t pin = pins[i];
-        if (!_inBurst[i]) {
+    if (!_inBurst[index]) {
 #ifdef CONSOLE_ENABLE
-            dprintf("burst on");
+        dprintf("burst on");
 #endif
-            pmw3360_write(pin, REG_Motion_Burst, 0x00);
-            _inBurst[i] = true;
-        }
+        pmw3360_write(index, REG_Motion_Burst, 0x00);
+        _inBurst[index] = true;
+    }
 
-        pmw3360_spi_start(pin);
-        spi_write(REG_Motion_Burst);
-        wait_us(35);  // waits for tSRAD_MOTBR
+    pmw3360_spi_start(index);
+    spi_write(REG_Motion_Burst);
+    wait_us(35);  // waits for tSRAD_MOTBR
 
-        uint8_t motion = spi_read();
-        spi_read();  // skip Observation
-        // delta registers
-        uint8_t delta_x_l = spi_read();
-        uint8_t delta_x_h = spi_read();
-        uint8_t delta_y_l = spi_read();
-        uint8_t delta_y_h = spi_read();
+    uint8_t motion = spi_read();
+    spi_read();  // skip Observation
+    // delta registers
+    uint8_t delta_x_l = spi_read();
+    uint8_t delta_x_h = spi_read();
+    uint8_t delta_y_l = spi_read();
+    uint8_t delta_y_h = spi_read();
 
-        spi_stop();
+    spi_stop();
 
 #ifdef CONSOLE_ENABLE
-        if (debug_mouse) {
-            dprintf("sensor %d: ", i);
-            print_byte(motion);
-            print_byte(delta_x_l);
-            print_byte(delta_x_h);
-            print_byte(delta_y_l);
-            print_byte(delta_y_h);
-            dprintf("\n");
-        }
+    if (debug_mouse) {
+        dprintf("sensor %d: ", index);
+        print_byte(motion);
+        print_byte(delta_x_l);
+        print_byte(delta_x_h);
+        print_byte(delta_y_l);
+        print_byte(delta_y_h);
+        dprintf("\n");
+    }
 #endif
 
-        if (motion & 0b111) {  // panic recovery, sometimes burst mode works weird.
-            _inBurst[i] = false;
-        }
+    if (motion & 0b111) {  // panic recovery, sometimes burst mode works weird.
+        _inBurst[index] = false;
+    }
 
-        const bool isMotion    = (motion & 0x80) != 0;
-        const bool isOnSurface = (motion & 0x08) == 0;
+    const bool isMotion    = (motion & 0x80) != 0;
+    const bool isOnSurface = (motion & 0x08) == 0;
 
-        if (!isMotion) {
-            continue;
-        }
+    if (!isMotion) {
+        return report;
+    }
 
-        int16_t dx, dy;
-        // We need to be able to rotate and invert per sensor, so the single global defines won't do.
+    int16_t dx, dy;
+    // We need to be able to rotate and invert per sensor, so the single global defines won't do.
 #ifdef POINTING_DEVICE_ROTATION_pwm3360_XXX
-        // 16bits for 4 potential combinatins, ugh, use an enum or so.
-        static const int16_t rotation[] = POINTING_DEVICE_ROTATION_pwm3360;
-        _Static_assert(NUMBER_OF_SENSORS == sizeof(rotation)/sizeof(rotation[0]));
-        switch (rotation[i]) {
-            case 90:
-                dx = convertDeltaToInt(delta_y_h, delta_y_l);
-                dy = -convertDeltaToInt(delta_x_h, delta_x_l);
-                break;
-            case 180:
-                dx = -convertDeltaToInt(delta_x_h, delta_x_l);
-                dy = -convertDeltaToInt(delta_y_h, delta_y_l);
-                break;
-            case 270:
-                dx = -convertDeltaToInt(delta_y_h, delta_y_l);
-                dy = convertDeltaToInt(delta_x_h, delta_x_l);
-                break;
-            default:
-                dx = convertDeltaToInt(delta_x_h, delta_x_l);
-                dy = convertDeltaToInt(delta_y_h, delta_y_l);
-        }
+    // 16bits for 4 potential combinatins, ugh, use an enum or so.
+    static const int16_t rotation[] = POINTING_DEVICE_ROTATION_pwm3360;
+    _Static_assert(NUMBER_OF_SENSORS == sizeof(rotation)/sizeof(rotation[0]));
+    switch (rotation[index]) {
+        case 90:
+            dx = convertDeltaToInt(delta_y_h, delta_y_l);
+            dy = -convertDeltaToInt(delta_x_h, delta_x_l);
+            break;
+        case 180:
+            dx = -convertDeltaToInt(delta_x_h, delta_x_l);
+            dy = -convertDeltaToInt(delta_y_h, delta_y_l);
+            break;
+        case 270:
+            dx = -convertDeltaToInt(delta_y_h, delta_y_l);
+            dy = convertDeltaToInt(delta_x_h, delta_x_l);
+            break;
+        default:
+            dx = convertDeltaToInt(delta_x_h, delta_x_l);
+            dy = convertDeltaToInt(delta_y_h, delta_y_l);
+    }
 #else
-        dx = convertDeltaToInt(delta_x_h, delta_x_l);
-        dy = convertDeltaToInt(delta_y_h, delta_y_l);
+    dx = convertDeltaToInt(delta_x_h, delta_x_l);
+    dy = convertDeltaToInt(delta_y_h, delta_y_l);
 #endif
 #ifdef POINTING_DEVICE_INVERT_XY_pwm3360
-        static const bool invert[][2] = POINTING_DEVICE_INVERT_XY_pwm3360;
-        _Static_assert(NUMBER_OF_SENSORS == sizeof(invert)/sizeof(invert[0]));
-        if (invert[i][0])
-                dx = -dx;
-        if (invert[i][1])
-                dy = -dy;
+    static const bool invert[][2] = POINTING_DEVICE_INVERT_XY_pwm3360;
+    _Static_assert(NUMBER_OF_SENSORS == sizeof(invert)/sizeof(invert[0]));
+    if (invert[index][0])
+        dx = -dx;
+    if (invert[index][1])
+        dy = -dy;
 #endif
 
-        report.isMotion |= isMotion;
-        report.isOnSurface |= isOnSurface;
-        report.dx = signed_sat_add16(report.dx, dx);
-        report.dy = signed_sat_add16(report.dy, dy);
-    }
+    report.isMotion |= isMotion;
+    report.isOnSurface |= isOnSurface;
+    report.dx = signed_sat_add16(report.dx, dx);
+    report.dy = signed_sat_add16(report.dy, dy);
 
     return report;
 }
