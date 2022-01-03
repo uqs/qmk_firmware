@@ -21,6 +21,7 @@
 #include "pmw3360.h"
 #include "wait.h"
 #include "debug.h"
+#include "timer.h"
 #include "print.h"
 #include PMW3360_FIRMWARE_H
 
@@ -93,6 +94,8 @@ static const pin_t pins[] = PMW3360_CS_PINS;
 bool _inBurst[NUMBER_OF_SENSORS] = {0};
 
 #ifdef CONSOLE_ENABLE
+static fast_timer_t init_time;
+
 void print_byte(uint8_t byte) { dprintf("%c%c%c%c%c%c%c%c|", (byte & 0x80 ? '1' : '0'), (byte & 0x40 ? '1' : '0'), (byte & 0x20 ? '1' : '0'), (byte & 0x10 ? '1' : '0'), (byte & 0x08 ? '1' : '0'), (byte & 0x04 ? '1' : '0'), (byte & 0x02 ? '1' : '0'), (byte & 0x01 ? '1' : '0')); }
 #endif
 #define constrain(amt, low, high) ((amt) < (low) ? (low) : ((amt) > (high) ? (high) : (amt)))
@@ -142,20 +145,25 @@ uint8_t pmw3360_read(int8_t index, uint8_t reg_addr) {
 }
 
 bool pmw3360_init(int8_t index) {
-    static const int16_t rotation[] = POINTING_DEVICE_ROTATION_pwm3360;
-    _Static_assert(NUMBER_OF_SENSORS == sizeof(rotation)/sizeof(rotation[0]));
-
+#ifdef CONSOLE_ENABLE
+    init_time = timer_read_fast();
+#endif
     spi_init();
-    //setPinOutput(pins[index]);
 
-    //spi_stop();
-    //pmw3360_spi_start(index);
-    //spi_stop();
+#if 0
+    // with this on, init() takes 469ms, without we're down to 164ms
+    setPinOutput(pins[index]);
 
-    //pmw3360_write(index, REG_Shutdown, 0xb6);  // Shutdown first
-    //wait_ms(300);
+    spi_stop();
+    pmw3360_spi_start(index);
+    spi_stop();
+
+    pmw3360_write(index, REG_Shutdown, 0xb6);  // Shutdown first
+    wait_ms(300);
+#endif
 
     // power up, need to first drive NCS high then low.
+    // the datasheet does not say for how long, 40us works well in practice.
     pmw3360_spi_start(index);
     wait_us(40);
     spi_stop();
@@ -179,6 +187,9 @@ bool pmw3360_init(int8_t index) {
 
     wait_ms(1);
 
+#ifdef POINTING_DEVICE_ROTATION_pwm3360
+    static const int16_t rotation[] = POINTING_DEVICE_ROTATION_pwm3360;
+    _Static_assert(NUMBER_OF_SENSORS == sizeof(rotation)/sizeof(rotation[0]));
     // write the 90/180/270 degree angle to REG_Control
     int8_t rot = 0;
     switch (rotation[index]) {
@@ -193,6 +204,7 @@ bool pmw3360_init(int8_t index) {
             break;
     }
     pmw3360_write(index, REG_Control, rot);
+#endif
 
     // XXX data sheet only shows from -30 deg to 30deg, using values 0xe2 for -30, 0x00 for 0, 0x1e for +30
     pmw3360_write(index, REG_Angle_Tune, constrain(ROTATIONAL_TRANSFORM_ANGLE, -127, 127));
@@ -208,6 +220,7 @@ bool pmw3360_init(int8_t index) {
     } else {
         dprintf("pmw3360 signature(s) verification failed!");
     }
+    init_time = timer_elapsed_fast(init_time);
 #endif
 
     return init_success;
@@ -254,8 +267,8 @@ uint16_t pmw3360_get_cpi(void) {
         if (cpival != othercpival) {
             dprintf("pmw3360 cpivals differ: %d vs %d", cpival, othercpival);
         }
-#endif
     }
+#endif
     return (uint16_t)((cpival + 1) & 0xFF) * CPI_STEP;
 }
 
@@ -293,7 +306,8 @@ report_pmw3360_t pmw3360_read_burst(int8_t index) {
 
     if (!_inBurst[index]) {
 #ifdef CONSOLE_ENABLE
-        dprintf("burst on");
+        //dprintf("burst on\n");
+        dprintf("pmw3360 init took: %d\n", init_time);
 #endif
         pmw3360_write(index, REG_Motion_Burst, 0x00);
         _inBurst[index] = true;
@@ -315,6 +329,7 @@ report_pmw3360_t pmw3360_read_burst(int8_t index) {
 
 #ifdef CONSOLE_ENABLE
     if (debug_mouse) {
+        /*
         dprintf("sensor %d: ", index);
         print_byte(motion);
         print_byte(delta_x_l);
@@ -322,6 +337,7 @@ report_pmw3360_t pmw3360_read_burst(int8_t index) {
         print_byte(delta_y_l);
         print_byte(delta_y_h);
         dprintf("\n");
+        */
     }
 #endif
 

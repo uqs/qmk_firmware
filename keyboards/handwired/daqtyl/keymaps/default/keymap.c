@@ -40,10 +40,23 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 };
 
 bool encoder_update_user(uint8_t index, bool clockwise) {
+    static const uint16_t us_per_tick = 64 / (F_CPU/1000000);
     if (index == 0) { /* First encoder */
         if (clockwise) {
+#ifdef CONSOLE_ENABLE
+            uint16_t tcnt1 = TCNT3;
+            pointing_device_set_cpi(100);
+            uint16_t tcnt2 = TCNT3;
+            dprintf("set_cpi took: %u ticks which is %u us\n", tcnt2-tcnt1, us_per_tick*(tcnt2-tcnt1));
+#endif
             tap_code(KC_P);
         } else {
+#ifdef CONSOLE_ENABLE
+            uint16_t tcnt1 = TCNT3;
+            uint16_t cpi = pointing_device_get_cpi();
+            uint16_t tcnt2 = TCNT3;
+            dprintf("get_cpi took: %u ticks which is %u us: cpi is %u\n", tcnt2-tcnt1, us_per_tick*(tcnt2-tcnt1), cpi);
+#endif
             tap_code(KC_U);
         }
     } else if (index == 1) { /* Second encoder */
