@@ -19,6 +19,7 @@
 // early October, 59wpm/96% on MT; 61wpm/97% on typeracer;
 // November, 56wpm/97% on MT; 62wpm/98% on typeracer;
 // December, 62wpm/96% on MT; 66wpm/98% on typeracer;
+// January, 61wpm/97% on MT; 65wpm/98% on typeracer;
 
 
 #ifdef RGBLIGHT_LAYERS
