@@ -307,7 +307,7 @@ report_pmw3360_t pmw3360_read_burst(int8_t index) {
     if (!_inBurst[index]) {
 #ifdef CONSOLE_ENABLE
         //dprintf("burst on\n");
-        dprintf("pmw3360 init took: %d\n", init_time);
+        //dprintf("pmw3360 init took: %d\n", init_time);
 #endif
         pmw3360_write(index, REG_Motion_Burst, 0x00);
         _inBurst[index] = true;

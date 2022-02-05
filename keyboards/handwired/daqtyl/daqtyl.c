@@ -18,19 +18,11 @@
 #include "pointing_device.h"
 #include "drivers/sensors/pmw3360.h"
 
-#ifdef POINTING_DEVICE_ENABLE
-void pointing_device_init_kb(void) {
-    pmw3360_init(1);
-    pointing_device_set_cpi(800);
-
-    pointing_device_init_user();
-}
-
 void keyboard_post_init_user(void) {
   // Customise these values to desired behaviour
   debug_enable=true;
   debug_matrix=true;
-  //debug_keyboard=true;
+  debug_keyboard=true;
   debug_mouse=true;
   // Set TCNT3 to count ticks of 4us each.
   TCCR3A = 0; // TCCR0A register set to 0
@@ -38,6 +30,15 @@ void keyboard_post_init_user(void) {
   TCNT3  = 0; // counter value to 0
   // set prescaler to 64, should be 4us per tick then ...
   TCCR3B |=(1<<CS31)|(1<<CS30);
+  dprintf("keyboard_post_init_user done\n");
+}
+
+#ifdef POINTING_DEVICE_ENABLE
+void pointing_device_init_kb(void) {
+    pmw3360_init(1);
+    pointing_device_set_cpi(800);
+
+    pointing_device_init_user();
 }
 
 static int16_t signed_sat_add16(int16_t a, int16_t b) {
@@ -51,6 +52,12 @@ static int16_t signed_sat_add16(int16_t a, int16_t b) {
     }
     return res;
 }
+
+// TODO: the sensors are installed at a 45 degree angle, which avoids
+// installing them at the bottom, which should help keep them a bit more dust
+// free. But this means they "see" less of a distance travelled in one of the
+// axis, which we need to compensate for.
+// TODO: insert trigonometry for this
 
 report_mouse_t pointing_device_task_kb(report_mouse_t mouse_report) {
     report_pmw3360_t data = pmw3360_read_burst(1);
