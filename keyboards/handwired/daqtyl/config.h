@@ -28,8 +28,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #define DEVICE_VER 0x0101
 
 /* key matrix size */
-#define MATRIX_ROWS 2
-#define MATRIX_COLS 2
+#define MATRIX_ROWS 5
+#define MATRIX_COLS 10
 
 /*
  * Keyboard Matrix Assignments
@@ -39,11 +39,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * ROWS: AVR pins used for rows, top to bottom
  * DIODE_DIRECTION: COL2ROW = COL = Anode (+), ROW = Cathode (-, marked on diode)
  *                  ROW2COL = ROW = Anode (+), COL = Cathode (-, marked on diode)
- *
  */
-#define MATRIX_ROW_PINS { D0, D4 }
-#define MATRIX_COL_PINS { D1, C6 }
-#define UNUSED_PINS
+#define MATRIX_ROW_PINS { E6, B4, B5, B7, D5 }
+#define MATRIX_COL_PINS { D7, C6, D4, D0, D1, F4, B6, F0, F1, C7 }
+#define UNUSED_PINS // { B0 }
 
 /* COL2ROW, ROW2COL */
 #define DIODE_DIRECTION COL2ROW
@@ -55,21 +54,20 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #undef DEBOUNCE
 #define DEBOUNCE 10
 
-/* EVQWGD001 encoders are apparently A, B, C, - as seem from the 2 switch pins.
+/* EVQWGD001 encoders are apparently A, B, C, - as seen from the 2 switch pins.
  */
-#define ENCODERS_PAD_A { F5 /*, LINE_PIN14 */ }
-#define ENCODERS_PAD_B { F6 /*, LINE_PIN37 */ }
+#define ENCODERS_PAD_A { F5, D2 }
+#define ENCODERS_PAD_B { D3, F5 }
 #define ENCODER_RESOLUTION 2
 
 /* PMW3360 sensor(s)
  */
-//#define PMW3360_CS_PIN B5
-#define PMW3360_CS_PINS { B5, B6 }
+#define PMW3360_CS_PINS { F6, F7 }
 // global defs
 //#define POINTING_DEVICE_INVERT_X
-//#define ROTATIONAL_TRANSFORM_ANGLE 90
+//#define ROTATIONAL_TRANSFORM_ANGLE 180 - 135
 // per sensor defs
-#define POINTING_DEVICE_ROTATION_pwm3360 { 90, 270 }
+#define POINTING_DEVICE_ROTATION_pwm3360 { 0, 270 }
 #define POINTING_DEVICE_INVERT_XY_pwm3360 { { true, false }, { true, false } }
 
 #define PERMISSIVE_HOLD

@@ -86,40 +86,43 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
     /* Base */
     [_BASE] = LAYOUT(
-        KC_A,    KC_1,
-            KC_B,   KC_2
+            KC_BTN2, KC_BTN3, KC_BTN1,
+     KC_Q,  KC_W,    KC_E,    KC_R,   KC_T, /**/ KC_Y, KC_U,    KC_I,    KC_O,   KC_P,
+     KC_A,  KC_S,    KC_D,    KC_F,   KC_G, /**/ KC_H, KC_J,    KC_K,    KC_L,   KC_SCLN,
+     KC_Z,  KC_X,    KC_C,    KC_V,   KC_B, /**/ KC_N, KC_M,    KC_COMM, KC_DOT, KC_SLSH,
+            KC_LALT, KC_LGUI,               /**/       KC_MINS, KC_EQL,
+  /*thumb*/ KC_LCTL, SFT_T(KC_SPC), KC_LALT,/**/ KC_RGUI, KC_TAB, KC_RSFT
     ),
-    [_FN] = LAYOUT(
-        QMKBEST, QMKURL,
-            RESET,    XXXXXXX
-    )
 };
 
+// TODO: get a SQUAL reading from the sensors!
 bool encoder_update_user(uint8_t index, bool clockwise) {
+#ifdef POINTING_DEVICE_ENABLE
     static const uint16_t us_per_tick = 64 / (F_CPU/1000000);
+#endif
     if (index == 0) { /* First encoder */
         if (clockwise) {
-#ifdef CONSOLE_ENABLE
+#if defined(CONSOLE_ENABLE) && defined(POINTING_DEVICE_ENABLE)
             uint16_t tcnt1 = TCNT3;
             pointing_device_set_cpi(100);
             uint16_t tcnt2 = TCNT3;
             dprintf("set_cpi took: %u ticks which is %u us\n", tcnt2-tcnt1, us_per_tick*(tcnt2-tcnt1));
 #endif
-            tap_code(KC_P);
+            tap_code(KC_UP);
         } else {
-#ifdef CONSOLE_ENABLE
+#if defined(CONSOLE_ENABLE) && defined(POINTING_DEVICE_ENABLE)
             uint16_t tcnt1 = TCNT3;
             uint16_t cpi = pointing_device_get_cpi();
             uint16_t tcnt2 = TCNT3;
             dprintf("get_cpi took: %u ticks which is %u us: cpi is %u\n", tcnt2-tcnt1, us_per_tick*(tcnt2-tcnt1), cpi);
 #endif
-            tap_code(KC_U);
+            tap_code(KC_DOWN);
         }
     } else if (index == 1) { /* Second encoder */
         if (clockwise) {
-            tap_code(KC_5);
+            tap_code(KC_LEFT);
         } else {
-            tap_code(KC_6);
+            tap_code(KC_RIGHT);
         }
     }
     return false;
