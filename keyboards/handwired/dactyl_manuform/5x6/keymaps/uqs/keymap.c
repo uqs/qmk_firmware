@@ -68,9 +68,6 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
       /*aux*/  KC_F5,    KC_RALT,  KC_APP
   ),
 
-  // TODO: implement CAPS_WORD on the left pinky shift on tap (maybe?) But it
-  // can't actually set caps lock, as I'm rebinding that for a saner laptop
-  // keyboard. See drashna's keymap.
   [L_COLM] = LAYOUT_uqs(
      KC_NO,    KC_NO,    KC_BTN2,  KC_BTN3,  KC_BTN1,  KC_NO,
      KC_BTN2,  KC_Q,     KC_W,     KC_F,     KC_P,     KC_B,
@@ -87,13 +84,6 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
      /*thumb*/ LT_FUNC_SHIFT_INS, KC_ENT, LT_NUM_BSPC,
       /*aux*/  KC_LEAD,  KC_RALT,  KC_APP
   ),
-// NOTE: RSFT_T(KC_S_INS) doesn't work, only INS comes through. RSFT_T stuff
-// only works on "simple" keycodes. See process_record_user for how this works,
-// thanks to ridingqwerty on Discord.
-// KC_PASTE essentially does shift-insert for Linux (mostly, for example not in
-// Qt apps! Also Chrome makes it copy from Clipboard, not Selection, like XTerm
-// does. Wargh), does nothing on Windows though, where Shift-Ins works.
-//
 
   // Updated with inspiration from https://forum.colemak.com/topic/2014-extend-extra-extreme/
   // I like the AltGr trick from https://stevep99.github.io/seniply/ and should probably incorporate some stuff from it.
