@@ -1,3 +1,4 @@
+// vi:et sw=4:
 #pragma once
 
 #include QMK_KEYBOARD_H
@@ -20,12 +21,11 @@ _Static_assert(DYNAMIC_KEYMAP_LAYER_COUNT >= L_LAST, "VIA enabled, but not enoug
 #define KC_CTAB LCTL(KC_TAB)
 #define KC_SCTAB LCTL(LSFT(KC_TAB))
 
-// Works as well as the above, but only needed for more complex stuff.
+// Custom single-key codes, see uqs.c for the combos.
 enum custom_keycodes {
     SHIFT_INS = SAFE_RANGE,
     ALT_SHIFT_INS,
     INS_HARD,
-    ALTGR_QUOT,
     KC_A_AE,
     KC_O_OE,
     KC_U_UE,
@@ -39,7 +39,6 @@ enum custom_keycodes {
     WIN_UP,
     WIN_DN,
     LT_EXTD_ESC,
-    LT_EXTD_ESC_WIN,
     LT_NUM_BSPC,
     LT_MOUSE_ALT_SHIFT_INS,
     LT_FUNC_SHIFT_INS,
@@ -48,7 +47,6 @@ enum custom_keycodes {
     OSM_CTL,
     OSM_ALT,
     ALT_TAB,
-    ALT_STAB,
 };
 
 #ifndef LEADER_ENABLE

@@ -1,10 +1,9 @@
 // vi:et sw=4:
 
-#include <wait.h>
 #include "uqs.h"
 
 // LOG:
-// late Jan 2020, got Dactyl Manuform 5x6
+// late Jan 2020, got Ohkeycaps Dactyl Manuform 5x6
 // https://play.typeracer.com shows about 75-80wpm (en) or ~400cpm (de) on my classic keeb.
 // Never did proper touch typing, basically didn't use ring finger much, mostly index/middle and pinky (only to hold down modifiers, really).
 // Feb 2020, switching to Colemak DH after 30 years of Qwerty, uh oh...
@@ -20,6 +19,12 @@
 // November, 56wpm/97% on MT; 62wpm/98% on typeracer;
 // December, 62wpm/96% on MT; 66wpm/98% on typeracer;
 // January, 61wpm/97% on MT; 65wpm/98% on typeracer;
+// February, 64wpm/97% on MT; 67wpm/98% on typeracer; my qwerty on the laptop is still fine, but I miss my shortcuts badly.
+//
+// So that's one year on Colemak. Was it worth the switch? Probably not, though
+// I also had to first learn proper technique, but that was actually swift, as
+// the keyboard nicely forces that on you. I really like home row mods though,
+// they are so comfy. Need to rethink my combos some more, still.
 
 
 #ifdef RGBLIGHT_LAYERS
@@ -31,7 +36,6 @@ layer_state_t default_layer_state_set_user(layer_state_t state) {
 }
 #endif
 
-// NOTE have a look at keyboards/jones/v03/keymaps/default_jp/keymap.c for default layers and put WASD there and NUM?
 layer_state_t layer_state_set_user(layer_state_t state) {
 #if 0
     // defining layer L_FUNC when both keys are pressed
@@ -63,26 +67,19 @@ const rgblight_layer_t PROGMEM my_rgb_segments[] = {
 
 // This array needs pointers, :/
 const rgblight_segment_t* const PROGMEM my_rgb_layers[] = {
-    [L_QWER] = my_rgb_segments[L_QWER],
-    [L_WASD] = my_rgb_segments[L_WASD],
-    [L_COLM] = my_rgb_segments[L_COLM],
-    [L_EXTD] = my_rgb_segments[L_EXTD],
-    [L_NUM]  = my_rgb_segments[L_NUM],
-    [L_FUNC] = my_rgb_segments[L_FUNC],
-    [L_MOUSE]= my_rgb_segments[L_MOUSE],
+    my_rgb_segments[L_QWER],
+    my_rgb_segments[L_WASD],
+    my_rgb_segments[L_COLM],
+    my_rgb_segments[L_EXTD],
+    my_rgb_segments[L_NUM],
+    my_rgb_segments[L_FUNC],
+    my_rgb_segments[L_MOUSE],
 };
-#endif
 
-void keyboard_post_init_user(void) {
-#ifndef KEYBOARD_preonic_rev3
-    default_layer_set(1ul << L_COLM);
+_Static_assert(sizeof(my_rgb_layers) / sizeof(my_rgb_layers[0]) ==
+        sizeof(my_rgb_segments) / sizeof(my_rgb_segments[0]),
+        "Number of rgb_segment definitions does not match up!");
 #endif
-#ifdef RGBLIGHT_LAYERS
-    // Enable the LED layers
-    rgblight_layers = my_rgb_layers;
-    rgblight_set_layer_state(0, true);
-#endif
-}
 
 #ifdef COMBO_ENABLE
 enum combo_events {
@@ -98,8 +95,7 @@ enum combo_events {
 // Maybe use this?
 // #define COMBO_ONLY_FROM_LAYER L_COLM
 
-#if 1
-// Need to split this into combos and action_combos to save space, as I'm 4 bytes over!
+// The official way has way too much duplication and intermediate names for my taste...
 const uint16_t PROGMEM my_action_combos[][3] = {
     [C_AUML] = {KC_G_A, KC_W, COMBO_END},
     [C_OUML] = {KC_G_O, KC_Y, COMBO_END},
@@ -110,31 +106,34 @@ const uint16_t PROGMEM my_action_combos[][3] = {
     [C_BRC]  = {KC_LPRN, KC_LBRC, COMBO_END},
 };
 const uint16_t PROGMEM my_combos[][4] = {
-    {KC_F, KC_P, COMBO_END, KC_LPRN},
-    {KC_C, KC_D, COMBO_END, KC_RPRN},
-    {KC_W, KC_F, COMBO_END, KC_LCBR},
-    {KC_X, KC_C, COMBO_END, KC_RCBR},
-    {KC_G_A, KC_A_R, COMBO_END, KC_TAB},
-    {KC_B, KC_J, COMBO_END, KC_BSLS},  // remove this?
-    {KC_F, KC_U, COMBO_END, KC_BSLS},
-    {KC_P, KC_L, COMBO_END, LSFT(KC_BSLS)},
-    {KC_C_T, KC_C_N, COMBO_END, KC_MINUS},
-    {KC_D, KC_H, COMBO_END, LSFT(KC_MINUS)},
-    {KC_Q, KC_W, COMBO_END, KC_GRV},  // remove this?
-    {KC_C, KC_COMM, COMBO_END, KC_GRV},
-    {KC_G, KC_M, COMBO_END, LSFT(KC_GRV)},
-    {KC_BTN1, KC_BTN2, COMBO_END, KC_BTN3},
-    {KC_BTN2, KC_BTN3, COMBO_END, KC_BTN1},
+    {KC_LPRN, KC_F, KC_P, COMBO_END},
+    {KC_RPRN, KC_C, KC_D, COMBO_END},
+    {KC_LCBR, KC_W, KC_F, COMBO_END},
+    {KC_RCBR, KC_X, KC_C, COMBO_END},
+    {KC_TAB,  KC_G_A, KC_A_R, COMBO_END},
+    {KC_BSLS, KC_B, KC_J, COMBO_END},  // remove this?
+    {KC_BSLS, KC_F, KC_U, COMBO_END},
+    {LSFT(KC_BSLS), KC_P, KC_L, COMBO_END},
+    {KC_MINUS, KC_C_T, KC_C_N, COMBO_END},
+    {LSFT(KC_MINUS), KC_D, KC_H, COMBO_END},
+    {KC_GRV,  KC_Q, KC_W, COMBO_END},  // remove this?
+    {KC_GRV,  KC_C, KC_COMM, COMBO_END},
+    {LSFT(KC_GRV), KC_G, KC_M, COMBO_END},
+    {KC_BTN3, KC_BTN1, KC_BTN2, COMBO_END},
+    {KC_BTN1, KC_BTN2, KC_BTN3, COMBO_END},
 };
 
-// TODO: should probably have the keycode come first ...
+const uint16_t COMBO_LEN = sizeof(my_action_combos) / sizeof(my_action_combos[0]) + sizeof(my_combos) / sizeof(my_combos[0]);
+
 #define MY_ACTION_COMBO(ck) \
     [ck] = { .keys = &(my_action_combos[ck][0]) }
 #define MY_COMBO(ck) \
-    { .keys = &(my_combos[ck][0]), .keycode = my_combos[ck][3] }
+    { .keys = &(my_combos[ck][1]), .keycode = my_combos[ck][0] }
 
-// XXX: this will crash the firmware after a couple of keypresses! wat?
-//const combo_t PROGMEM key_combos[] = { ...
+// NOTE: while my_combos can live in PROGMEM, the key_combos data also
+// contains state that is tweaked at runtime, so we need to indirect. Ugh.
+#define COMBO_STATICALLY
+#ifdef COMBO_STATICALLY
 // TODO: fill this at runtime with a loop?
 combo_t key_combos[] = {
   MY_ACTION_COMBO(0),
@@ -164,43 +163,9 @@ combo_t key_combos[] = {
 _Static_assert(sizeof(key_combos) / sizeof(key_combos[0]) ==
         (sizeof(my_action_combos) / sizeof(my_action_combos[0]) + sizeof(my_combos) / sizeof(my_combos[0])),
         "Number of combo definitions does not match up!");
-
 #else
-
-#define MY_COMBO(x, ...) \
-    { .keycode = x, .keys = (const uint16_t[]) { __VA_ARGS__, COMBO_END } }
-#define MY_COMBO_ACTION(...) MY_COMBO(KC_NO, __VA_ARGS__)
-
-// Can't use PROGMEM, as that'll crash the firmware, and somehow the whole
-// thing doesn't work anyway. Testing on a regular ELF binary, the const
-// my_combos ends up in .rodata and the rest in .data. No idea what the
-// microcontroller needs here.
-// I think
-// https://www.avrfreaks.net/forum/using-progmem-put-array-structures-flash
-// applies here and I don't understand why flash or RAM should make a
-// difference. Sigh.
-combo_t /*PROGMEM*/ key_combos[] = {
-    [C_AUML] = MY_COMBO_ACTION(KC_G_A, KC_W),
-    [C_OUML] = MY_COMBO_ACTION(KC_G_O, KC_Y),
-    [C_UUML] = MY_COMBO_ACTION(KC_C_N, KC_U),
-    [C_SZ]   = MY_COMBO_ACTION(KC_S_S, KC_Z),
-    MY_COMBO(KC_LPRN, KC_F, KC_P),
-    MY_COMBO(KC_RPRN, KC_C, KC_D),
-    MY_COMBO(KC_LCBR, KC_W, KC_F),
-    MY_COMBO(KC_RCBR, KC_X, KC_C),
-    MY_COMBO(KC_TAB, KC_G_A, KC_A_R),
-    MY_COMBO(KC_BSLS, KC_B, KC_J),
-    MY_COMBO(LSFT(KC_BSLS), KC_P, KC_L),
-    MY_COMBO(KC_MINUS, KC_C_T, KC_C_N),
-    MY_COMBO(LSFT(KC_MINUS), KC_D, KC_H),
-    MY_COMBO(KC_GRV, KC_Q, KC_W),
-    MY_COMBO(LSFT(KC_GRV), KC_G, KC_M),
-    MY_COMBO(KC_BTN3, KC_BTN1, KC_BTN2),
-    MY_COMBO(KC_BTN1, KC_BTN2, KC_BTN3),
-};
+combo_t key_combos[sizeof(my_action_combos) / sizeof(my_action_combos[0]) + sizeof(my_combos) / sizeof(my_combos[0])];
 #endif
-
-const uint16_t COMBO_LEN = sizeof(key_combos) / sizeof(key_combos[0]);
 
 void process_combo_event(uint16_t combo_index, bool pressed) {
     switch (combo_index) {
@@ -256,6 +221,27 @@ void process_combo_event(uint16_t combo_index, bool pressed) {
     }
 }
 #endif
+
+void keyboard_post_init_user(void) {
+#ifndef KEYBOARD_preonic_rev3
+    default_layer_set(1ul << L_COLM);
+#endif
+#ifdef RGBLIGHT_LAYERS
+    // Enable the LED layers
+    rgblight_layers = my_rgb_layers;
+    rgblight_set_layer_state(0, true);
+#endif
+#if defined(COMBO_ENABLE) && !defined(COMBO_STATICALLY)
+    uint8_t i = 0;
+    for (; i < sizeof(my_action_combos) / sizeof(my_action_combos[0]); i++) {
+        key_combos[i].keys = &(my_action_combos[i][0]);
+    }
+    for (uint8_t j = 0; j < sizeof(my_combos) / sizeof(my_combos[0]); j++, i++) {
+        key_combos[i].keycode = my_combos[j][0];
+        key_combos[i].keys = &(my_combos[j][1]);
+    }
+#endif
+}
 
 uint16_t key_timer;
 bool delkey_registered;
@@ -320,47 +306,6 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
         } else {
             layer_off(L_EXTD);
             unregister_mods(MOD_BIT(KC_LALT));   // undo what ALT_TAB might've set
-            // NOTE: need to track whether we made use of the extd layer and
-            // that all happened within the tapping term. Otherwise we'd emit
-            // that layer key code _plus_ an extra Esc.
-            if (timer_elapsed(extd_layer_timer) < TAPPING_TERM && !extd_layer_was_used) {
-                tap_code(KC_ESC);
-            }
-        }
-        return true;
-    case LT_EXTD_ESC_WIN:
-        if (record->event.pressed) {
-            extd_layer_was_used = false;
-            extd_layer_timer = timer_read();
-            layer_on(L_EXTD);
-            register_mods(MOD_BIT(KC_LWIN));
-            // QMK is fecking stupid. All I want is to send a custom keycode
-            // that I bind to Hyper via xmodmap, but this doesn't seem possible
-            // according to some reddit search. Maybe I should use F13..F24
-            // instead? Anyway, I'll be using Control_R and rebind that to
-            // Hyper_L via xmodmap. Why? So that I can have this magic key
-            // trigger Hyper_L when pressed, but unpress it in case I hit any
-            // other key on that layer. This can then be used in combination
-            // with the mouse to move/resize windows. I would use the Win key
-            // for this, but then under Windows that opens the Startmenu, so I
-            // need a modifier that is unknown to windows. A "silent" RCTL tap
-            // under Windows should be benign, I think.
-            // .xmodmaprc:
-            //   remove mod4 = Hyper_L
-            //   remove control = Hyper_L
-            //   keycode 105 = Hyper_L
-            //   add mod3 = Hyper_L
-            //
-            // While this works once, re-plugging the keyboard makes the apps
-            // no longer see Hyper but Control again. Feck. I probably need to
-            // come up with some setxkb magic to have this mapping be more
-            // permanent. Or switch to WIN directly, even though that will
-            // mess up Windows pretty bad.
-
-        } else {
-            layer_off(L_EXTD);
-            unregister_mods(MOD_BIT(KC_LALT));
-            unregister_mods(MOD_BIT(KC_LWIN));
             // NOTE: need to track whether we made use of the extd layer and
             // that all happened within the tapping term. Otherwise we'd emit
             // that layer key code _plus_ an extra Esc.
@@ -472,33 +417,6 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
 #define OSM_GUI OSM(MOD_LGUI)
 #define OSM_SFT OSM(MOD_LSFT)
 #endif
-#if 0
-        // From https://github.com/precondition/dactyl-manuform-keymap/blob/main/keymap.c
-    case KC_BSPC:
-        if (record->event.pressed) {
-            if (mod_state & MOD_MASK_SHIFT) {
-                // In case only one shift is held
-                // see https://stackoverflow.com/questions/1596668/logical-xor-operator-in-c
-                // This also means that in case of holding both shifts and pressing KC_BSPC,
-                // Shift+Delete is sent (useful in Firefox) since the shift modifiers aren't deleted.
-                if (!(mod_state & MOD_BIT(KC_LSHIFT)) != !(mod_state & MOD_BIT(KC_RSHIFT))) {
-                    del_mods(MOD_MASK_SHIFT);
-                }
-                register_code(KC_DEL);
-                delkey_registered = true;
-                set_mods(mod_state);
-                return false;
-            }
-        } else {
-            if (delkey_registered) {
-                unregister_code(KC_DEL);
-                delkey_registered = false;
-                return false;
-            }
-        }
-        return true;  // fall through to regular handling
-        break;
-#endif
     // Obsoleted by using combos for umlauts now.
     case KC_A_AE:
         if (record->event.pressed) {
@@ -542,14 +460,6 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
             tap_code16(KC_TAB);
         }
         break;
-/* no longer needed, will work fine with Shift+ALT_TAB
-    case ALT_STAB:
-        if (record->event.pressed) {
-            register_mods(MOD_BIT(KC_LALT));
-            tap_code16(LSFT(KC_TAB));
-        }
-        break;
-*/
     case INS_HARD:
         // Do Alt-Shift-Ins first to have xdotool copy from SELECTION to CLIPBOARD, then Shift-Ins to paste.
         if (record->event.pressed) {
@@ -587,15 +497,8 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
             unregister_mods(MOD_BIT(KC_LSFT) | MOD_BIT(KC_LALT));
         }
         break;
-    case ALTGR_QUOT:
-        // Shortcut for composing Umlauts
-        if (record->event.pressed) {
-            tap_code16(KC_RALT);
-            tap_code16(LSFT(KC_QUOT));
-        }
-        break;
 /*
- * Obsoleted by making tmux understand Ctrl-Pgup/down natively.
+ * Obsoleted by making tmux understand Ctrl-(Shift)-Tab natively.
     case TM_NEXT:
         if (record->event.pressed) SEND_STRING(SS_LCTRL("a") "n");
         break;
@@ -603,25 +506,25 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
         if (record->event.pressed) SEND_STRING(SS_LCTRL("a") "p");
         break;
 */
-        // TODO use overrides to turn, e.g. Win+Ctrl-Tab into something that switches vim tabs left and right
-        // Probably should use Alt-Pgup/down inside vim ...
+        // TODO: use key overrides to turn, e.g. Win+Ctrl-Tab into VIM_NEXT.
+        // Not sure why Ctrl-Pgup works in vim, but not in vim-inside-tmux.
     case VIM_NEXT:
-        if (record->event.pressed) SEND_STRING(SS_LCTRL("a") "n");
+        if (record->event.pressed) SEND_STRING(SS_TAP(X_ESC) SS_TAP(X_G) SS_TAP(X_T));
         break;
     case VIM_PREV:
-        if (record->event.pressed) SEND_STRING(SS_LCTRL("a") "p");
+        if (record->event.pressed) SEND_STRING(SS_TAP(X_ESC) SS_TAP(X_G) SS_LSFT("t"));
         break;
     case WIN_LEFT:
         if (record->event.pressed) SEND_STRING(SS_LCTRL("w") SS_TAP(X_H));
         break;
-    case WIN_RGHT:
-        if (record->event.pressed) SEND_STRING(SS_LCTRL("w") SS_TAP(X_L));
+    case WIN_DN:
+        if (record->event.pressed) SEND_STRING(SS_LCTRL("w") SS_TAP(X_J));
         break;
     case WIN_UP:
         if (record->event.pressed) SEND_STRING(SS_LCTRL("w") SS_TAP(X_K));
         break;
-    case WIN_DN:
-        if (record->event.pressed) SEND_STRING(SS_LCTRL("w") SS_TAP(X_J));
+    case WIN_RGHT:
+        if (record->event.pressed) SEND_STRING(SS_LCTRL("w") SS_TAP(X_L));
         break;
     }
 
@@ -674,7 +577,6 @@ void matrix_scan_user(void) {
 const qk_ucis_symbol_t ucis_symbol_table[] = UCIS_TABLE(
     UCIS_SYM("poop", 0x1F4A9),                // 💩
     UCIS_SYM("rofl", 0x1F923),                // 🤣
-    UCIS_SYM("cuba", 0x1F1E8, 0x1F1FA),       // 🇨🇺
     UCIS_SYM("look", 0x0CA0, 0x005F, 0x0CA0)  // ಠ_ಠ
 );
 #endif

@@ -63,20 +63,16 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
       /*aux*/  KC_RALT,  KC_APP
   ),
 
-  // TODO: implement CAPS_WORD on the left pinky shift on tap (maybe?) But it
-  // can't actually set caps lock, as I'm rebinding that for a saner laptop
-  // keyboard. See drashna's keymap.
   [L_COLM] = LAYOUT_uqs(
      KC_BTN2,  KC_Q,     KC_W,     KC_F,     KC_P,     KC_B,
      KC_BTN1,  KC_G_A,   KC_A_R,   KC_S_S,   KC_C_T,   KC_G,
      KC_BTN3,  KC_Z,     KC_X,     KC_C,     KC_D,     KC_V,
                          MS_WHUP,  MS_WHDN,
      /*thumb*/ LT_EXTD_ESC, SFT_T(KC_SPC), LT(L_MOUSE, KC_TAB),
-      /*aux*/
-               OSM_GUI,  KC_LALT,
-     KC_J,     KC_L,     KC_U,     KC_Y,     KC_QUOT,  KC_BSLS,
-     KC_M,     KC_C_N,   KC_S_E,   KC_A_I,   KC_G_O,   KC_MINUS,
-     KC_K,     KC_H,     KC_COMM,  KC_DOT,   KC_SLSH,  KC_GRV,
+      /*aux*/  OSM_GUI,  KC_LALT,
+     KC_J,     KC_L,     KC_U,     KC_Y,     KC_QUOT,  KC_NO,
+     KC_M,     KC_C_N,   KC_S_E,   KC_A_I,   KC_G_O,   KC_NO,
+     KC_K,     KC_H,     KC_COMM,  KC_DOT,   KC_SLSH,  KC_NO,
                          KC_NO,    KC_NO,
      /*thumb*/ LT_FUNC_SHIFT_INS, KC_ENT, LT_NUM_BSPC,
       /*aux*/  KC_RALT,  KC_APP
