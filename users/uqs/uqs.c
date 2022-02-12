@@ -225,6 +225,7 @@ void process_combo_event(uint16_t combo_index, bool pressed) {
 #endif
 
 void keyboard_post_init_user(void) {
+    debug_enable = true;
 #ifndef KEYBOARD_preonic_rev3
     default_layer_set(1ul << L_COLM);
 #endif
@@ -244,6 +245,33 @@ void keyboard_post_init_user(void) {
     }
 #endif
 }
+
+// Make the backspace and tab be holds on double-tap-and-hold
+#ifdef TAPPING_FORCE_HOLD_PER_KEY
+bool get_tapping_force_hold(uint16_t keycode, keyrecord_t *record) {
+    switch (keycode) {
+        case LT(L_MOUSE, KC_TAB):
+        case LT(L_NUM, KC_BSPC):
+            return false;
+        default:
+            return true;
+    }
+}
+#endif
+
+// This works to replace my custom LT_NUM_BSPC, but it must not apply to mod-taps!
+#ifdef HOLD_ON_OTHER_KEY_PRESS_PER_KEY
+bool get_hold_on_other_key_press(uint16_t keycode, keyrecord_t *record) {
+    switch (keycode) {
+        case LT(L_NUM, KC_BSPC):
+            // Immediately select the hold action when another key is pressed.
+            return true;
+        default:
+            // Do not select the hold action when another key is pressed.
+            return false;
+    }
+}
+#endif
 
 uint16_t key_timer;
 bool delkey_registered;
@@ -329,31 +357,9 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
             }
         }
         return true;
-    case LT_MOUSE_ALT_SHIFT_INS:
-        if (record->event.pressed) {
-            key_timer = timer_read();
-            layer_on(L_MOUSE);
-        } else {
-            layer_off(L_MOUSE);
-            if (timer_elapsed(key_timer) < TAPPING_TERM) {
-                tap_code16(LALT(LSFT(KC_INS)));
-            }
-        }
-        return true;
-    case LT_FUNC_SHIFT_INS:
-        if (record->event.pressed) {
-            key_timer = timer_read();
-            layer_on(L_FUNC);
-        } else {
-            layer_off(L_FUNC);
-            if (timer_elapsed(key_timer) < TAPPING_TERM) {
-                tap_code16(LSFT(KC_INS));
-            }
-        }
-        return true;
 #if 1
         /* Looks like PERMISSIVE_HOLD on LT and OSM doesn't work properly. This
-         * is probaby https://github.com/qmk/qmk_firmware/issues/8971
+         * is probably https://github.com/qmk/qmk_firmware/issues/8971
          */
     case OSM_GUI:
         /* OSM(MOD_LGUI) is delaying the event, but I need immediate triggering

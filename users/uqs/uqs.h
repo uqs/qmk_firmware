@@ -42,8 +42,6 @@ enum custom_keycodes {
     WIN_DN,
     LT_EXTD_ESC,
     LT_NUM_BSPC,
-    LT_MOUSE_ALT_SHIFT_INS,
-    LT_FUNC_SHIFT_INS,
     OSM_GUI,
     OSM_SFT,
     OSM_CTL,
