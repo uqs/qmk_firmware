@@ -1,13 +1,14 @@
+// Copyright 2022 Ulrich Spörlein (@uqs)
+// SPDX-License-Identifier: GPL-2.0-or-later
 #pragma once
 
 #ifdef RGBLIGHT_ENABLE
-  #define RGBLIGHT_SLEEP
-  // Disable these to save loads of space in the EEPROM
-  //#define RGBLIGHT_ANIMATIONS
-  #define RGBLIGHT_LAYERS
-  #define RGBLIGHT_MAX_LAYERS 8  // default is 16
-  #define RGBLIGHT_DISABLE_KEYCODES  // RGB_foo keys no longer work, saves 600 bytes
-  #define RGBLIGHT_DEFAULT_HUE 15
+#    define RGBLIGHT_SLEEP
+//#    define RGBLIGHT_ANIMATIONS      // disabled to save space
+#    define RGBLIGHT_LAYERS
+#    define RGBLIGHT_MAX_LAYERS 8      // default is 16
+#    define RGBLIGHT_DISABLE_KEYCODES  // RGB_foo keys no longer work, saves 600 bytes
+#    define RGBLIGHT_DEFAULT_HUE 15
 #endif
 
 #define DYNAMIC_KEYMAP_LAYER_COUNT 6  // default is 4 for VIA builds
@@ -18,7 +19,6 @@
 #define TAPPING_FORCE_HOLD  // make tap-then-hold _not_ do key auto repeat
 #define IGNORE_MOD_TAP_INTERRUPT
 #define PERMISSIVE_HOLD  // I don't think this works for me, hence I rolled my own implementation.
-//#define PREVENT_STUCK_MODIFIERS
 
 #define LEADER_TIMEOUT 400
 #define LEADER_PER_KEY_TIMING
@@ -34,7 +34,7 @@
 
 #ifdef KEYBOARD_preonic_rev3
 // Some games seem to not register Esc otherwise when tapped, maybe try with this delay?
-#define TAP_CODE_DELAY 30
+#    define TAP_CODE_DELAY 30
 #else
-#define TAP_CODE_DELAY 10
+#    define TAP_CODE_DELAY 10
 #endif

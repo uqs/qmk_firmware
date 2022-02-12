@@ -1,3 +1,5 @@
+// Copyright 2022 Ulrich Spörlein (@uqs)
+// SPDX-License-Identifier: GPL-2.0-or-later
 // vi:et sw=4:
 #pragma once
 

@@ -1,20 +1,7 @@
-/* Copyright 2020 Christopher Courtney, aka Drashna Jael're  (@drashna) <drashna@live.com>
- * Copyright 2019 Sunjun Kim
- * Copyright 2020 Ploopy Corporation
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 2 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
- */
+// Copyright 2022 Ulrich Spörlein (@uqs)
+// SPDX-License-Identifier: GPL-2.0-or-later
+// vi:et sw=4:
+
 #include QMK_KEYBOARD_H
 
 enum custom_keycodes {
@@ -23,9 +10,11 @@ enum custom_keycodes {
 
 bool process_record_user(uint16_t keycode, keyrecord_t *record) {
     switch (keycode) {
+        // This works fine in xev(1) or a browser, but not in the game where I
+        // would want it. Maybe need to increase the delay? Also needs to be
+        // rewritten to use Deferred Execution.
         case DBL_CLK_NO:
             if (record->event.pressed) {
-                //SEND_STRING(SS_TAP(X_BTN2) SS_DELAY(300) SS_TAP(X_BTN2) SS_DELAY(300) SS_TAP(X_N));
                 tap_code(KC_BTN2);
                 wait_ms(150);
                 tap_code(KC_BTN2);

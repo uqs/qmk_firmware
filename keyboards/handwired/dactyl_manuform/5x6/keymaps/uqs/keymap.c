@@ -1,4 +1,7 @@
+// Copyright 2022 Ulrich Spörlein (@uqs)
+// SPDX-License-Identifier: GPL-2.0-or-later
 // vi:et sw=4 cc=5,15,25,35,45,55,65:
+
 #include "uqs.h"
 
 /*
