@@ -225,7 +225,17 @@ void process_combo_event(uint16_t combo_index, bool pressed) {
 #endif
 
 void keyboard_post_init_user(void) {
-    debug_enable = true;
+    debug_enable=true;
+    debug_matrix=true;
+    debug_keyboard=true;
+    debug_mouse=true;
+    // Set TCNT3 to count ticks of 4us each.
+    TCCR3A = 0; // TCCR0A register set to 0
+    TCCR3B = 0; // same with registreb B
+    TCNT3  = 0; // counter value to 0
+    // set prescaler to 64, should be 4us per tick then ...
+    TCCR3B |=(1<<CS31)|(1<<CS30);
+    dprintf("keyboard_post_init_user done\n");
 #ifndef KEYBOARD_preonic_rev3
     default_layer_set(1ul << L_COLM);
 #endif

@@ -18,25 +18,10 @@
 #include "pointing_device.h"
 #include "drivers/sensors/pmw3360.h"
 
-void keyboard_post_init_user(void) {
-  // Customise these values to desired behaviour
-  debug_enable=true;
-  debug_matrix=true;
-  debug_keyboard=true;
-  debug_mouse=true;
-  // Set TCNT3 to count ticks of 4us each.
-  TCCR3A = 0; // TCCR0A register set to 0
-  TCCR3B = 0; // same with registreb B
-  TCNT3  = 0; // counter value to 0
-  // set prescaler to 64, should be 4us per tick then ...
-  TCCR3B |=(1<<CS31)|(1<<CS30);
-  dprintf("keyboard_post_init_user done\n");
-}
-
 #ifdef POINTING_DEVICE_ENABLE
 void pointing_device_init_kb(void) {
     pmw3360_init(1);
-    pointing_device_set_cpi(800);
+    pointing_device_set_cpi(600);
 
     pointing_device_init_user();
 }
@@ -71,8 +56,3 @@ report_mouse_t pointing_device_task_kb(report_mouse_t mouse_report) {
     return pointing_device_task_user(mouse_report);
 }
 #endif
-
-//#ifdef POINTING_DEVICE_ENABLE
-//void matrix_power_up(void) { pointing_device_task(); }
-//#endif
-

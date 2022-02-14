@@ -40,8 +40,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * DIODE_DIRECTION: COL2ROW = COL = Anode (+), ROW = Cathode (-, marked on diode)
  *                  ROW2COL = ROW = Anode (+), COL = Cathode (-, marked on diode)
  */
-#define MATRIX_ROW_PINS { E6, B4, B5, B7, D5 }
-#define MATRIX_COL_PINS { D7, C6, D4, D0, D1, F4, B6, F0, F1, C7 }
+#define MATRIX_ROW_PINS { E6, B4, B5, B7, F4 }
+#define MATRIX_COL_PINS { D7, C6, D4, D0, D1, B6, F0, F1, C7, D5 }
 #define UNUSED_PINS // { B0 }
 
 /* COL2ROW, ROW2COL */
@@ -56,8 +56,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 /* EVQWGD001 encoders are apparently A, B, C, - as seen from the 2 switch pins.
  */
-#define ENCODERS_PAD_A { F5, D2 }
-#define ENCODERS_PAD_B { D3, F5 }
+#define ENCODERS_PAD_A { F5, D3 }
+#define ENCODERS_PAD_B { D3, D2 }
 #define ENCODER_RESOLUTION 2
 
 /* PMW3360 sensor(s)
@@ -67,7 +67,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //#define POINTING_DEVICE_INVERT_X
 //#define ROTATIONAL_TRANSFORM_ANGLE 180 - 135
 // per sensor defs
-#define POINTING_DEVICE_ROTATION_pwm3360 { 0, 270 }
+#define POINTING_DEVICE_ROTATION_pwm3360 { 0, 90 }
+// These apply _before_ rotating, so you need to make sure to flip the right one.
 #define POINTING_DEVICE_INVERT_XY_pwm3360 { { true, false }, { true, false } }
 
 #define PERMISSIVE_HOLD

@@ -306,7 +306,7 @@ report_pmw3360_t pmw3360_read_burst(int8_t index) {
 
     if (!_inBurst[index]) {
 #ifdef CONSOLE_ENABLE
-        //dprintf("burst on\n");
+        //dprintf("burst on for index %d\n", index);
         //dprintf("pmw3360 init took: %d\n", init_time);
 #endif
         pmw3360_write(index, REG_Motion_Burst, 0x00);
@@ -328,8 +328,7 @@ report_pmw3360_t pmw3360_read_burst(int8_t index) {
     spi_stop();
 
 #ifdef CONSOLE_ENABLE
-    if (debug_mouse) {
-        /*
+    if (debug_mouse && (motion & 0x80)) {
         dprintf("sensor %d: ", index);
         print_byte(motion);
         print_byte(delta_x_l);
@@ -337,7 +336,6 @@ report_pmw3360_t pmw3360_read_burst(int8_t index) {
         print_byte(delta_y_l);
         print_byte(delta_y_h);
         dprintf("\n");
-        */
     }
 #endif
 
