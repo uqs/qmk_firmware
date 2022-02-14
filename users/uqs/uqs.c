@@ -246,13 +246,20 @@ void keyboard_post_init_user(void) {
 #endif
 }
 
-// Make the backspace and tab be holds on double-tap-and-hold
+// Make the backspace and tab be holds on the tap key, not the hold key on
+// double-tap-and-hold
 #ifdef TAPPING_FORCE_HOLD_PER_KEY
 bool get_tapping_force_hold(uint16_t keycode, keyrecord_t *record) {
     switch (keycode) {
         case LT(L_MOUSE, KC_TAB):
-        case LT(L_NUM, KC_BSPC):
+        //case LT(L_NUM, KC_BSPC):  // would be nice, but can't backspace + number entry quickly anymore
             return false;
+            // For mod-taps aka home row mods, default to holding the hold
+            // function, so I can type 's' followed by holding it, to get a
+            // shifted '?'. If this sounds reversed, that's because I have
+            // TAPPING_FORCE_HOLD defined globally, so tapping will force a
+            // hold of the hold function, not a hold of the tapping function.
+            // See https://github.com/qmk/qmk_firmware/pull/7859
         default:
             return true;
     }
