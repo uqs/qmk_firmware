@@ -65,7 +65,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
      KC_BTN2,  KC_Q,     KC_W,     KC_F,     KC_P,     KC_B,
      KC_BTN1,  KC_G_A,   KC_A_R,   KC_S_S,   KC_C_T,   KC_G,
      KC_BTN3,  KC_Z,     KC_X,     KC_C,     KC_D,     KC_V,
-                         MS_WHUP,  MS_WHDN,
+                         DRAG_SCROLL, MS_WHDN,
      /*thumb*/ LT_EXTD_ESC, SFT_T(KC_SPC), LT(L_MOUSE, KC_TAB),
      KC_J,     KC_L,     KC_U,     KC_Y,     KC_QUOT,  KC_NO,
      KC_M,     KC_C_N,   KC_S_E,   KC_A_I,   KC_G_O,   KC_NO,
@@ -152,4 +152,3 @@ bool encoder_update_user(uint8_t index, bool clockwise) {
     }
     return false;
 }
-

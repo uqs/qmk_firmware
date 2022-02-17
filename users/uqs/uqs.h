@@ -47,6 +47,7 @@ enum custom_keycodes {
     OSM_CTL,
     OSM_ALT,
     ALT_TAB,
+    DRAG_SCROLL,
 };
 
 #ifndef LEADER_ENABLE

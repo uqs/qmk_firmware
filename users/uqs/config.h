@@ -30,7 +30,7 @@
 
 // make KC_ACL0 et al work when held.
 #define MK_COMBINED
-#define MOUSEKEY_WHEEL_INTERVAL 40  // default is 50, lower means more scroll events, 40 works ok.
+#define MOUSEKEY_WHEEL_INTERVAL 50
 
 // From https://michael.stapelberg.ch/posts/2021-05-08-keyboard-input-latency-qmk-kinesis/
 #define USB_POLLING_INTERVAL_MS 1

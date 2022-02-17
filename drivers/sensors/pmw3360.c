@@ -329,6 +329,7 @@ report_pmw3360_t pmw3360_read_burst(int8_t index) {
 
 #ifdef CONSOLE_ENABLE
     if (debug_mouse && (motion & 0x80)) {
+#if 0
         dprintf("sensor %d: ", index);
         print_byte(motion);
         print_byte(delta_x_l);
@@ -336,6 +337,7 @@ report_pmw3360_t pmw3360_read_burst(int8_t index) {
         print_byte(delta_y_l);
         print_byte(delta_y_h);
         dprintf("\n");
+#endif
     }
 #endif
 

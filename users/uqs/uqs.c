@@ -3,6 +3,7 @@
 // vi:et sw=4:
 
 #include "uqs.h"
+#include "pointing_device.h"
 
 // LOG:
 // late Jan 2020, got Ohkeycaps Dactyl Manuform 5x6
@@ -226,7 +227,7 @@ void process_combo_event(uint16_t combo_index, bool pressed) {
 
 void keyboard_post_init_user(void) {
     debug_enable=true;
-    debug_matrix=true;
+    //debug_matrix=true;
     debug_keyboard=true;
     debug_mouse=true;
     // Set TCNT3 to count ticks of 4us each.
@@ -315,6 +316,38 @@ void maybe_send_umlaut(uint16_t keycode, bool *is_pressed) {
     }
 }
 
+bool set_scrolling = false;
+report_mouse_t pointing_device_task_user(report_mouse_t mouse_report) {
+    static uint32_t last_exec = 0;
+    if (set_scrolling) {
+        if (timer_elapsed32(last_exec) < 10 /*ms*/) {
+            mouse_report.x = mouse_report.y = 0;
+            return mouse_report;
+        }
+        last_exec = timer_read32();
+        if (mouse_report.x > 0) {
+            mouse_report.h = -1;
+        } else if (mouse_report.x < 0) {
+            mouse_report.h = 1;
+        }
+        if (mouse_report.y > 0) {
+            mouse_report.v = -1;
+        } else if (mouse_report.y < 0) {
+            mouse_report.v = 1;
+        }
+#if 0
+        mouse_report.h = -mouse_report.x;
+        mouse_report.v = -mouse_report.y;
+#endif
+        mouse_report.x = mouse_report.y = 0;
+        // TODO: accumulate movement in a var and spit it out when a threshold has been reached.
+        if (mouse_report.h != 0 && mouse_report.v != 0) {
+            dprintf("drag_scroll report sending: %d %d\n", mouse_report.h, mouse_report.v);
+        }
+    }
+    return mouse_report;
+}
+
 bool process_record_user(uint16_t keycode, keyrecord_t *record) {
     // TODO: why not use key_timer here? is it dynamic or not?
     static uint16_t extd_layer_timer;
@@ -341,6 +374,19 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
             tap_code16(KC_U);
             uuml_pressed = false;
         }
+    }
+    if (keycode == DRAG_SCROLL && record->event.pressed) {
+        set_scrolling = !set_scrolling;
+        //dprintf("flipping set_scrolling to: %d\n", set_scrolling);
+        // Done by clamping the output values instead
+#if 0
+        if (set_scrolling) {
+            pointing_device_set_cpi(100);
+        } else {
+            pointing_device_set_cpi(600);
+        }
+#endif
+        return true;
     }
 
     switch (keycode) {
@@ -568,7 +614,6 @@ void matrix_scan_user(void) {
     SEQ_ONE_KEY(KC_U) {
       qk_ucis_start();
     }
-#endif
     SEQ_ONE_KEY(KC_H) {
       send_unicode_string("ᕕ( ᐛ )ᕗ");  // happy
     }
@@ -593,6 +638,7 @@ void matrix_scan_user(void) {
       //send_unicode_hex_string("0028 30CE 0CA0 75CA 0CA0 0029 30CE 5F61 253B 2501 253B");
       send_unicode_string("┬─┬ノ( º _ ºノ)");
     }
+#endif
   }
 }
 #endif
