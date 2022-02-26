@@ -257,6 +257,25 @@ void keyboard_post_init_user(void) {
 #endif
 }
 
+#ifdef TAPPING_TERM_PER_KEY
+uint16_t get_tapping_term(uint16_t keycode, keyrecord_t *record) {
+    switch (keycode) {
+        case KC_G_A:
+        case KC_A_R:
+        case KC_A_I:
+        case KC_G_O:
+            return TAPPING_TERM + 50;
+        case KC_S_S:
+        case KC_C_T:
+        case KC_C_N:
+        case KC_S_E:
+            return TAPPING_TERM - 50;
+        default:
+            return TAPPING_TERM;
+    }
+}
+#endif
+
 // Make the backspace and tab be holds on the tap key, not the hold key on
 // double-tap-and-hold
 #ifdef TAPPING_FORCE_HOLD_PER_KEY
@@ -319,16 +338,16 @@ void maybe_send_umlaut(uint16_t keycode, bool *is_pressed) {
 bool set_scrolling = false;
 report_mouse_t pointing_device_task_user(report_mouse_t mouse_report) {
     static uint32_t last_exec = 0;
-    if (set_scrolling) {
-        if (timer_elapsed32(last_exec) < 10 /*ms*/) {
+    if (set_scrolling || layer_state_is(L_FUNC)) {
+        if (timer_elapsed32(last_exec) < 20 /*ms*/) {
             mouse_report.x = mouse_report.y = 0;
             return mouse_report;
         }
         last_exec = timer_read32();
         if (mouse_report.x > 0) {
-            mouse_report.h = -1;
-        } else if (mouse_report.x < 0) {
             mouse_report.h = 1;
+        } else if (mouse_report.x < 0) {
+            mouse_report.h = -1;
         }
         if (mouse_report.y > 0) {
             mouse_report.v = -1;
@@ -341,8 +360,8 @@ report_mouse_t pointing_device_task_user(report_mouse_t mouse_report) {
 #endif
         mouse_report.x = mouse_report.y = 0;
         // TODO: accumulate movement in a var and spit it out when a threshold has been reached.
-        if (mouse_report.h != 0 && mouse_report.v != 0) {
-            dprintf("drag_scroll report sending: %d %d\n", mouse_report.h, mouse_report.v);
+        if (mouse_report.h != 0 || mouse_report.v != 0) {
+            dprintf("drag_scroll report sending: h=%d v=%d\n", mouse_report.h, mouse_report.v);
         }
     }
     return mouse_report;
@@ -375,17 +394,23 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
             uuml_pressed = false;
         }
     }
-    if (keycode == DRAG_SCROLL && record->event.pressed) {
-        set_scrolling = !set_scrolling;
-        //dprintf("flipping set_scrolling to: %d\n", set_scrolling);
-        // Done by clamping the output values instead
+    if (layer_state_is(L_FUNC)) {
+        //set_scrolling = 1;
+    }
+    if (keycode == DRAG_SCROLL) {
+        if (record->event.pressed) {
+            set_scrolling = 1;
 #if 0
-        if (set_scrolling) {
-            pointing_device_set_cpi(100);
-        } else {
-            pointing_device_set_cpi(600);
-        }
+            // Done by clamping the output values instead
+            if (set_scrolling) {
+                pointing_device_set_cpi(100);
+            } else {
+                pointing_device_set_cpi(600);
+            }
 #endif
+        } else {
+            set_scrolling = 0;
+        }
         return true;
     }
 

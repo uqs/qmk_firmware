@@ -21,7 +21,7 @@
 #ifdef POINTING_DEVICE_ENABLE
 void pointing_device_init_kb(void) {
     pmw3360_init(1);
-    pointing_device_set_cpi(600);
+    pointing_device_set_cpi(500);
 
     pointing_device_init_user();
 }

@@ -47,24 +47,25 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
   ),
 
   [L_WASD] = LAYOUT_uqs(
-     KC_ESC,   KC_1,     KC_2,     KC_3,     KC_4,     KC_5,
-     KC_T,     KC_TAB,   KC_Q,     KC_W,     KC_E,     KC_R,
-     KC_G,     KC_LSFT,  KC_A,     KC_S,     KC_D,     KC_F,
-     KC_B,     KC_GRV,   KC_Z,     KC_X,     KC_C,     KC_V,
+     KC_NO,    KC_NO,    KC_2,     KC_3,     KC_4,     KC_NO,
+     KC_NO,    KC_TAB,   KC_Q,     KC_W,     KC_E,     KC_R,
+     KC_NO,    KC_LSFT,  KC_A,     KC_S,     KC_D,     KC_F,
+     KC_NO,    KC_GRV,   KC_Z,     KC_X,     KC_C,     KC_V,
                          KC_LGUI,  KC_LALT,
      /*thumb*/ KC_LCTL,  KC_SPC,   KC_LALT,
-     KC_Y,     KC_U,     KC_I,     KC_O,     KC_P,     KC_BSLS,
-     KC_H,     KC_J,     KC_K,     KC_L,     KC_SCLN,  KC_QUOT,
-     KC_N,     KC_M,     KC_COMM,  KC_DOT,   KC_SLSH,  RSFT_T(KC_GRV),
+     KC_Y,     KC_U,     KC_I,     KC_O,     KC_P,     KC_NO,
+     KC_H,     KC_J,     KC_K,     KC_L,     KC_SCLN,  KC_NO,
+     KC_N,     KC_M,     KC_COMM,  KC_DOT,   KC_SLSH,  KC_NO,
                          KC_MINS,  KC_EQL,
+// TODO: make DF a tap, on hold do a switch to COLM
      /*thumb*/ DF(L_COLM), KC_ENT, KC_BSPC
   ),
 
   [L_COLM] = LAYOUT_uqs(
      KC_NO,    KC_NO,    KC_BTN2,  KC_BTN3,  KC_BTN1,  KC_NO,
-     KC_BTN2,  KC_Q,     KC_W,     KC_F,     KC_P,     KC_B,
-     KC_BTN1,  KC_G_A,   KC_A_R,   KC_S_S,   KC_C_T,   KC_G,
-     KC_BTN3,  KC_Z,     KC_X,     KC_C,     KC_D,     KC_V,
+     KC_NO,    KC_Q,     KC_W,     KC_F,     KC_P,     KC_B,
+     KC_NO,    KC_G_A,   KC_A_R,   KC_S_S,   KC_C_T,   KC_G,
+     KC_NO,    KC_Z,     KC_X,     KC_C,     KC_D,     KC_V,
                          DRAG_SCROLL, MS_WHDN,
      /*thumb*/ LT_EXTD_ESC, SFT_T(KC_SPC), LT(L_MOUSE, KC_TAB),
      KC_J,     KC_L,     KC_U,     KC_Y,     KC_QUOT,  KC_NO,
@@ -101,7 +102,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
      /*thumb*/ KC_ESC,   KC_SPC,   KC_0,
      KC_EQUAL, KC_7,     KC_8,     KC_9,     KC_KP_PLUS,_______,
      KC_KP_ASTERISK,KC_4,KC_5,     KC_6,     MINS_UNDSCR,_______,
-     KC_COMM,  KC_1,     KC_2,     KC_3,     KC_KP_SLASH,KC_KP_ENTER,  // Enter here, because thumb is occupied
+     KC_COMM,  KC_1,     KC_2,     KC_3,     KC_KP_SLASH,_______,
                          KC_0,     KC_KP_DOT,
      /*thumb*/ _______,  _______,  _______
   ),
@@ -111,6 +112,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
      _______,  KC_NO,    KC_MUTE,  KC_VOLD,  KC_VOLU,  DF(L_WASD),
      _______,  KC_LGUI,  KC_LALT,  KC_LSFT,  KC_LCTL,  DF(L_QWER),
      _______,  KC_NO,    KC_NO,    KC_NO,    KC_NO,    DF(L_COLM),
+     // add printscrn and the like here
                          KC_NO,    KC_NO,
      /*thumb*/ _______,  _______,  _______,
      KC_PSCR,  KC_F7,    KC_F8,    KC_F9,    KC_F10,   KC_NO,
@@ -122,16 +124,16 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 
   [L_MOUSE] = LAYOUT_uqs(
      _______,  _______,  _______,  _______,  _______,  _______,
-     _______,  KC_NO,    KC_BTN2,  KC_BTN3,  KC_BTN1,  KC_VOLU,
-     _______,  KC_NO,    KC_ACL0,  KC_ACL1,  KC_ACL2,  KC_VOLD,
-     _______,  KC_NO,    KC_NO,    KC_NO,    KC_NO,    KC_MUTE,
+     _______,  KC_BTN1,  KC_BTN2,  KC_BTN3,  KC_BTN1,  KC_VOLU,
+     _______,  KC_LGUI,  KC_LALT,  KC_LSFT,  KC_LCTL,  KC_VOLD,
+     _______,  KC_NO,    MS_WHUP,  MS_WHDN,  KC_NO,    KC_MUTE,
                          KC_NO,    KC_NO,
      /*thumb*/ _______,  _______,  _______,
      _______,  _______,  KC_MS_UP, MS_WHUP,  _______,  _______,
      MS_WHLEFT,KC_MS_L,  KC_MS_D,  KC_MS_R,  MS_WHRGHT,_______,
      _______,  MS_WHDN,  KC_BTN3,  KC_BTN4,  KC_BTN5,  _______,
                          KC_NO,    KC_NO,
-     /*thumb*/ KC_NO,    KC_BTN1,  KC_BTN2
+     /*thumb*/ KC_BTN3,  KC_BTN1,  KC_BTN2
   ),
 };
 
