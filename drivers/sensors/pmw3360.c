@@ -304,6 +304,11 @@ static int16_t signed_sat_add16(int16_t a, int16_t b) {
 report_pmw3360_t pmw3360_read_burst(int8_t index) {
     report_pmw3360_t report = {0};
 
+#ifdef CONSOLE_ENABLE
+    //uint8_t squal = pmw3360_read(index, REG_SQUAL);
+    //dprintf("squal for index %d is %d\n", index, 8*squal);
+#endif
+
     if (!_inBurst[index]) {
 #ifdef CONSOLE_ENABLE
         //dprintf("burst on for index %d\n", index);

@@ -16,9 +16,9 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
         case DBL_CLK_NO:
             if (record->event.pressed) {
                 tap_code(KC_BTN2);
-                wait_ms(150);
+                wait_ms(200);
                 tap_code(KC_BTN2);
-                wait_ms(300);
+                wait_ms(500);
                 tap_code(KC_N);
             }
             return false;

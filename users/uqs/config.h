@@ -14,7 +14,7 @@
 #define DYNAMIC_KEYMAP_LAYER_COUNT 6  // default is 4 for VIA builds
 
 #define TAPPING_TOGGLE 2  // number of taps for a toggle-on-tap
-#define TAPPING_TERM 170  // ms to trigger tap
+#define TAPPING_TERM 200  // ms to trigger tap
 #define TAPPING_TERM_PER_KEY
 // https://precondition.github.io/home-row-mods
 #define TAPPING_FORCE_HOLD  // make tap-then-hold _not_ do key auto repeat
