@@ -26,18 +26,6 @@ void pointing_device_init_kb(void) {
     pointing_device_init_user();
 }
 
-static int16_t signed_sat_add16(int16_t a, int16_t b) {
-    int16_t res;
-    bool overflow = __builtin_add_overflow(a, b, &res);
-    if (overflow) {
-        // if b was positive, this will return INT16_MAX, if b was negative,
-        // it'll slap its negative sign bit onto INT16_MAX, returning
-        // INT16_MIN.
-        return ((uint16_t)b >> 15) + INT16_MAX;
-    }
-    return res;
-}
-
 // TODO: the sensors are installed at a 45 degree angle, which avoids
 // installing them at the bottom, which should help keep them a bit more dust
 // free. But this means they "see" less of a distance travelled in one of the
@@ -49,8 +37,11 @@ report_mouse_t pointing_device_task_kb(report_mouse_t mouse_report) {
     if (data.isOnSurface && data.isMotion) {
 // From quantum/pointing_device_drivers.c
 #define constrain_hid(amt) ((amt) < -127 ? -127 : ((amt) > 127 ? 127 : (amt)))
-        mouse_report.x = constrain_hid(signed_sat_add16(mouse_report.x, data.dx));
-        mouse_report.y = constrain_hid(signed_sat_add16(mouse_report.y, data.dy));
+        // This would need a saturated add to be correct, but the generated
+        // values are typically small enough and moving 2 sensors at the same
+        // time is rare.
+        mouse_report.x = constrain_hid(mouse_report.x + data.dx);
+        mouse_report.y = constrain_hid(mouse_report.y + data.dy);
     }
 
     return pointing_device_task_user(mouse_report);
