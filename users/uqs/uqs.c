@@ -282,8 +282,9 @@ uint16_t get_tapping_term(uint16_t keycode, keyrecord_t *record) {
 #ifdef TAPPING_FORCE_HOLD_PER_KEY
 bool get_tapping_force_hold(uint16_t keycode, keyrecord_t *record) {
     switch (keycode) {
-        case LT(L_MOUSE, KC_TAB):
+        case LT(L_FUNC, KC_TAB):
         //case LT(L_NUM, KC_BSPC):  // would be nice, but can't backspace + number entry quickly anymore
+        //case LT(L_MOUSE, DRAG_SCROLL):  // doesn't work, as DRAG_SCROLL is then not handled as a keypress event
             return false;
             // For mod-taps aka home row mods, default to holding the hold
             // function, so I can type 's' followed by holding it, to get a
@@ -339,7 +340,7 @@ void maybe_send_umlaut(uint16_t keycode, bool *is_pressed) {
 bool set_scrolling = false;
 report_mouse_t pointing_device_task_user(report_mouse_t mouse_report) {
     static uint32_t last_exec = 0;
-    if (set_scrolling || layer_state_is(L_FUNC)) {
+    if (set_scrolling /*|| layer_state_is(L_FUNC) */) {
         if (timer_elapsed32(last_exec) < 20 /*ms*/) {
             mouse_report.x = mouse_report.y = 0;
             return mouse_report;
@@ -395,11 +396,15 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
             uuml_pressed = false;
         }
     }
-    if (layer_state_is(L_FUNC)) {
-        //set_scrolling = 1;
+    if (keycode == DRAG_SCROLL2) {
+        if (record->event.pressed) {
+            set_scrolling = !set_scrolling;
+            return true;
+        }
     }
     if (keycode == DRAG_SCROLL) {
         if (record->event.pressed) {
+            dprintf("drag scroll pressed\n");
             set_scrolling = 1;
 #if 0
             // Done by clamping the output values instead
@@ -410,6 +415,7 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
             }
 #endif
         } else {
+            dprintf("drag scroll UNpressed\n");
             set_scrolling = 0;
         }
         return true;

@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: GPL-2.0-or-later
 // vi:et sw=4 cc=5,15,25,35,45,55,65:
 
+#include QMK_KEYBOARD_H
 #include "uqs.h"
 
 /*
@@ -67,12 +68,12 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
      KC_NO,    KC_G_A,   KC_A_R,   KC_S_S,   KC_C_T,   KC_G,
      KC_NO,    KC_Z,     KC_X,     KC_C,     KC_D,     KC_V,
                          DRAG_SCROLL, MS_WHDN,
-     /*thumb*/ LT_EXTD_ESC, SFT_T(KC_SPC), LT(L_MOUSE, KC_TAB),
+     /*thumb*/ LT_EXTD_ESC, SFT_T(KC_SPC), LT(L_FUNC, KC_TAB),
      KC_J,     KC_L,     KC_U,     KC_Y,     KC_QUOT,  KC_NO,
      KC_M,     KC_C_N,   KC_S_E,   KC_A_I,   KC_G_O,   KC_NO,
      KC_K,     KC_H,     KC_COMM,  KC_DOT,   KC_SLSH,  KC_NO,
                          KC_NO,    KC_NO,
-     /*thumb*/ LT(L_FUNC, KC_LEAD), KC_ENT, LT(L_NUM, KC_BSPC)
+     /*thumb*/ LT(L_MOUSE, DRAG_SCROLL), KC_ENT, LT(L_NUM, KC_BSPC)
   ),
 
   // Updated with inspiration from https://forum.colemak.com/topic/2014-extend-extra-extreme/
@@ -112,14 +113,13 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
      _______,  KC_NO,    KC_MUTE,  KC_VOLD,  KC_VOLU,  DF(L_WASD),
      _______,  KC_LGUI,  KC_LALT,  KC_LSFT,  KC_LCTL,  DF(L_QWER),
      _______,  KC_NO,    KC_NO,    KC_NO,    KC_NO,    DF(L_COLM),
-     // add printscrn and the like here
                          KC_NO,    KC_NO,
      /*thumb*/ _______,  _______,  _______,
      KC_PSCR,  KC_F7,    KC_F8,    KC_F9,    KC_F10,   KC_NO,
      KC_SLCK,  KC_F4,    KC_F5,    KC_F6,    KC_F11,   KC_NO,
      KC_PAUS,  KC_F1,    KC_F2,    KC_F3,    KC_F12,   KC_NO,
                          KC_NO,    KC_NO,
-     /*thumb*/ _______,  _______,  _______
+     /*thumb*/ _______,  KC_BTN1,  KC_BTN2
   ),
 
   [L_MOUSE] = LAYOUT_uqs(
@@ -128,16 +128,15 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
      _______,  KC_LGUI,  KC_LALT,  KC_LSFT,  KC_LCTL,  KC_VOLD,
      _______,  KC_NO,    MS_WHUP,  MS_WHDN,  KC_NO,    KC_MUTE,
                          KC_NO,    KC_NO,
-     /*thumb*/ _______,  _______,  _______,
-     _______,  _______,  KC_MS_UP, MS_WHUP,  _______,  _______,
-     MS_WHLEFT,KC_MS_L,  KC_MS_D,  KC_MS_R,  MS_WHRGHT,_______,
-     _______,  MS_WHDN,  KC_BTN3,  KC_BTN4,  KC_BTN5,  _______,
+     /*thumb*/ KC_BTN2,  KC_BTN1,  _______,
+     KC_BTN1,  KC_BTN2,  KC_MS_U,  KC_BTN3,  KC_BTN2,  _______,
+     DRAG_SCROLL2,KC_MS_L,  KC_MS_D,  KC_MS_R,  _______,_______,
+     _______,  _______,  KC_BTN3,  KC_BTN4,  KC_BTN5,  _______,
                          KC_NO,    KC_NO,
-     /*thumb*/ KC_BTN3,  KC_BTN1,  KC_BTN2
+     /*thumb*/ _______,  _______,  _______
   ),
 };
 
-// TODO: get a SQUAL reading from the sensors!
 bool encoder_update_user(uint8_t index, bool clockwise) {
     if (index == 0) { /* First encoder */
         if (clockwise) {
