@@ -49,6 +49,7 @@ enum custom_keycodes {
     ALT_TAB,
     DRAG_SCROLL,
     DRAG_SCROLL2,
+    QUOT_SCROLL,
 };
 
 #ifndef LEADER_ENABLE

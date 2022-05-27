@@ -93,6 +93,7 @@ enum combo_events {
   C_CBR,
   C_PRN,
   C_BRC,
+  C_QUOT,
 };
 
 // Maybe use this?
@@ -107,19 +108,16 @@ const uint16_t PROGMEM my_action_combos[][3] = {
     [C_CBR]  = {KC_COLN, KC_LCBR, COMBO_END},
     [C_PRN]  = {KC_LCBR, KC_LPRN, COMBO_END},
     [C_BRC]  = {KC_LPRN, KC_LBRC, COMBO_END},
+    [C_QUOT] = {KC_COMM, KC_DOT, COMBO_END},
 };
 const uint16_t PROGMEM my_combos[][4] = {
-    {KC_LPRN, KC_F, KC_P, COMBO_END},
-    {KC_RPRN, KC_C, KC_D, COMBO_END},
-    {KC_LCBR, KC_W, KC_F, COMBO_END},
-    {KC_RCBR, KC_X, KC_C, COMBO_END},
+    {KC_RCBR, KC_X, KC_C, COMBO_END},  // hotkey for gmail archive
     {KC_TAB,  KC_G_A, KC_A_R, COMBO_END},
-    {KC_BSLS, KC_B, KC_J, COMBO_END},  // remove this?
     {KC_BSLS, KC_F, KC_U, COMBO_END},
     {LSFT(KC_BSLS), KC_P, KC_L, COMBO_END},
     {KC_MINUS, KC_C_T, KC_C_N, COMBO_END},
     {LSFT(KC_MINUS), KC_D, KC_H, COMBO_END},
-    {KC_GRV,  KC_Q, KC_W, COMBO_END},  // remove this?
+    {KC_GRV,  KC_Q, KC_W, COMBO_END},  // remove this? turn into esc:wq?
     {KC_GRV,  KC_C, KC_COMM, COMBO_END},
     {LSFT(KC_GRV), KC_G, KC_M, COMBO_END},
     {KC_BTN3, KC_BTN1, KC_BTN2, COMBO_END},
@@ -146,6 +144,7 @@ combo_t key_combos[] = {
   MY_ACTION_COMBO(4),
   MY_ACTION_COMBO(5),
   MY_ACTION_COMBO(6),
+  MY_ACTION_COMBO(7),
   MY_COMBO(0),
   MY_COMBO(1),
   MY_COMBO(2),
@@ -157,10 +156,6 @@ combo_t key_combos[] = {
   MY_COMBO(8),
   MY_COMBO(9),
   MY_COMBO(10),
-  MY_COMBO(11),
-  MY_COMBO(12),
-  MY_COMBO(13),
-  MY_COMBO(14),
 };
 
 _Static_assert(sizeof(key_combos) / sizeof(key_combos[0]) ==
@@ -221,6 +216,16 @@ void process_combo_event(uint16_t combo_index, bool pressed) {
                 tap_code16(KC_LEFT);
             }
             break;
+        case C_QUOT:
+            if (pressed) {
+                tap_code16(KC_QUOT);
+                tap_code16(KC_QUOT);
+                // need to drop shift here, if present!
+                unregister_mods(MOD_BIT(KC_LSFT));
+                unregister_mods(MOD_BIT(KC_RSFT));
+                tap_code16(KC_LEFT);
+            }
+            break;
     }
 }
 #endif
@@ -265,9 +270,9 @@ uint16_t get_tapping_term(uint16_t keycode, keyrecord_t *record) {
         case KC_A_I:
         case KC_G_O:
             return TAPPING_TERM + 50;
-        //case KC_C_T:
-        //case KC_C_N:
-        //    return TAPPING_TERM - 50;
+        case KC_C_T:
+        case KC_C_N:
+            return TAPPING_TERM - 50;
         case KC_S_S:
         case KC_S_E:
             return TAPPING_TERM - 80;
@@ -339,8 +344,9 @@ void maybe_send_umlaut(uint16_t keycode, bool *is_pressed) {
 
 bool set_scrolling = false;
 report_mouse_t pointing_device_task_user(report_mouse_t mouse_report) {
-    static uint32_t last_exec = 0;
     if (set_scrolling /*|| layer_state_is(L_FUNC) */) {
+#if 0
+        static uint32_t last_exec = 0;
         if (timer_elapsed32(last_exec) < 20 /*ms*/) {
             mouse_report.x = mouse_report.y = 0;
             return mouse_report;
@@ -356,8 +362,8 @@ report_mouse_t pointing_device_task_user(report_mouse_t mouse_report) {
         } else if (mouse_report.y < 0) {
             mouse_report.v = 1;
         }
-#if 0
-        mouse_report.h = -mouse_report.x;
+#else
+        mouse_report.h =  mouse_report.x;
         mouse_report.v = -mouse_report.y;
 #endif
         mouse_report.x = mouse_report.y = 0;
@@ -420,6 +426,8 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
         }
         return true;
     }
+
+    static bool force_shift = false;
 
     switch (keycode) {
         // From https://github.com/qmk/qmk_firmware/issues/6053
@@ -554,6 +562,88 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
                 tap_code16(KC_MINUS);
             } else {
                 tap_code16(KC_UNDERSCORE);
+            }
+        }
+        break;
+        // This turns on dragscroll when held, otherwise '"
+    case LT(3,KC_NO):
+        if (record->tap.count > 0 && record->event.pressed) {
+            tap_code16(KC_QUOT); // Intercept tap function
+        } else if (record->event.pressed) {
+#if defined(POINTING_DEVICE_ENABLE)
+            set_scrolling = 1;
+            pointing_device_set_cpi(100);
+        } else {
+            set_scrolling = 0;
+            pointing_device_set_cpi(500);
+#endif
+        }
+        return false;
+        break;
+        // Need to remember if this was pressed, to make the RCTL_T(KC_N) work
+        // with that key held.
+        // BUG: should one roll ST improperly, the default handling of
+        // LSFT_T(KS_S) will eventually clear the shift mod, even though it
+        // wasn't the one that added it. So shift can get lost here
+    case SFT_T(KC_SPC):
+        if (record->event.pressed) {
+            force_shift = true;
+        } else {
+            force_shift = false;
+            unregister_mods(MOD_BIT(KC_LSHIFT));
+            unregister_mods(MOD_BIT(KC_RSHIFT));
+        }
+        break;
+    case KC_S_S:
+        if (record->event.pressed) {
+            return true;  // process normally
+        } else {
+            // restore shift, if we're in force_shift
+            if (force_shift) {
+                add_mods(MOD_BIT(KC_LSHIFT));
+            }
+        }
+        break;
+    case KC_S_E:
+        if (record->event.pressed) {
+            return true;  // process normally
+        } else {
+            // restore shift, if we're in force_shift
+            if (force_shift) {
+                add_mods(MOD_BIT(KC_RSHIFT));
+            }
+        }
+        break;
+    // From https://precondition.github.io/home-row-mods#rolled-modifiers-cancellation
+    case KC_C_N:
+        if (record->event.pressed && record->tap.count > 0) {
+            // Detect right Shift
+            if (!force_shift && get_mods() & MOD_BIT(KC_RSHIFT)) {
+                // temporarily disable right Shift
+                // so that we can send KC_E and KC_N
+                // without Shift on.
+                unregister_mods(MOD_BIT(KC_RSHIFT));
+                tap_code(KC_E);
+                tap_code(KC_N);
+                // restore the mod state
+                add_mods(MOD_BIT(KC_RSHIFT));
+                // to prevent QMK from processing RCTL_T(KC_N) as usual in our special case
+                return false;
+            }
+        }
+        /*else process RCTL_T(KC_N) as usual.*/
+        break;
+        /* This also uses right shift, as holding the SFT_T(KC_SPC) key shall *not* produce the lowercase st, as it's my sort-of-caps-lock key.
+         * TODO: how to detect that key-hold and skip it here?
+         */
+    case KC_C_T:
+        if (record->event.pressed && record->tap.count > 0) {
+            if (!force_shift && get_mods() & MOD_BIT(KC_LSHIFT)) {
+                unregister_mods(MOD_BIT(KC_LSHIFT));
+                tap_code(KC_S);
+                tap_code(KC_T);
+                add_mods(MOD_BIT(KC_LSHIFT));
+                return false;
             }
         }
         break;
