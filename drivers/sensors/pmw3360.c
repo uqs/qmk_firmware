@@ -23,7 +23,7 @@
 #include "debug.h"
 #include "timer.h"
 #include "print.h"
-#include PMW3360_FIRMWARE_H
+#include "pmw3360_firmware.h"
 
 // Registers
 // clang-format off
@@ -81,9 +81,6 @@
 // clang-format on
 
 // limits to 0--119, resulting in a CPI range of 100 -- 12000 (as only steps of 100 are possible).
-// Note that for the PMW3389DM chip, the step size is 50 and supported range is
-// up to 16000. The datasheet does not indicate the minimum CPI though, neither
-// whether this uses 2 bytes (as 16000/50 == 320)
 #ifndef MAX_CPI
 #    define MAX_CPI 0x77
 #endif
@@ -91,12 +88,15 @@
 static const pin_t pins[] = PMW3360_CS_PINS;
 #define NUMBER_OF_SENSORS (sizeof(pins) / sizeof(pin_t))
 
-bool _inBurst[NUMBER_OF_SENSORS] = {0};
+// per-sensor driver state
+static bool _inBurst[NUMBER_OF_SENSORS] = {0};
 
 #ifdef CONSOLE_ENABLE
 static fast_timer_t init_time;
 
-void print_byte(uint8_t byte) { dprintf("%c%c%c%c%c%c%c%c|", (byte & 0x80 ? '1' : '0'), (byte & 0x40 ? '1' : '0'), (byte & 0x20 ? '1' : '0'), (byte & 0x10 ? '1' : '0'), (byte & 0x08 ? '1' : '0'), (byte & 0x04 ? '1' : '0'), (byte & 0x02 ? '1' : '0'), (byte & 0x01 ? '1' : '0')); }
+void print_byte(uint8_t byte) {
+    dprintf("%c%c%c%c%c%c%c%c|", (byte & 0x80 ? '1' : '0'), (byte & 0x40 ? '1' : '0'), (byte & 0x20 ? '1' : '0'), (byte & 0x10 ? '1' : '0'), (byte & 0x08 ? '1' : '0'), (byte & 0x04 ? '1' : '0'), (byte & 0x02 ? '1' : '0'), (byte & 0x01 ? '1' : '0'));
+}
 #endif
 #define constrain(amt, low, high) ((amt) < (low) ? (low) : ((amt) > (high) ? (high) : (amt)))
 
@@ -144,23 +144,47 @@ uint8_t pmw3360_read(int8_t index, uint8_t reg_addr) {
     return data;
 }
 
+bool pmw3360_check_signature(int8_t index) {
+    uint8_t pid      = pmw3360_read(index, REG_Product_ID);
+    uint8_t iv_pid   = pmw3360_read(index, REG_Inverse_Product_ID);
+    uint8_t SROM_ver = pmw3360_read(index, REG_SROM_ID);
+    return (pid == firmware_signature[0] && iv_pid == firmware_signature[1] && SROM_ver == firmware_signature[2]); // signature for SROM 0x04
+}
+
+void pmw3360_upload_firmware(int8_t index) {
+    // Datasheet claims we need to disable REST mode first, but during startup
+    // it's already disabled and we're not turning it on ...
+    // pmw3360_write(index, REG_Config2, 0x00); // disable REST mode
+    pmw3360_write(index, REG_SROM_Enable, 0x1d);
+
+    wait_ms(10);
+
+    pmw3360_write(index, REG_SROM_Enable, 0x18);
+
+    pmw3360_spi_start(index);
+    spi_write(REG_SROM_Load_Burst | 0x80);
+    wait_us(15);
+
+    for (uint16_t i = 0; i < FIRMWARE_LENGTH; i++) {
+        spi_write(pgm_read_byte(firmware_data + i));
+#ifndef PMW3360_FIRMWARE_UPLOAD_FAST
+        wait_us(15);
+#endif
+    }
+    wait_us(200);
+
+    pmw3360_read(index, REG_SROM_ID);
+    pmw3360_write(index, REG_Config2, 0x00);
+}
+
 bool pmw3360_init(int8_t index) {
+    if (index >= NUMBER_OF_SENSORS) {
+        return false;
+    }
 #ifdef CONSOLE_ENABLE
     init_time = timer_read_fast();
 #endif
     spi_init();
-
-#if 0
-    // with this on, init() takes 469ms, without we're down to 164ms
-    setPinOutput(pins[index]);
-
-    spi_stop();
-    pmw3360_spi_start(index);
-    spi_stop();
-
-    pmw3360_write(index, REG_Shutdown, 0xb6);  // Shutdown first
-    wait_ms(300);
-#endif
 
     // power up, need to first drive NCS high then low.
     // the datasheet does not say for how long, 40us works well in practice.
@@ -187,6 +211,8 @@ bool pmw3360_init(int8_t index) {
 
     wait_ms(1);
 
+    pmw3360_write(index, REG_Config2, 0x00);
+
 #ifdef POINTING_DEVICE_ROTATION_pwm3360
     static const int16_t rotation[] = POINTING_DEVICE_ROTATION_pwm3360;
     _Static_assert(NUMBER_OF_SENSORS == sizeof(rotation)/sizeof(rotation[0]));
@@ -212,13 +238,11 @@ bool pmw3360_init(int8_t index) {
     pmw3360_write(index, REG_Lift_Config, PMW3360_LIFTOFF_DISTANCE);
 
     bool init_success = pmw3360_check_signature(index);
-    //writePinLow(pins[index]);
-
 #ifdef CONSOLE_ENABLE
     if (init_success) {
-        dprintf("pmw3360 signature(s) verified");
+        dprintf("pmw3360 signature verified");
     } else {
-        dprintf("pmw3360 signature(s) verification failed!");
+        dprintf("pmw3360 signature verification failed!");
     }
     init_time = timer_elapsed_fast(init_time);
 #endif
@@ -226,39 +250,7 @@ bool pmw3360_init(int8_t index) {
     return init_success;
 }
 
-void pmw3360_upload_firmware(int8_t index) {
-    // Datasheet claims we need to disable REST mode first, but during startup
-    // it's already disabled and we're not turning it on ...
-    //pmw3360_write(index, REG_Config2, 0x00);  // disable REST mode
-    pmw3360_write(index, REG_SROM_Enable, 0x1d);
-
-    wait_ms(10);
-
-    pmw3360_write(index, REG_SROM_Enable, 0x18);
-
-    pmw3360_spi_start(index);
-    spi_write(REG_SROM_Load_Burst | 0x80);
-    wait_us(15);
-
-    unsigned char c;
-    for (int i = 0; i < FIRMWARE_LENGTH; i++) {
-        c = (unsigned char)pgm_read_byte(firmware_data + i);
-        spi_write(c);
-        wait_us(15);
-    }
-    wait_us(200);
-
-    pmw3360_read(index, REG_SROM_ID);
-    pmw3360_write(index, REG_Config2, 0x00);
-}
-
-bool pmw3360_check_signature(int8_t index) {
-    uint8_t pid      = pmw3360_read(index, REG_Product_ID);
-    uint8_t iv_pid   = pmw3360_read(index, REG_Inverse_Product_ID);
-    uint8_t SROM_ver = pmw3360_read(index, REG_SROM_ID);
-    return (pid == firmware_signature[0] && iv_pid == firmware_signature[1] && SROM_ver == firmware_signature[2]);  // signature for SROM 0x04
-}
-
+// Only support reading the value from sensor #0, no one is using this anyway.
 uint16_t pmw3360_get_cpi(void) {
     uint8_t cpival = pmw3360_read(0, REG_Config1);
 #ifdef CONSOLE_ENABLE
@@ -272,9 +264,10 @@ uint16_t pmw3360_get_cpi(void) {
     return (uint16_t)((cpival + 1) & 0xFF) * CPI_STEP;
 }
 
+// Write same CPI to all sensors.
 void pmw3360_set_cpi(uint16_t cpi) {
     uint8_t cpival = constrain((cpi / CPI_STEP) - 1, 0, MAX_CPI);
-    for (size_t i=0; i<NUMBER_OF_SENSORS; i++) {
+    for (size_t i = 0; i < NUMBER_OF_SENSORS; i++) {
         pmw3360_write(i, REG_Config1, cpival);
     }
 }
@@ -303,6 +296,9 @@ static int16_t signed_sat_add16(int16_t a, int16_t b) {
 
 report_pmw3360_t pmw3360_read_burst(int8_t index) {
     report_pmw3360_t report = {0};
+    if (index >= NUMBER_OF_SENSORS) {
+        return report;
+    }
 
 #ifdef CONSOLE_ENABLE
     //uint8_t squal = pmw3360_read(index, REG_SQUAL);
@@ -311,7 +307,7 @@ report_pmw3360_t pmw3360_read_burst(int8_t index) {
 
     if (!_inBurst[index]) {
 #ifdef CONSOLE_ENABLE
-        //dprintf("burst on for index %d\n", index);
+        dprintf("burst on for index %d", index);
         //dprintf("pmw3360 init took: %d\n", init_time);
 #endif
         pmw3360_write(index, REG_Motion_Burst, 0x00);
@@ -320,40 +316,37 @@ report_pmw3360_t pmw3360_read_burst(int8_t index) {
 
     pmw3360_spi_start(index);
     spi_write(REG_Motion_Burst);
-    wait_us(35);  // waits for tSRAD_MOTBR
+    wait_us(35); // waits for tSRAD_MOTBR
 
-    uint8_t motion = spi_read();
-    spi_read();  // skip Observation
+    report.motion = spi_read();
+    spi_read(); // skip Observation
     // delta registers
-    uint8_t delta_x_l = spi_read();
-    uint8_t delta_x_h = spi_read();
-    uint8_t delta_y_l = spi_read();
-    uint8_t delta_y_h = spi_read();
+    report.dx  = spi_read();
+    report.mdx = spi_read();
+    report.dy  = spi_read();
+    report.mdy = spi_read();
+
+    if (report.motion & 0b111) { // panic recovery, sometimes burst mode works weird.
+        _inBurst[index] = false;
+    }
 
     spi_stop();
 
 #ifdef CONSOLE_ENABLE
-    if (debug_mouse && (motion & 0x80)) {
-#if 0
-        dprintf("sensor %d: ", index);
-        print_byte(motion);
-        print_byte(delta_x_l);
-        print_byte(delta_x_h);
-        print_byte(delta_y_l);
-        print_byte(delta_y_h);
+    if (debug_mouse) {
+        print_byte(report.motion);
+        print_byte(report.dx);
+        print_byte(report.mdx);
+        print_byte(report.dy);
+        print_byte(report.mdy);
         dprintf("\n");
-#endif
     }
 #endif
 
-    if (motion & 0b111) {  // panic recovery, sometimes burst mode works weird.
-        _inBurst[index] = false;
-    }
+    report.isMotion    = (report.motion & 0x80) != 0;
+    report.isOnSurface = (report.motion & 0x08) == 0;
 
-    const bool isMotion    = (motion & 0x80) != 0;
-    const bool isOnSurface = (motion & 0x08) == 0;
-
-    if (!isMotion) {
+    if (!report.isMotion) {
         return report;
     }
 
@@ -393,10 +386,10 @@ report_pmw3360_t pmw3360_read_burst(int8_t index) {
         dy = -dy;
 #endif
 
-    report.isMotion |= isMotion;
-    report.isOnSurface |= isOnSurface;
-    report.dx = signed_sat_add16(report.dx, dx);
-    report.dy = signed_sat_add16(report.dy, dy);
+    report.dx |= (report.mdx << 8);
+    report.dx = report.dx * -1;
+    report.dy |= (report.mdy << 8);
+    report.dy = report.dy * -1;
 
     return report;
 }
