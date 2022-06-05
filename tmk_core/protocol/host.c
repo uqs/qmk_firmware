@@ -87,6 +87,15 @@ void host_mouse_send(report_mouse_t *report) {
     report->report_id = REPORT_ID_MOUSE;
 #endif
     (*driver->send_mouse)(report);
+    // Only for button presses.
+    if (debug_mouse && report->buttons != 0) {
+#if 0
+      print("mousekey [btn|x y v h](rep/acl): [");
+      print_hex8(report->buttons);
+      print("|");
+      print(")\n");
+#endif
+    }
 }
 
 void host_system_send(uint16_t report) {
