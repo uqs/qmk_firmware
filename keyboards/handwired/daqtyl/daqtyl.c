@@ -16,11 +16,12 @@
 
 #include "daqtyl.h"
 #include "pointing_device.h"
-#include "drivers/sensors/pmw3360.h"
+#include "drivers/sensors/pmw3389.h"
 
 #ifdef POINTING_DEVICE_ENABLE
 void pointing_device_init_kb(void) {
-    pmw3360_init(1);
+    //pmw3360_init(1);
+    pmw3389_init();
     pointing_device_set_cpi(500);
 
     pointing_device_init_user();
@@ -31,6 +32,8 @@ void pointing_device_init_kb(void) {
 // free. But this means they "see" less of a distance travelled in one of the
 // axis, which we need to compensate for.
 // TODO: insert trigonometry for this
+
+#if 0
 
 report_mouse_t pointing_device_task_kb(report_mouse_t mouse_report) {
     report_pmw3360_t data = pmw3360_read_burst(1);
@@ -46,4 +49,5 @@ report_mouse_t pointing_device_task_kb(report_mouse_t mouse_report) {
 
     return pointing_device_task_user(mouse_report);
 }
+#endif
 #endif

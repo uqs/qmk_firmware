@@ -272,6 +272,7 @@ void pmw3360_set_cpi(uint16_t cpi) {
     }
 }
 
+#if 0
 static int16_t convertDeltaToInt(uint8_t high, uint8_t low) {
     // join bytes into twos compliment
     uint16_t twos_comp = (high << 8) | low;
@@ -293,6 +294,7 @@ static int16_t signed_sat_add16(int16_t a, int16_t b) {
     }
     return res;
 }
+#endif
 
 report_pmw3360_t pmw3360_read_burst(int8_t index) {
     report_pmw3360_t report = {0};
@@ -346,6 +348,7 @@ report_pmw3360_t pmw3360_read_burst(int8_t index) {
     report.isMotion    = (report.motion & 0x80) != 0;
     report.isOnSurface = (report.motion & 0x08) == 0;
 
+#if 0
     if (!report.isMotion) {
         return report;
     }
@@ -384,6 +387,7 @@ report_pmw3360_t pmw3360_read_burst(int8_t index) {
         dx = -dx;
     if (invert[index][1])
         dy = -dy;
+#endif
 #endif
 
     report.dx |= (report.mdx << 8);

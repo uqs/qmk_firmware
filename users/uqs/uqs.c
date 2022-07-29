@@ -29,6 +29,7 @@
 // the keyboard nicely forces that on you. I really like home row mods though,
 // they are so comfy. Need to rethink my combos some more, still.
 
+// July, 68wpm/98% on MT; 69wpm/98% on typeracer
 
 #ifdef RGBLIGHT_LAYERS
 layer_state_t default_layer_state_set_user(layer_state_t state) {

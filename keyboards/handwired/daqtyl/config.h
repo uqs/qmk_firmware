@@ -23,8 +23,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #define VENDOR_ID    0x444D
 #define MANUFACTURER tshort
 
-#define PRODUCT      Daqtyl (4x5)
-#define PRODUCT_ID 0x3435  // for 4x5
+#define PRODUCT      Daqtyl (3x5)
+#define PRODUCT_ID 0x3335  // for 4x5
 #define DEVICE_VER 0x0101
 
 /* key matrix size */
@@ -62,7 +62,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 /* PMW3360 sensor(s)
  */
-#define PMW3360_CS_PINS { F6, F7 }
+#define PMW3389_CS_PIN F7
+//#define PMW3360_CS_PINS { F6, F7 }
 // global defs
 //#define POINTING_DEVICE_INVERT_X
 //#define ROTATIONAL_TRANSFORM_ANGLE 180 - 135
