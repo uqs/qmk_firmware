@@ -75,7 +75,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
      KC_M,     KC_C_N,   KC_S_E,   KC_A_I,   KC_G_O,
      KC_K,     KC_H,     KC_COMM,  KC_DOT,   KC_SLSH,
                          KC_NO,    KC_NO,
-     /*thumb*/ LT(L_MOUSE, DRAG_SCROLL), KC_ENT, LT(L_NUM, KC_BSPC)
+     /*thumb*/ LT(L_MOUSE, DRAG_SCROLL), SFT_T(KC_ENT), LT(L_NUM, KC_BSPC)
   ),
 
   // Updated with inspiration from https://forum.colemak.com/topic/2014-extend-extra-extreme/
@@ -102,9 +102,9 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
      KC_SCLN,  KC_COLN,  KC_LCBR,  KC_LPRN,  KC_LBRC,
      KC_CIRC,  KC_AMPR,  KC_RCBR,  KC_RPRN,  KC_RBRC,
                KC_GRV,   KC_TILDE,
-     /*thumb*/ KC_ESC,   KC_SPC,   KC_0,
-     KC_EQUAL, KC_7,     KC_8,     KC_9,     KC_KP_PLUS,
-     KC_KP_ASTERISK,KC_4,KC_5,     KC_6,     MINS_UNDSCR,
+     /*thumb*/ KC_ESC,   KC_SPC,   KC_TAB,
+     KC_KP_ASTERISK, KC_7, KC_8,   KC_9,     KC_KP_PLUS,
+     KC_EQUAL, KC_4,     KC_5,     KC_6,     MINS_UNDSCR,
      KC_COMM,  KC_1,     KC_2,     KC_3,     KC_KP_SLASH,
                          KC_0,     KC_KP_DOT,
      /*thumb*/ _______,  _______,  _______

@@ -73,8 +73,8 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
       /*aux*/  _______,  _______,  _______,
                /* ^^^^ use these */
      KC_F6,    KC_F7,    KC_F8,    KC_F9,    KC_F10,   KC_F12,
-     KC_EQUAL, KC_7,     KC_8,     KC_9,     KC_KP_PLUS,_______,
-     KC_KP_ASTERISK,KC_4,KC_5,     KC_6,     MINS_UNDSCR,_______,
+     KC_KP_ASTERISK, KC_7,     KC_8,     KC_9,     KC_KP_PLUS,_______,
+     KC_EQUAL,KC_4,KC_5,     KC_6,     MINS_UNDSCR,_______,
      KC_COMM,  KC_1,     KC_2,     KC_3,     KC_KP_SLASH,KC_KP_ENTER,  // Enter here, because thumb is occupied
      /*thumb*/ _______,  _______,
       /*aux*/  KC_0,     KC_KP_DOT, _______

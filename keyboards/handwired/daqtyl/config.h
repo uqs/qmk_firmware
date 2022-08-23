@@ -63,9 +63,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 /* PMW3360 sensor(s)
  */
 #define PMW3389_CS_PIN F7
-//#define PMW3360_CS_PINS { F6, F7 }
+#define PMW3360_CS_PINS { F6, F7 }
 // global defs
-//#define POINTING_DEVICE_INVERT_X
+//#define POINTING_DEVICE_INVERT_Y
 //#define ROTATIONAL_TRANSFORM_ANGLE 180 - 135
 // per sensor defs
 #define POINTING_DEVICE_ROTATION_pwm3360 { 0, 90 }

@@ -178,6 +178,7 @@ void pmw3360_upload_firmware(int8_t index) {
 }
 
 bool pmw3360_init(int8_t index) {
+  dprintf("pmw3360_init(%d) running!\n", index);
     if (index >= NUMBER_OF_SENSORS) {
         return false;
     }
@@ -210,8 +211,6 @@ bool pmw3360_init(int8_t index) {
     pmw3360_set_cpi(PMW3360_CPI);
 
     wait_ms(1);
-
-    pmw3360_write(index, REG_Config2, 0x00);
 
 #ifdef POINTING_DEVICE_ROTATION_pwm3360
     static const int16_t rotation[] = POINTING_DEVICE_ROTATION_pwm3360;
@@ -272,7 +271,7 @@ void pmw3360_set_cpi(uint16_t cpi) {
     }
 }
 
-#if 0
+#if 1
 static int16_t convertDeltaToInt(uint8_t high, uint8_t low) {
     // join bytes into twos compliment
     uint16_t twos_comp = (high << 8) | low;
@@ -282,6 +281,7 @@ static int16_t convertDeltaToInt(uint8_t high, uint8_t low) {
 
     return twos_comp;
 }
+#endif
 
 static int16_t signed_sat_add16(int16_t a, int16_t b) {
     int16_t res;
@@ -294,7 +294,6 @@ static int16_t signed_sat_add16(int16_t a, int16_t b) {
     }
     return res;
 }
-#endif
 
 report_pmw3360_t pmw3360_read_burst(int8_t index) {
     report_pmw3360_t report = {0};
@@ -309,7 +308,7 @@ report_pmw3360_t pmw3360_read_burst(int8_t index) {
 
     if (!_inBurst[index]) {
 #ifdef CONSOLE_ENABLE
-        dprintf("burst on for index %d", index);
+        dprintf("burst on for index %d\n", index);
         //dprintf("pmw3360 init took: %d\n", init_time);
 #endif
         pmw3360_write(index, REG_Motion_Burst, 0x00);
@@ -320,36 +319,38 @@ report_pmw3360_t pmw3360_read_burst(int8_t index) {
     spi_write(REG_Motion_Burst);
     wait_us(35); // waits for tSRAD_MOTBR
 
-    report.motion = spi_read();
+    uint8_t motion = spi_read();
     spi_read(); // skip Observation
     // delta registers
-    report.dx  = spi_read();
-    report.mdx = spi_read();
-    report.dy  = spi_read();
-    report.mdy = spi_read();
-
-    if (report.motion & 0b111) { // panic recovery, sometimes burst mode works weird.
-        _inBurst[index] = false;
-    }
+    uint8_t delta_x_l = spi_read();
+    uint8_t delta_x_h = spi_read();
+    uint8_t delta_y_l = spi_read();
+    uint8_t delta_y_h = spi_read();
 
     spi_stop();
 
 #ifdef CONSOLE_ENABLE
-    if (debug_mouse) {
-        print_byte(report.motion);
-        print_byte(report.dx);
-        print_byte(report.mdx);
-        print_byte(report.dy);
-        print_byte(report.mdy);
+    if (debug_mouse && (motion & 0x80)) {
+#if 1
+        dprintf("sensor %d: ", index);
+        print_byte(motion);
+        print_byte(delta_x_l);
+        print_byte(delta_x_h);
+        print_byte(delta_y_l);
+        print_byte(delta_y_h);
         dprintf("\n");
+#endif
     }
 #endif
 
-    report.isMotion    = (report.motion & 0x80) != 0;
-    report.isOnSurface = (report.motion & 0x08) == 0;
+    if (motion & 0b111) {  // panic recovery, sometimes burst mode works weird.
+        _inBurst[index] = false;
+    }
 
-#if 0
-    if (!report.isMotion) {
+    const bool isMotion    = (motion & 0x80) != 0;
+    const bool isOnSurface = (motion & 0x08) == 0;
+
+    if (!isMotion) {
         return report;
     }
 
@@ -388,12 +389,11 @@ report_pmw3360_t pmw3360_read_burst(int8_t index) {
     if (invert[index][1])
         dy = -dy;
 #endif
-#endif
 
-    report.dx |= (report.mdx << 8);
-    report.dx = report.dx * -1;
-    report.dy |= (report.mdy << 8);
-    report.dy = report.dy * -1;
+    report.isMotion |= isMotion;
+    report.isOnSurface |= isOnSurface;
+    report.dx = signed_sat_add16(report.dx, dx);
+    report.dy = signed_sat_add16(report.dy, dy);
 
     return report;
 }

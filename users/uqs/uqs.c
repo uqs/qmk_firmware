@@ -125,6 +125,7 @@ const uint16_t PROGMEM my_combos[][4] = {
     {KC_BSLS, KC_F, KC_U, COMBO_END},
     {LSFT(KC_BSLS), KC_P, KC_L, COMBO_END},
     {KC_MINUS, KC_C_T, KC_C_N, COMBO_END},
+    {KC_MINUS, KC_LPRN, KC_4, COMBO_END},  // dupe to work on NUM layer
     {LSFT(KC_MINUS), KC_D, KC_H, COMBO_END},
     {KC_GRV,  KC_Q, KC_W, COMBO_END},  // remove this? turn into esc:wq?
     {KC_GRV,  KC_C, KC_COMM, COMBO_END},
@@ -135,6 +136,7 @@ const uint16_t PROGMEM my_combos[][4] = {
     {KC_BSLS, KC_E, KC_I, COMBO_END},
     {LSFT(KC_BSLS), KC_R, KC_U, COMBO_END},
     {KC_MINUS, KC_F, KC_J, COMBO_END},
+    {KC_MINUS, KC_LPRN, KC_4, COMBO_END},  // dupe to work on NUM layer
     {LSFT(KC_MINUS), KC_V, KC_M, COMBO_END},
     {COMBO_END},
     {KC_GRV,  KC_C, KC_COMM, COMBO_END},
@@ -165,6 +167,7 @@ combo_t key_combos[] = {
   MY_ACTION_COMBO(5),
   MY_ACTION_COMBO(6),
   MY_ACTION_COMBO(7),
+  MY_ACTION_COMBO(8),
   MY_COMBO(0),
   MY_COMBO(1),
   MY_COMBO(2),

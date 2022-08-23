@@ -16,12 +16,16 @@
 
 #include "daqtyl.h"
 #include "pointing_device.h"
-#include "drivers/sensors/pmw3389.h"
+#include "drivers/sensors/pmw3360.h"
 
 #ifdef POINTING_DEVICE_ENABLE
 void pointing_device_init_kb(void) {
+#ifdef PMW3360_CS_PINS
     //pmw3360_init(1);
-    pmw3389_init();
+#endif
+#ifdef PMW3389_CS_PINS
+    pmw3389_init(1);
+#endif
     pointing_device_set_cpi(500);
 
     pointing_device_init_user();
@@ -33,7 +37,7 @@ void pointing_device_init_kb(void) {
 // axis, which we need to compensate for.
 // TODO: insert trigonometry for this
 
-#if 0
+#if 1
 
 report_mouse_t pointing_device_task_kb(report_mouse_t mouse_report) {
     report_pmw3360_t data = pmw3360_read_burst(1);
