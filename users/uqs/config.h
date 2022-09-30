@@ -30,8 +30,9 @@
 #define UNICODE_SELECTED_MODES UC_LNX
 
 // make KC_ACL0 et al work when held.
-#define MK_COMBINED
+#define MK_COMBINED  // XXX remove as obsolete with real trackball
 #define MOUSEKEY_WHEEL_INTERVAL 50
+#define AUTO_BUTTONS_TIMEOUT 750
 
 // From https://michael.stapelberg.ch/posts/2021-05-08-keyboard-input-latency-qmk-kinesis/
 #define USB_POLLING_INTERVAL_MS 1

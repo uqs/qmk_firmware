@@ -13,6 +13,7 @@ enum layers {
     L_NUM,
     L_FUNC,
     L_MOUSE,
+    L_DRAGSCROLL,
     L_LAST, // unused
 };
 
@@ -48,8 +49,24 @@ enum custom_keycodes {
     OSM_ALT,
     ALT_TAB,
     DRAG_SCROLL,
-    DRAG_SCROLL2,
-    QUOT_SCROLL,
+};
+
+// Define a type for as many tap dance states as you need
+typedef enum {
+    TD_NONE,
+    TD_UNKNOWN,
+    TD_SINGLE_TAP,
+    TD_SINGLE_HOLD,
+    TD_DOUBLE_TAP
+} td_state_t;
+
+typedef struct {
+    bool is_press_action;
+    td_state_t state;
+} td_tap_t;
+
+enum {
+    MOUSE_SCROLL,
 };
 
 #ifndef LEADER_ENABLE

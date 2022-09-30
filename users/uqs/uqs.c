@@ -127,6 +127,7 @@ const uint16_t PROGMEM my_combos[][4] = {
     {KC_MINUS, KC_C_T, KC_C_N, COMBO_END},
     {KC_MINUS, KC_LPRN, KC_4, COMBO_END},  // dupe to work on NUM layer
     {LSFT(KC_MINUS), KC_D, KC_H, COMBO_END},
+    {LSFT(KC_MINUS), KC_RPRN, KC_1, COMBO_END},  // dupe to work on NUM
     {KC_GRV,  KC_Q, KC_W, COMBO_END},  // remove this? turn into esc:wq?
     {KC_GRV,  KC_C, KC_COMM, COMBO_END},
     {LSFT(KC_GRV), KC_G, KC_M, COMBO_END},
@@ -138,6 +139,7 @@ const uint16_t PROGMEM my_combos[][4] = {
     {KC_MINUS, KC_F, KC_J, COMBO_END},
     {KC_MINUS, KC_LPRN, KC_4, COMBO_END},  // dupe to work on NUM layer
     {LSFT(KC_MINUS), KC_V, KC_M, COMBO_END},
+    {LSFT(KC_MINUS), KC_RPRN, KC_1, COMBO_END},  // dupe to work on NUM
     {COMBO_END},
     {KC_GRV,  KC_C, KC_COMM, COMBO_END},
     {LSFT(KC_GRV), KC_G, KC_H, COMBO_END},
@@ -179,6 +181,7 @@ combo_t key_combos[] = {
   MY_COMBO(8),
   MY_COMBO(9),
   MY_COMBO(10),
+  MY_COMBO(11),
 };
 
 _Static_assert(sizeof(key_combos) / sizeof(key_combos[0]) ==
@@ -301,6 +304,8 @@ uint16_t get_tapping_term(uint16_t keycode, keyrecord_t *record) {
         case KC_S_S:
         case KC_S_E:
             return TAPPING_TERM - 80;
+        case QK_TAP_DANCE ... QK_TAP_DANCE_MAX:
+            return 225;
         default:
             return TAPPING_TERM;
     }
@@ -367,9 +372,16 @@ void maybe_send_umlaut(uint16_t keycode, bool *is_pressed) {
     }
 }
 
-bool set_scrolling = false;
+// Can't use MH_AUTO_BUTTONS, as that requires PS/2 stuff, so crib this from drashna's pointing.c
+static bool set_scrolling = false;
+#if 0
+static uint16_t mouse_timer           = 0;
+static uint16_t mouse_debounce_timer  = 0;
+static uint8_t  mouse_keycode_tracker = 0;
+#endif
+
 report_mouse_t pointing_device_task_user(report_mouse_t mouse_report) {
-    if (set_scrolling /*|| layer_state_is(L_FUNC) */) {
+    if (set_scrolling /*|| layer_state_is(L_FUNC) */ || IS_LAYER_ON(L_DRAGSCROLL)) {
 #if 0
         static uint32_t last_exec = 0;
         if (timer_elapsed32(last_exec) < 20 /*ms*/) {
@@ -392,11 +404,32 @@ report_mouse_t pointing_device_task_user(report_mouse_t mouse_report) {
         mouse_report.v = -mouse_report.y;
 #endif
         mouse_report.x = mouse_report.y = 0;
-        // TODO: accumulate movement in a var and spit it out when a threshold has been reached.
+        // TODO: accumulate movement in a var and spit it out when a threshold has been reached?
         if (mouse_report.h != 0 || mouse_report.v != 0) {
             dprintf("drag_scroll report sending: h=%d v=%d\n", mouse_report.h, mouse_report.v);
         }
     }
+
+#if 0
+    // From drashna, but it a) kicks in with every move, even when the keyboard
+    // only shakes a little, and it b) kills a manual layer change, and c)
+    // needs to not turn off when a mouse button is held for dragging. I don't
+    // fully understand how that's done in the code and frankly haven't warmed
+    // to the auto-layer idea yet.
+    int8_t x = mouse_report.x, y = mouse_report.y;
+    if (x != 0 || y != 0) {
+        mouse_timer = timer_read();
+        if (!layer_state_is(L_MOUSE)) {
+            dprintf("turning on mouse layer\n");
+            layer_on(L_MOUSE);
+        }
+    } else if (timer_elapsed(mouse_timer) > 450 && layer_state_is(L_MOUSE) && !mouse_keycode_tracker) {
+        // XXX don't turn off if the layer key is manually held! is that what
+        // the tracker tries to do?
+        layer_off(L_MOUSE);
+        dprintf("turning off mouse layer\n");
+    }
+#endif
     return mouse_report;
 }
 
@@ -427,27 +460,15 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
             uuml_pressed = false;
         }
     }
-    if (keycode == DRAG_SCROLL2) {
-        if (record->event.pressed) {
-            set_scrolling = !set_scrolling;
-            return true;
-        }
-    }
     if (keycode == DRAG_SCROLL) {
         if (record->event.pressed) {
             dprintf("drag scroll pressed\n");
             set_scrolling = 1;
-#if 0
-            // Done by clamping the output values instead
-            if (set_scrolling) {
-                pointing_device_set_cpi(100);
-            } else {
-                pointing_device_set_cpi(600);
-            }
-#endif
+            pointing_device_set_cpi(100);
         } else {
             dprintf("drag scroll UNpressed\n");
             set_scrolling = 0;
+            pointing_device_set_cpi(500);
         }
         return true;
     }
@@ -605,12 +626,31 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
         }
         return false;
         break;
+        // Same as above, but does the logic via layer switching
+    case LT(L_DRAGSCROLL,KC_QUOT):
+#if defined(POINTING_DEVICE_ENABLE)
+        if (record->event.pressed) {
+            pointing_device_set_cpi(100);
+        } else {
+            pointing_device_set_cpi(500);
+        }
+#endif
+        break;
         // Need to remember if this was pressed, to make the RCTL_T(KC_N) work
         // with that key held.
         // BUG: should one roll ST improperly, the default handling of
         // LSFT_T(KS_S) will eventually clear the shift mod, even though it
         // wasn't the one that added it. So shift can get lost here
-    case SFT_T(KC_SPC):
+    case LSFT_T(KC_SPC):
+        if (record->event.pressed) {
+            force_shift = true;
+        } else {
+            force_shift = false;
+            unregister_mods(MOD_BIT(KC_LSHIFT));
+            unregister_mods(MOD_BIT(KC_RSHIFT));
+        }
+        break;
+    case RSFT_T(KC_ENT):
         if (record->event.pressed) {
             force_shift = true;
         } else {
@@ -797,4 +837,59 @@ const qk_ucis_symbol_t ucis_symbol_table[] = UCIS_TABLE(
     UCIS_SYM("rofl", 0x1F923),                // 🤣
     UCIS_SYM("look", 0x0CA0, 0x005F, 0x0CA0)  // ಠ_ಠ
 );
+#endif
+
+
+#ifdef TAP_DANCE_ENABLE
+// Determine the current tap dance state
+td_state_t cur_dance(qk_tap_dance_state_t *state) {
+    if (state->count == 1) {
+        if (!state->pressed) return TD_SINGLE_TAP;
+        else return TD_SINGLE_HOLD;
+    } else if (state->count == 2) return TD_DOUBLE_TAP;
+    else return TD_UNKNOWN;
+}
+
+// Initialize tap structure associated with example tap dance key
+static td_tap_t ql_tap_state = {
+    .is_press_action = true,
+    .state = TD_NONE
+};
+
+// Functions that control what our tap dance key does
+void ql_finished(qk_tap_dance_state_t *state, void *user_data) {
+    ql_tap_state.state = cur_dance(state);
+    switch (ql_tap_state.state) {
+        case TD_SINGLE_TAP:
+            layer_off(L_MOUSE);
+            set_scrolling = 0;
+            pointing_device_set_cpi(500);
+            break;
+        case TD_SINGLE_HOLD:
+            layer_on(L_MOUSE);
+            break;
+        case TD_DOUBLE_TAP:
+            layer_on(L_MOUSE);
+            set_scrolling = 1;
+            pointing_device_set_cpi(100);
+            break;
+        default:
+            break;
+    }
+}
+
+void ql_reset(qk_tap_dance_state_t *state, void *user_data) {
+    // If the key was held down and now is released then switch off the layer
+    if (ql_tap_state.state == TD_SINGLE_HOLD || ql_tap_state.state == TD_DOUBLE_TAP) {
+        layer_off(L_MOUSE);
+        set_scrolling = 0;
+        pointing_device_set_cpi(500);
+    }
+    ql_tap_state.state = TD_NONE;
+}
+
+// Associate our tap dance key with its functionality
+qk_tap_dance_action_t tap_dance_actions[] = {
+    [MOUSE_SCROLL] = ACTION_TAP_DANCE_FN_ADVANCED(NULL, ql_finished, ql_reset)
+};
 #endif

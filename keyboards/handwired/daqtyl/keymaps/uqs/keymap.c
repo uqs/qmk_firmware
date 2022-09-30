@@ -39,12 +39,12 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
      KC_A,     KC_S,     KC_D,     KC_F,     KC_G,
      KC_Z,     KC_X,     KC_C,     KC_V,     KC_B,
                KC_LBRC,  KC_RBRC,
-     /*thumb*/ LT_EXTD_ESC, SFT_T(KC_SPC), LT(L_FUNC, KC_TAB),
+     /*thumb*/ LT_EXTD_ESC, LSFT_T(KC_SPC), LT(L_FUNC, KC_TAB),
      KC_Y,     KC_U,     KC_I,     KC_O,     KC_P,
      KC_H,     KC_J,     KC_K,     KC_L,     KC_SCLN,
      KC_N,     KC_M,     KC_COMM,  KC_DOT,   KC_SLSH,
                          KC_MINS,  KC_EQL,
-     /*thumb*/ LT(L_MOUSE, DRAG_SCROLL), KC_ENT, LT(L_NUM, KC_BSPC)
+     /*thumb*/ LT(L_MOUSE, DRAG_SCROLL), RSFT_T(KC_ENT), LT(L_NUM, KC_BSPC)
   ),
 
   // The encoder could up/down the mouse sensitivity maybe? Hard to do in game,
@@ -65,17 +65,18 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
   ),
 
   [L_COLM] = LAYOUT_uqs(
-     KC_NO,    KC_BTN2,  KC_BTN3,  KC_BTN1,  KC_NO,
+     //KC_NO,    KC_BTN2,  KC_BTN3,  KC_BTN1,  KC_NO,
+     KC_NO,    KC_NO,    KC_NO,    KC_NO,    KC_NO,
      KC_Q,     KC_W,     KC_F,     KC_P,     KC_B,
      KC_G_A,   KC_A_R,   KC_S_S,   KC_C_T,   KC_G,
      KC_Z,     KC_X,     KC_C,     KC_D,     KC_V,
-               DRAG_SCROLL, MS_WHDN,
-     /*thumb*/ LT_EXTD_ESC, SFT_T(KC_SPC), LT(L_FUNC, KC_TAB),
-     KC_J,     KC_L,     KC_U,     KC_Y,     LT(3,KC_NO),
+               DRAG_SCROLL, KC_NO,
+     /*thumb*/ LT_EXTD_ESC, LSFT_T(KC_SPC), LT(L_FUNC, KC_TAB),
+     KC_J,     KC_L,     KC_U,     KC_Y,     LT(L_DRAGSCROLL,KC_QUOT),
      KC_M,     KC_C_N,   KC_S_E,   KC_A_I,   KC_G_O,
      KC_K,     KC_H,     KC_COMM,  KC_DOT,   KC_SLSH,
                          KC_NO,    KC_NO,
-     /*thumb*/ LT(L_MOUSE, DRAG_SCROLL), SFT_T(KC_ENT), LT(L_NUM, KC_BSPC)
+     /*thumb*/ TD(MOUSE_SCROLL), RSFT_T(KC_ENT), LT(L_NUM, KC_BSPC)
   ),
 
   // Updated with inspiration from https://forum.colemak.com/topic/2014-extend-extra-extreme/
@@ -91,7 +92,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
      KC_LEFT,  KC_DOWN,  KC_UP,    KC_RGHT,  KC_DEL,
      WIN_LEFT, WIN_DN,   WIN_UP,   WIN_RGHT, KC_PSTE,
                          _______,  _______,
-     /*thumb*/ _______,  _______,  KC_BSPC
+     /*thumb*/ _______,  KC_ENT,   KC_BSPC
   ),
 
   // TODO: maybe swap # with ;, that way I can roll :w or :wq which I need
@@ -112,28 +113,42 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 
   [L_FUNC] = LAYOUT_uqs(
      KC_NO,    KC_NO,    KC_NO,    KC_NO,    KC_NO,
-     KC_BTN1,  KC_BTN2,  KC_BTN3,  KC_BTN1,  DF(L_QWER),
+     KC_NO,    KC_NO,    KC_NO,    KC_NO,    DF(L_QWER),
      KC_LGUI,  KC_LALT,  KC_LSFT,  KC_LCTL,  DF(L_WASD),
-     KC_NO,    KC_MUTE,  KC_VOLD,  KC_VOLU,  DF(L_COLM),
+     KC_NO,    KC_VOLU,  KC_VOLD,  KC_MUTE,  DF(L_COLM),
                KC_NO,    KC_NO,
      /*thumb*/ _______,  _______,  _______,
      KC_PSCR,  KC_F7,    KC_F8,    KC_F9,    KC_F10,
      KC_SLCK,  KC_F4,    KC_F5,    KC_F6,    KC_F11,
      KC_PAUS,  KC_F1,    KC_F2,    KC_F3,    KC_F12,
                          KC_NO,    KC_NO,
-     /*thumb*/ _______,  KC_BTN1,  KC_BTN2
+     /*thumb*/ _______,  _______,  _______
   ),
 
   [L_MOUSE] = LAYOUT_uqs(
      _______,  _______,  _______,  _______,  _______,
-     KC_BTN1,  KC_BTN2,  KC_BTN3,  KC_BTN1,  KC_VOLU,
+     KC_BTN1,  KC_BTN2,  KC_PGUP,  KC_BTN1,  KC_VOLU,
      KC_LGUI,  KC_LALT,  KC_LSFT,  KC_LCTL,  KC_VOLD,
-     KC_NO,    MS_WHUP,  MS_WHDN,  KC_NO,    KC_MUTE,
+     ALT_TAB,  MS_WHUP,  MS_WHDN,  KC_PGDN,  KC_MUTE,
                KC_NO,    KC_NO,
-     /*thumb*/ KC_BTN2,  KC_BTN1,  _______,
-     KC_BTN1,  KC_BTN2,  KC_MS_U,  KC_BTN3,  KC_BTN2,
-     DRAG_SCROLL2,KC_MS_L,  KC_MS_D,  KC_MS_R,  _______,
-     _______,  _______,  KC_BTN3,  KC_BTN4,  KC_BTN5,
+     /*thumb*/ LT_EXTD_ESC,  KC_BTN1,  KC_BTN2,
+     KC_BTN1,  KC_BTN2,  KC_MS_U,  _______,  _______,
+     KC_NO,    KC_MS_L,  KC_MS_D,  KC_MS_R,  KC_NO,
+     KC_BTN1,  KC_BTN2,  KC_BTN3,  KC_BTN4,  KC_BTN5,
+                         KC_NO,    KC_NO,
+     /*thumb*/ _______,  _______,  _______
+  ),
+  // same as above but special handling in layer_state_set_user
+  [L_DRAGSCROLL] = LAYOUT_uqs(
+     _______,  _______,  _______,  _______,  _______,
+     KC_BTN1,  KC_BTN2,  KC_PGUP,  KC_BTN1,  KC_VOLU,
+     KC_LGUI,  KC_LALT,  KC_LSFT,  KC_LCTL,  KC_VOLD,
+     KC_NO,    MS_WHUP,  MS_WHDN,  KC_PGDN,  KC_MUTE,
+               KC_NO,    KC_NO,
+     /*thumb*/ _______,  KC_BTN1,  KC_BTN2,
+     KC_BTN1,  KC_BTN2,  KC_MS_U,  _______,  _______,
+     KC_NO,    KC_MS_L,  KC_MS_D,  KC_MS_R,  KC_NO,
+     KC_BTN1,  KC_BTN2,  KC_BTN3,  KC_BTN4,  KC_BTN5,
                          KC_NO,    KC_NO,
      /*thumb*/ _______,  _______,  _______
   ),
