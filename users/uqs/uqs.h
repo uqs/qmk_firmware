@@ -13,7 +13,6 @@ enum layers {
     L_NUM,
     L_FUNC,
     L_MOUSE,
-    L_DRAGSCROLL,
     L_LAST, // unused
 };
 

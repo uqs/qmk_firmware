@@ -44,7 +44,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
      KC_H,     KC_J,     KC_K,     KC_L,     KC_SCLN,
      KC_N,     KC_M,     KC_COMM,  KC_DOT,   KC_SLSH,
                          KC_MINS,  KC_EQL,
-     /*thumb*/ LT(L_MOUSE, DRAG_SCROLL), RSFT_T(KC_ENT), LT(L_NUM, KC_BSPC)
+     /*thumb*/ MO(L_MOUSE), RSFT_T(KC_ENT), LT(L_NUM, KC_BSPC)
   ),
 
   // The encoder could up/down the mouse sensitivity maybe? Hard to do in game,
@@ -60,7 +60,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
      KC_H,     KC_J,     KC_K,     KC_L,     KC_SCLN,
      KC_N,     KC_M,     KC_COMM,  KC_DOT,   KC_SLSH,
                          KC_MINS,  KC_EQL,
-// TODO: make DF a tap, on hold do a switch to COLM??
+// TODO: make DF a tap, on hold do an MO to COLM??
      /*thumb*/ DF(L_COLM), KC_ENT, LT(L_NUM, KC_BSPC)
   ),
 
@@ -70,20 +70,20 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
      KC_Q,     KC_W,     KC_F,     KC_P,     KC_B,
      KC_G_A,   KC_A_R,   KC_S_S,   KC_C_T,   KC_G,
      KC_Z,     KC_X,     KC_C,     KC_D,     KC_V,
-               DRAG_SCROLL, KC_NO,
+               KC_NO,    KC_NO,
      /*thumb*/ LT_EXTD_ESC, LSFT_T(KC_SPC), LT(L_FUNC, KC_TAB),
-     KC_J,     KC_L,     KC_U,     KC_Y,     LT(L_DRAGSCROLL,KC_QUOT),
+     KC_J,     KC_L,     KC_U,     KC_Y,     LT(3, KC_NO),
      KC_M,     KC_C_N,   KC_S_E,   KC_A_I,   KC_G_O,
      KC_K,     KC_H,     KC_COMM,  KC_DOT,   KC_SLSH,
                          KC_NO,    KC_NO,
-     /*thumb*/ TD(MOUSE_SCROLL), RSFT_T(KC_ENT), LT(L_NUM, KC_BSPC)
+     /*thumb*/ MO(L_MOUSE), RSFT_T(KC_ENT), LT(L_NUM, KC_BSPC)
   ),
 
   // Updated with inspiration from https://forum.colemak.com/topic/2014-extend-extra-extreme/
   // I like the AltGr trick from https://stevep99.github.io/seniply/ and should probably incorporate some stuff from it.
   [L_EXTD] = LAYOUT_uqs(
      _______,  _______,  _______,  _______,  _______,
-     KC_BTN1,  KC_SCTAB, KC_PGUP,  KC_CTAB,  KC_LEAD,
+     KC_NO,    KC_SCTAB, KC_PGUP,  KC_CTAB,  KC_LEAD,
      OSM_GUI,  OSM_ALT,  OSM_SFT,  OSM_CTL,  KC_RALT,
      ALT_TAB,  MS_WHUP,  MS_WHDN,  KC_PGDN,  INS_HARD,
                _______,  _______,
@@ -95,14 +95,12 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
      /*thumb*/ _______,  KC_ENT,   KC_BSPC
   ),
 
-  // TODO: maybe swap # with ;, that way I can roll :w or :wq which I need
-  // often ... probably better to add a combo?
   [L_NUM] = LAYOUT_uqs(
      KC_NO,    KC_NO,    KC_NO,    KC_NO,    KC_NO,
      KC_EXLM,  KC_AT,    KC_HASH,  KC_DLR,   KC_PERC,
      KC_SCLN,  KC_COLN,  KC_LCBR,  KC_LPRN,  KC_LBRC,
      KC_CIRC,  KC_AMPR,  KC_RCBR,  KC_RPRN,  KC_RBRC,
-               KC_GRV,   KC_TILDE,
+               KC_NO,    KC_NO,
      /*thumb*/ KC_ESC,   KC_SPC,   KC_TAB,
      KC_KP_ASTERISK, KC_7, KC_8,   KC_9,     KC_KP_PLUS,
      KC_EQUAL, KC_4,     KC_5,     KC_6,     MINS_UNDSCR,
@@ -127,26 +125,12 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 
   [L_MOUSE] = LAYOUT_uqs(
      _______,  _______,  _______,  _______,  _______,
-     KC_BTN1,  KC_BTN2,  KC_PGUP,  KC_BTN1,  KC_VOLU,
-     KC_LGUI,  KC_LALT,  KC_LSFT,  KC_LCTL,  KC_VOLD,
-     ALT_TAB,  MS_WHUP,  MS_WHDN,  KC_PGDN,  KC_MUTE,
+     KC_BTN1,  KC_BTN2,  KC_PGUP,  KC_BTN1,  KC_BTN3,
+     KC_LGUI,  KC_LALT,  KC_LSFT,  KC_LCTL,  KC_NO,
+     ALT_TAB,  MS_WHUP,  MS_WHDN,  KC_PGDN,  KC_NO,
                KC_NO,    KC_NO,
      /*thumb*/ LT_EXTD_ESC,  KC_BTN1,  KC_BTN2,
-     KC_BTN1,  KC_BTN2,  KC_MS_U,  _______,  _______,
-     KC_NO,    KC_MS_L,  KC_MS_D,  KC_MS_R,  KC_NO,
-     KC_BTN1,  KC_BTN2,  KC_BTN3,  KC_BTN4,  KC_BTN5,
-                         KC_NO,    KC_NO,
-     /*thumb*/ _______,  _______,  _______
-  ),
-  // same as above but special handling in layer_state_set_user
-  [L_DRAGSCROLL] = LAYOUT_uqs(
-     _______,  _______,  _______,  _______,  _______,
-     KC_BTN1,  KC_BTN2,  KC_PGUP,  KC_BTN1,  KC_VOLU,
-     KC_LGUI,  KC_LALT,  KC_LSFT,  KC_LCTL,  KC_VOLD,
-     KC_NO,    MS_WHUP,  MS_WHDN,  KC_PGDN,  KC_MUTE,
-               KC_NO,    KC_NO,
-     /*thumb*/ _______,  KC_BTN1,  KC_BTN2,
-     KC_BTN1,  KC_BTN2,  KC_MS_U,  _______,  _______,
+     KC_BTN3,  KC_BTN1,  KC_MS_U,  KC_BTN2,  _______,
      KC_NO,    KC_MS_L,  KC_MS_D,  KC_MS_R,  KC_NO,
      KC_BTN1,  KC_BTN2,  KC_BTN3,  KC_BTN4,  KC_BTN5,
                          KC_NO,    KC_NO,
