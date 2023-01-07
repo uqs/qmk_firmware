@@ -69,7 +69,7 @@ enum {
 };
 
 #ifndef LEADER_ENABLE
-#define KC_LEAD KC_NO
+#define QK_LEAD KC_NO
 #endif
 
 // Shorter names
