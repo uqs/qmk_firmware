@@ -389,6 +389,16 @@ static uint16_t mouse_debounce_timer  = 0;
 static uint8_t  mouse_keycode_tracker = 0;
 #endif
 
+static inline int8_t pointing_device_movement_clamp(int16_t value) {
+    if (value < INT8_MIN) {
+        return INT8_MIN;
+    } else if (value > INT8_MAX) {
+        return INT8_MAX;
+    } else {
+        return value;
+    }
+}
+
 report_mouse_t pointing_device_task_user(report_mouse_t mouse_report) {
     if (set_scrolling /*|| layer_state_is(L_FUNC) */ /*|| IS_LAYER_ON(L_DRAGSCROLL) */) {
 #if 0
@@ -439,6 +449,30 @@ report_mouse_t pointing_device_task_user(report_mouse_t mouse_report) {
         dprintf("turning off mouse layer\n");
     }
 #endif
+
+    // From https://www.reddit.com/r/ErgoMechKeyboards/comments/zttki9/developments_in_posture_efficiency_and_mouse/
+    //mouse_report.x = (mouse_xy_report_t)(mouse_report.x > 0 ? pow(4, mouse_report.x) / 2 + mouse_report.x : -pow(4, abs(mouse_report.x)) / 2 + mouse_report.x);
+
+    //mouse_report.y = (mouse_xy_report_t)(mouse_report.y > 0 ? pow(5, mouse_report.y) / 2 + mouse_report.y : -pow(5, abs(mouse_report.y)) / 2 + mouse_report.y);
+    //
+    // This is incompatible with USB_POLLING_INTERVAL_MS 1 (1000Hz polling) as
+    // you only really get values of 1, maybe a 2 or 3, and you get them in
+    // slower or faster succession when going slow or fast on the trackball.
+
+    // Using pow() explodes the image size by about 2200 bytes.
+    if (mouse_report.x != 0 || mouse_report.y != 0) {
+#if 1
+        dprintf("turning x/y %d %d", mouse_report.x, mouse_report.y);
+        int16_t x = mouse_report.x;
+        int16_t y = mouse_report.y;
+        x = (x*x*x) / 8 + x;
+        y = (y*y*y) / 4 + y;
+        mouse_report.x = pointing_device_movement_clamp(x);
+        mouse_report.y = pointing_device_movement_clamp(y);
+        dprintf(" into x/y %d %d\n", mouse_report.x, mouse_report.y);
+#endif
+    }
+
     return mouse_report;
 }
 
@@ -630,7 +664,7 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
             pointing_device_set_cpi(100);
         } else {
             set_scrolling = 0;
-            pointing_device_set_cpi(500);
+            pointing_device_set_cpi(100);
 #endif
         }
         return false;

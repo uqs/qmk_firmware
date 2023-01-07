@@ -26,7 +26,7 @@ void pointing_device_init_kb(void) {
 #ifdef PMW3389_CS_PINS
     pmw3389_init(1);
 #endif
-    pointing_device_set_cpi(500);
+    pointing_device_set_cpi(100);
 
     pointing_device_init_user();
 }

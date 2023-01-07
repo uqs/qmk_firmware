@@ -36,6 +36,9 @@
 
 // From https://michael.stapelberg.ch/posts/2021-05-08-keyboard-input-latency-qmk-kinesis/
 #define USB_POLLING_INTERVAL_MS 1
+// Too quick polling of trackball makes acceleration code useless
+#define POINTING_DEVICE_TASK_THROTTLE_MS 8
+#define QMK_KEYS_PER_SCAN 4
 
 #ifdef KEYBOARD_preonic_rev3
 // Some games seem to not register Esc otherwise when tapped, maybe try with this delay?
