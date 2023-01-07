@@ -19,14 +19,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "config_common.h"
 
-/* USB Device descriptor parameter */
-#define VENDOR_ID    0x444D
-#define MANUFACTURER tshort
-
-#define PRODUCT      Daqtyl (3x5)
-#define PRODUCT_ID 0x3335  // for 4x5
-#define DEVICE_VER 0x0101
-
 /* key matrix size */
 #define MATRIX_ROWS 5
 #define MATRIX_COLS 10
@@ -42,7 +34,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 #define MATRIX_ROW_PINS { E6, B4, B5, B7, F4 }
 #define MATRIX_COL_PINS { D7, C6, D4, D0, D1, B6, F0, F1, C7, D5 }
-#define UNUSED_PINS // { B0 }
 
 /* COL2ROW, ROW2COL */
 #define DIODE_DIRECTION COL2ROW
@@ -62,15 +53,14 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 /* PMW3360 sensor(s)
  */
-#define PMW3389_CS_PIN F7
-#define PMW3360_CS_PINS { F6, F7 }
+#define PMW33XX_CS_PINS { F6, F7 }
 // global defs
 //#define POINTING_DEVICE_INVERT_Y
 //#define ROTATIONAL_TRANSFORM_ANGLE 180 - 135
 // per sensor defs
-#define POINTING_DEVICE_ROTATION_pwm3360 { 0, 90 }
+#define POINTING_DEVICE_ROTATION_pwm33xx { 0, 90 }
 // These apply _before_ rotating, so you need to make sure to flip the right one.
-#define POINTING_DEVICE_INVERT_XY_pwm3360 { { true, false }, { true, false } }
+#define POINTING_DEVICE_INVERT_XY_pwm33xx { { false, true }, { false, true } }
 
 #define PERMISSIVE_HOLD
 #define IGNORE_MOD_TAP_INTERRUPT

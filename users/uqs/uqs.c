@@ -389,16 +389,6 @@ static uint16_t mouse_debounce_timer  = 0;
 static uint8_t  mouse_keycode_tracker = 0;
 #endif
 
-static inline int8_t pointing_device_movement_clamp(int16_t value) {
-    if (value < INT8_MIN) {
-        return INT8_MIN;
-    } else if (value > INT8_MAX) {
-        return INT8_MAX;
-    } else {
-        return value;
-    }
-}
-
 report_mouse_t pointing_device_task_user(report_mouse_t mouse_report) {
     if (set_scrolling /*|| layer_state_is(L_FUNC) */ /*|| IS_LAYER_ON(L_DRAGSCROLL) */) {
 #if 0
@@ -463,12 +453,12 @@ report_mouse_t pointing_device_task_user(report_mouse_t mouse_report) {
     if (mouse_report.x != 0 || mouse_report.y != 0) {
 #if 1
         dprintf("turning x/y %d %d", mouse_report.x, mouse_report.y);
-        int16_t x = mouse_report.x;
-        int16_t y = mouse_report.y;
+        mouse_xy_report_t x = mouse_report.x;
+        mouse_xy_report_t y = mouse_report.y;
         x = (x*x*x) / 8 + x;
         y = (y*y*y) / 4 + y;
-        mouse_report.x = pointing_device_movement_clamp(x);
-        mouse_report.y = pointing_device_movement_clamp(y);
+        mouse_report.x = x;
+        mouse_report.y = y;
         dprintf(" into x/y %d %d\n", mouse_report.x, mouse_report.y);
 #endif
     }
@@ -691,8 +681,8 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
             force_shift = true;
         } else {
             force_shift = false;
-            unregister_mods(MOD_BIT(KC_LSHIFT));
-            unregister_mods(MOD_BIT(KC_RSHIFT));
+            unregister_mods(MOD_BIT(KC_LSFT));
+            unregister_mods(MOD_BIT(KC_RSFT));
         }
         break;
     case RSFT_T(KC_ENT):
@@ -700,8 +690,8 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
             force_shift = true;
         } else {
             force_shift = false;
-            unregister_mods(MOD_BIT(KC_LSHIFT));
-            unregister_mods(MOD_BIT(KC_RSHIFT));
+            unregister_mods(MOD_BIT(KC_LSFT));
+            unregister_mods(MOD_BIT(KC_RSFT));
         }
         break;
     case KC_S_S:
@@ -710,7 +700,7 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
         } else {
             // restore shift, if we're in force_shift
             if (force_shift) {
-                add_mods(MOD_BIT(KC_LSHIFT));
+                add_mods(MOD_BIT(KC_LSFT));
             }
         }
         break;
@@ -720,7 +710,7 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
         } else {
             // restore shift, if we're in force_shift
             if (force_shift) {
-                add_mods(MOD_BIT(KC_RSHIFT));
+                add_mods(MOD_BIT(KC_RSFT));
             }
         }
         break;
@@ -728,15 +718,15 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
     case KC_C_N:
         if (record->event.pressed && record->tap.count > 0) {
             // Detect right Shift
-            if (!force_shift && get_mods() & MOD_BIT(KC_RSHIFT)) {
+            if (!force_shift && get_mods() & MOD_BIT(KC_RSFT)) {
                 // temporarily disable right Shift
                 // so that we can send KC_E and KC_N
                 // without Shift on.
-                unregister_mods(MOD_BIT(KC_RSHIFT));
+                unregister_mods(MOD_BIT(KC_RSFT));
                 tap_code(KC_E);
                 tap_code(KC_N);
                 // restore the mod state
-                add_mods(MOD_BIT(KC_RSHIFT));
+                add_mods(MOD_BIT(KC_RSFT));
                 // to prevent QMK from processing RCTL_T(KC_N) as usual in our special case
                 return false;
             }
@@ -748,11 +738,11 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
          */
     case KC_C_T:
         if (record->event.pressed && record->tap.count > 0) {
-            if (!force_shift && get_mods() & MOD_BIT(KC_LSHIFT)) {
-                unregister_mods(MOD_BIT(KC_LSHIFT));
+            if (!force_shift && get_mods() & MOD_BIT(KC_LSFT)) {
+                unregister_mods(MOD_BIT(KC_LSFT));
                 tap_code(KC_S);
                 tap_code(KC_T);
-                add_mods(MOD_BIT(KC_LSHIFT));
+                add_mods(MOD_BIT(KC_LSFT));
                 return false;
             }
         }
