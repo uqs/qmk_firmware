@@ -441,22 +441,15 @@ report_mouse_t pointing_device_task_user(report_mouse_t mouse_report) {
 #endif
 
     // From https://www.reddit.com/r/ErgoMechKeyboards/comments/zttki9/developments_in_posture_efficiency_and_mouse/
-    //mouse_report.x = (mouse_xy_report_t)(mouse_report.x > 0 ? pow(4, mouse_report.x) / 2 + mouse_report.x : -pow(4, abs(mouse_report.x)) / 2 + mouse_report.x);
-
-    //mouse_report.y = (mouse_xy_report_t)(mouse_report.y > 0 ? pow(5, mouse_report.y) / 2 + mouse_report.y : -pow(5, abs(mouse_report.y)) / 2 + mouse_report.y);
-    //
-    // This is incompatible with USB_POLLING_INTERVAL_MS 1 (1000Hz polling) as
-    // you only really get values of 1, maybe a 2 or 3, and you get them in
-    // slower or faster succession when going slow or fast on the trackball.
-
     // Using pow() explodes the image size by about 2200 bytes.
+    // Check out https://www.wolframalpha.com/input?i=plot+%28x%5E2%29+%2F+4+%2B+x+and+x%5E3+%2F+16+%2B+x+and+x+%28x%5E1.8%29+%2B+1.5*x+for+x%3D-10+to+10
     if (mouse_report.x != 0 || mouse_report.y != 0) {
 #if 1
         dprintf("turning x/y %d %d", mouse_report.x, mouse_report.y);
         mouse_xy_report_t x = mouse_report.x;
         mouse_xy_report_t y = mouse_report.y;
-        x = (x*x*x) / 8 + x;
-        y = (y*y*y) / 4 + y;
+        x = (x*x*x) / 64 + x;
+        y = (y*y*y) / 64 + y;
         mouse_report.x = x;
         mouse_report.y = y;
         dprintf(" into x/y %d %d\n", mouse_report.x, mouse_report.y);
@@ -654,7 +647,7 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
             pointing_device_set_cpi(100);
         } else {
             set_scrolling = 0;
-            pointing_device_set_cpi(100);
+            pointing_device_set_cpi(250);
 #endif
         }
         return false;

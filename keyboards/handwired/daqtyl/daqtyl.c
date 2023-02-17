@@ -26,7 +26,7 @@ void pointing_device_init_kb(void) {
     // there
     //pmw33xx_init(1);
 
-    pointing_device_set_cpi(100);
+    pointing_device_set_cpi(250);
     pointing_device_init_user();
 }
 
