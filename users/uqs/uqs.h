@@ -40,6 +40,7 @@ enum custom_keycodes {
     WIN_RGHT,
     WIN_UP,
     WIN_DN,
+    T_PANE,
     LT_EXTD_ESC,
     LT_NUM_BSPC,
     OSM_GUI,

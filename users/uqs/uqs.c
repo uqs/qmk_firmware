@@ -812,6 +812,9 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
     case WIN_RGHT:
         if (record->event.pressed) SEND_STRING(SS_LCTL("w") SS_TAP(X_L));
         break;
+    case T_PANE:
+        if (record->event.pressed) SEND_STRING(SS_LCTL("a") SS_TAP(X_SCLN));
+        break;
     }
 
     return true;

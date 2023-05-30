@@ -26,11 +26,17 @@
 #define LEADER_TIMEOUT 400
 #define LEADER_PER_KEY_TIMING
 
+//#define COMBO_TERM 80  // default is 40ms
+
 #define UNICODE_SELECTED_MODES UNICODE_MODE_LINUX
 
 // make KC_ACL0 et al work when held.
-#define MK_COMBINED  // XXX remove as obsolete with real trackball
-#define MOUSEKEY_WHEEL_INTERVAL 50
+#define MK_COMBINED
+#define MOUSEKEY_WHEEL_DELAY 10
+#define MOUSEKEY_WHEEL_INTERVAL 100 // 80 is default
+#define MOUSEKEY_WHEEL_MAX_SPEED 4
+#define MOUSEKEY_WHEEL_TIME_TO_MAX 250 // 40 is default
+
 #define AUTO_BUTTONS_TIMEOUT 750
 
 // From https://michael.stapelberg.ch/posts/2021-05-08-keyboard-input-latency-qmk-kinesis/
