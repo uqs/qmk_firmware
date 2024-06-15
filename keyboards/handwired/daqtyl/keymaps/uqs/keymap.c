@@ -83,7 +83,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
   // I like the AltGr trick from https://stevep99.github.io/seniply/ and should probably incorporate some stuff from it.
   [L_EXTD] = LAYOUT_uqs(
      _______,  _______,  _______,  _______,  _______,
-     T_PANE,   KC_SCTAB, KC_PGUP,  KC_CTAB,  KC_LEAD,
+     T_PANE,   KC_SCTAB, KC_PGUP,  KC_CTAB,  QK_LEAD,
      OSM_GUI,  OSM_ALT,  OSM_SFT,  OSM_CTL,  KC_RALT,
      ALT_TAB,  MS_WHUP,  MS_WHDN,  KC_PGDN,  INS_HARD,
                _______,  _______,

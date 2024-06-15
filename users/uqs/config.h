@@ -31,6 +31,7 @@
 
 // make KC_ACL0 et al work when held.
 #define MK_COMBINED
+#undef MOUSEKEY_WHEEL_DELAY
 #define MOUSEKEY_WHEEL_DELAY 10
 #define MOUSEKEY_WHEEL_INTERVAL 100 // 80 is default
 #define MOUSEKEY_WHEEL_MAX_SPEED 4
