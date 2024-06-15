@@ -36,8 +36,6 @@ void print_byte(uint8_t byte) {
 #endif
 #define constrain(amt, low, high) ((amt) < (low) ? (low) : ((amt) > (high) ? (high) : (amt)))
 
-const size_t pmw33xx_number_of_sensors = ARRAY_SIZE(cs_pins);
-
 bool __attribute__((cold)) pmw33xx_upload_firmware(uint8_t sensor);
 bool __attribute__((cold)) pmw33xx_check_signature(uint8_t sensor);
 
