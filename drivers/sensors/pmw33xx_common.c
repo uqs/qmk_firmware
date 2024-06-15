@@ -1,3 +1,4 @@
+// Copyright 2022 Pablo Martinez (@elpekenin)
 // Copyright 2022 Daniel Kao (dkao)
 // Copyright 2022 Stefan Kerkmann (KarlK90)
 // Copyright 2022 Ulrich Spörlein (@uqs)
@@ -20,9 +21,11 @@
 extern const uint8_t pmw33xx_firmware_data[PMW33XX_FIRMWARE_LENGTH] PROGMEM;
 extern const uint8_t pmw33xx_firmware_signature[3] PROGMEM;
 
-static const pin_t cs_pins[]                     = PMW33XX_CS_PINS;
+static const pin_t cs_pins_left[]  = PMW33XX_CS_PINS;
+static const pin_t cs_pins_right[] = PMW33XX_CS_PINS_RIGHT;
 #define NUMBER_OF_SENSORS (sizeof(cs_pins) / sizeof(pin_t))
-static bool        in_burst[ARRAY_SIZE(cs_pins)] = {0};
+static bool in_burst_left[ARRAY_SIZE(cs_pins_left)]   = {0};
+static bool in_burst_right[ARRAY_SIZE(cs_pins_right)] = {0};
 
 #ifdef CONSOLE_ENABLE
 static fast_timer_t init_time;
@@ -49,7 +52,7 @@ bool pmw33xx_spi_start(uint8_t sensor) {
         spi_stop();
         return false;
     }
-    // tNCS-SCLK, 120ns
+    // tNCS-SCLK, 10ns
     wait_us(1);
     return true;
 }
@@ -73,7 +76,7 @@ bool pmw33xx_write(uint8_t sensor, uint8_t reg_addr, uint8_t data) {
     wait_us(35);
     spi_stop();
 
-    // tSWW/tSWR (=180us) minus tSCLK-NCS. Could be shortened, but it looks like
+    // tSWW/tSWR (=18us) minus tSCLK-NCS. Could be shortened, but it looks like
     // a safe lower bound
     wait_us(145);
     return true;
@@ -201,7 +204,6 @@ bool pmw33xx_init(uint8_t sensor) {
 #endif
 
     pmw33xx_write(sensor, REG_Config2, 0x00);
-    // XXX data sheet only shows from -30 deg to 30deg, using values 0xe2 for -30, 0x00 for 0, 0x1e for +30
     pmw33xx_write(sensor, REG_Angle_Tune, CONSTRAIN(ROTATIONAL_TRANSFORM_ANGLE, -127, 127));
     pmw33xx_write(sensor, REG_Lift_Config, PMW33XX_LIFTOFF_DISTANCE);
 

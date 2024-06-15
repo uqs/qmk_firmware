@@ -11,7 +11,7 @@ ifeq ($(filter $(strip $(KEYBOARD)),ploopyco/mouse),)
     MOUSEKEY_ENABLE ?= yes
 
     # Trying this out ...
-    TAP_DANCE_ENABLE = yes
+    # TAP_DANCE_ENABLE = yes
 
     # Disable all the unused stuff.
     SPACE_CADET_ENABLE = no

@@ -22,16 +22,11 @@
          R45, R46, R47,           \
          R32, R33                 \
 )                                 \
-LAYOUT_stack(                     \
-    L00, L01, L02, L03, L04, L05,                   \
-    L12, L13, L14, L15, L16, L17,                   \
-    L24, L25, L26, L27, L28, L29, L30, L31,         \
-                   L40, L41, L42, L43, L44,         \
-                                                    \
-                  R06, R07, R08, R09, R10, R11,     \
-                  R18, R19, R20, R21, R22, R23,     \
-        R32, R33, R34, R35, R36, R37, R38, R39,     \
-        R45, R46, R47, R48, R49                     \
+LAYOUT_split_3x6_5(                     \
+    L00, L01, L02, L03, L04, L05,                          R06, R07, R08, R09, R10, R11, \
+    L12, L13, L14, L15, L16, L17,                          R18, R19, R20, R21, R22, R23, \
+    L24, L25, L26, L27, L28, L29, L30, L31,      R32, R33, R34, R35, R36, R37, R38, R39, \
+                   L40, L41, L42, L43, L44,      R45, R46, R47, R48, R49 \
 )
 
 // clang-format off
@@ -47,7 +42,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
      KC_H,     KC_J,     KC_K,     KC_L,     KC_SCLN,  KC_QUOT,
      KC_N,     KC_M,     KC_COMM,  KC_DOT,   KC_SLSH,  RSFT_T(KC_GRV),
                          KC_MINS,  KC_EQL,
-     /*thumb*/ LT(L_FUNC, KC_LEAD), KC_ENT, LT(L_NUM, KC_BSPC),
+     /*thumb*/ LT(L_FUNC, QK_LEAD), KC_ENT, LT(L_NUM, KC_BSPC),
       /*aux*/  KC_RALT,  KC_APP
   ),
 
@@ -77,7 +72,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
      KC_M,     KC_C_N,   KC_S_E,   KC_A_I,   KC_G_O,   KC_NO,
      KC_K,     KC_H,     KC_COMM,  KC_DOT,   KC_SLSH,  KC_NO,
                          KC_NO,    KC_NO,
-     /*thumb*/ LT(L_FUNC, KC_LEAD), KC_ENT, LT(L_NUM, KC_BSPC),
+     /*thumb*/ LT(L_FUNC, QK_LEAD), KC_ENT, LT(L_NUM, KC_BSPC),
       /*aux*/  KC_RALT,  KC_APP
   ),
 
