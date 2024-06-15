@@ -83,11 +83,15 @@ _Static_assert(sizeof((pmw33xx_report_t){0}.motion) == 1, "pmw33xx_report_t.moti
 
 // Support single spelling and default to be the same as left side
 #if !defined(PMW33XX_CS_PINS_RIGHT)
-#    if !defined(PMW33XX_CS_PIN_RIGHT)
-#        define PMW33XX_CS_PIN_RIGHT PMW33XX_CS_PIN
+#    if defined(PMW33XX_CS_PINS)
+#        define PMW33XX_CS_PINS_RIGHT PMW33XX_CS_PINS
+#    else
+#        if !defined(PMW33XX_CS_PIN_RIGHT)
+#            define PMW33XX_CS_PIN_RIGHT PMW33XX_CS_PIN
+#        endif
+#        define PMW33XX_CS_PINS_RIGHT \
+            { PMW33XX_CS_PIN_RIGHT }
 #    endif
-#    define PMW33XX_CS_PINS_RIGHT \
-        { PMW33XX_CS_PIN_RIGHT }
 #endif
 
 // Defines so the old variable names are swapped by the appropiate value on each half
