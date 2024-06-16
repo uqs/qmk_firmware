@@ -470,7 +470,7 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
             pointing_device_set_cpi(100);
         } else {
             set_scrolling = 0;
-            pointing_device_set_cpi(250);
+            pointing_device_set_cpi(300);
 #endif
         }
         return false;
