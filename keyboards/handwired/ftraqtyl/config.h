@@ -1,5 +1,5 @@
 /*
-Copyright 2022 Ulrich Spörlein
+Copyright 2024 Ulrich Spörlein
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -30,8 +30,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 /* PMW3360 sensor(s)
  */
-#define PMW33XX_CS_PINS { F7 }
-#define POINTING_DEVICE_ROTATION_90
+#define PMW33XX_CS_PIN F7
+#define PMW33XX_CPI 300
+#define ROTATIONAL_TRANSFORM_ANGLE -90
 #define POINTING_DEVICE_INVERT_X
 
 /* mouse config */

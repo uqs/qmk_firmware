@@ -123,6 +123,13 @@ void keyboard_post_init_user(void) {
 #ifdef TAPPING_TERM_PER_KEY
 uint16_t get_tapping_term(uint16_t keycode, keyrecord_t *record) {
     switch (keycode) {
+        // Can't enter my 5+6==0 combo without delay otherwise, when the
+        // tapping term isn't up yet, it sees a number getting pressed, fine,
+        // so one can enter them immediately after entering the layer, but it
+        // doesn't check for whether actually a combo was triggered! So
+        // Num+digit is fine, but Num+combo results in 2 digits.
+        case LT(L_NUM, KC_BSPC):
+            return TAPPING_TERM - 100;
         case KC_G_A:
         case KC_A_R:
         case KC_A_I:
@@ -144,13 +151,12 @@ uint16_t get_tapping_term(uint16_t keycode, keyrecord_t *record) {
 
 // Make the backspace and tab be holds on the tap key, not the hold key on
 // double-tap-and-hold
-#ifdef TAPPING_FORCE_HOLD_PER_KEY
-bool get_tapping_force_hold(uint16_t keycode, keyrecord_t *record) {
+#ifdef QUICK_TAP_TERM_PER_KEY
+uint16_t get_quick_tap_term(uint16_t keycode, keyrecord_t *record) {
     switch (keycode) {
         case LT(L_FUNC, KC_TAB):
-        //case LT(L_NUM, KC_BSPC):  // would be nice, but can't backspace + number entry quickly anymore
-        //case LT(L_MOUSE, DRAG_SCROLL):  // doesn't work, as DRAG_SCROLL is then not handled as a keypress event
-            return false;
+        case LT(L_NUM, KC_BSPC):  // would be nice, but can't backspace + number entry quickly anymore
+            return QUICK_TAP_TERM;
             // For mod-taps aka home row mods, default to holding the hold
             // function, so I can type 's' followed by holding it, to get a
             // shifted '?'. If this sounds reversed, that's because I have
@@ -169,6 +175,8 @@ bool get_hold_on_other_key_press(uint16_t keycode, keyrecord_t *record) {
     switch (keycode) {
         case LT(L_NUM, KC_BSPC):
             // Immediately select the hold action when another key is pressed.
+            // FIXME: doesn't work with combos, my 5+6=0 combo doesn't trigger,
+            // and I get 5 and 6 instead.
             return true;
         default:
             // Do not select the hold action when another key is pressed.
@@ -475,18 +483,6 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
         }
         return false;
         break;
-#if 0
-        // Same as above, but does the logic via layer switching, needs duplicated layer though.
-    case LT(L_DRAGSCROLL,KC_QUOT):
-#if defined(POINTING_DEVICE_ENABLE)
-        if (record->event.pressed) {
-            pointing_device_set_cpi(100);
-        } else {
-            pointing_device_set_cpi(500);
-        }
-#endif
-        break;
-#endif
         // Need to remember if this was pressed, to make the RCTL_T(KC_N) work
         // with that key held.
         // BUG: should one roll ST improperly, the default handling of
@@ -684,59 +680,4 @@ const ucis_symbol_t ucis_symbol_table[] = UCIS_TABLE(
     UCIS_SYM("rofl", 0x1F923),                // 🤣
     UCIS_SYM("look", 0x0CA0, 0x005F, 0x0CA0)  // ಠ_ಠ
 );
-#endif
-
-#ifdef TAP_DANCE_ENABLE
-// Determine the current tap dance state
-td_state_t cur_dance(qk_tap_dance_state_t *state) {
-    if (state->count == 1) {
-        if (!state->pressed) return TD_SINGLE_TAP;
-        else return TD_SINGLE_HOLD;
-    } else if (state->count == 2) return TD_DOUBLE_TAP;
-    else return TD_UNKNOWN;
-}
-
-// Initialize tap structure associated with tap dance key
-static td_tap_t ql_tap_state = {
-    .is_press_action = true,
-    .state = TD_NONE
-};
-
-// Functions that control what our tap dance key does
-void ql_finished(qk_tap_dance_state_t *state, void *user_data) {
-    ql_tap_state.state = cur_dance(state);
-    switch (ql_tap_state.state) {
-        case TD_SINGLE_TAP:
-            layer_off(L_MOUSE);
-            set_scrolling = 0;
-            pointing_device_set_cpi(500);
-            break;
-        case TD_SINGLE_HOLD:
-            layer_on(L_MOUSE);
-            break;
-        case TD_DOUBLE_TAP:
-            dprintf("triggered tap dance mouse_scroll\n");
-            layer_on(L_MOUSE);
-            set_scrolling = 1;
-            pointing_device_set_cpi(100);
-            break;
-        default:
-            break;
-    }
-}
-
-void ql_reset(qk_tap_dance_state_t *state, void *user_data) {
-    dprintf("tap dance reset called\n");
-    // If the key was held down and now is released then switch off the layer
-    if (ql_tap_state.state == TD_SINGLE_HOLD || ql_tap_state.state == TD_DOUBLE_TAP) {
-        layer_off(L_MOUSE);
-        set_scrolling = 0;
-        pointing_device_set_cpi(500);
-    }
-    ql_tap_state.state = TD_NONE;
-}
-
-qk_tap_dance_action_t tap_dance_actions[] = {
-    [MOUSE_SCROLL] = ACTION_TAP_DANCE_FN_ADVANCED(NULL, ql_finished, ql_reset)
-};
 #endif

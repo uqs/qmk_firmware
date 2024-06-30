@@ -17,6 +17,7 @@
 #include "pointing_device.h"
 #include "drivers/sensors/pmw33xx_common.h"
 
+#if 0
 #ifdef POINTING_DEVICE_ENABLE
 void pointing_device_init_kb(void) {
     // calling this freezes the board, works when it's _not_ called for index 0
@@ -28,12 +29,7 @@ void pointing_device_init_kb(void) {
     pointing_device_set_cpi(300);
     pointing_device_init_user();
 }
-
-// TODO: the sensors are installed at a 45 degree angle, which avoids
-// installing them at the bottom, which should help keep them a bit more dust
-// free. But this means they "see" less of a distance travelled in one of the
-// axis, which we need to compensate for.
-// TODO: insert trigonometry for this
+#endif
 
 #if 0
 report_mouse_t pointing_device_task_kb(report_mouse_t mouse_report) {
