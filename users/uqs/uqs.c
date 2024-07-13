@@ -219,6 +219,8 @@ static uint8_t  mouse_keycode_tracker = 0;
 #endif
 
 report_mouse_t pointing_device_task_user(report_mouse_t mouse_report) {
+    static int16_t scroll_buffer_x = 0;
+    static int16_t scroll_buffer_y = 0;
     if (set_scrolling /*|| layer_state_is(L_FUNC) */ /*|| IS_LAYER_ON(L_DRAGSCROLL) */) {
 #if 0
         static uint32_t last_exec = 0;
@@ -238,13 +240,24 @@ report_mouse_t pointing_device_task_user(report_mouse_t mouse_report) {
             mouse_report.v = 1;
         }
 #else
-        mouse_report.h =  mouse_report.x;
-        mouse_report.v = -mouse_report.y;
+        scroll_buffer_x += mouse_report.x;
+        scroll_buffer_y -= mouse_report.y;
+        if (abs(scroll_buffer_x) > DRAGSCROLL_BUFFER_SIZE) {
+            mouse_report.h = scroll_buffer_x > 0 ? 1 : -1;
+            scroll_buffer_x = 0;
+        }
+        if (abs(scroll_buffer_y) > DRAGSCROLL_BUFFER_SIZE) {
+            mouse_report.v = scroll_buffer_y > 0 ? 1 : -1;
+            scroll_buffer_y = 0;
+        }
+        dprintf("dragscroll buffer at h=%d v=%d\n", scroll_buffer_x, scroll_buffer_y);
 #endif
         mouse_report.x = mouse_report.y = 0;
         // TODO: accumulate movement in a var and spit it out when a threshold has been reached?
+        // See keyboards/handwired/tractyl_manuform/tractyl_manuform.c for a
+        // BUFFER feature, not tested it myself yet
         if (mouse_report.h != 0 || mouse_report.v != 0) {
-            //dprintf("dragscroll report sending: h=%d v=%d\n", mouse_report.h, mouse_report.v);
+            dprintf("dragscroll report sending: h=%d v=%d\n", mouse_report.h, mouse_report.v);
         }
     }
 
@@ -320,11 +333,11 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
         if (record->event.pressed) {
             dprintf("drag scroll pressed\n");
             set_scrolling = 1;
-            pointing_device_set_cpi(100);
+            //pointing_device_set_cpi(100);
         } else {
             dprintf("drag scroll UNpressed\n");
             set_scrolling = 0;
-            pointing_device_set_cpi(500);
+            //pointing_device_set_cpi(500);
         }
 #endif
         return true;

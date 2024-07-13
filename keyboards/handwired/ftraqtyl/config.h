@@ -31,12 +31,16 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 /* PMW3360 sensor(s)
  */
 #define PMW33XX_CS_PIN F7
-#define PMW33XX_CPI 300
+#define PMW33XX_CPI 350
 #define ROTATIONAL_TRANSFORM_ANGLE -90
 #define POINTING_DEVICE_INVERT_X
+// Too quick polling of trackball makes acceleration code useless
+#define POINTING_DEVICE_TASK_THROTTLE_MS 8
 
 /* mouse config */
 #define MOUSEKEY_INTERVAL    20
 #define MOUSEKEY_DELAY       0
 #define MOUSEKEY_TIME_TO_MAX 60
 #define MOUSEKEY_MAX_SPEED   7
+
+#define MOUSE_EXTENDED_REPORT

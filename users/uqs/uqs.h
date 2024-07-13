@@ -65,9 +65,7 @@ typedef struct {
     td_state_t state;
 } td_tap_t;
 
-enum {
-    MOUSE_SCROLL,
-};
+#define DRAGSCROLL_BUFFER_SIZE 1
 
 #ifndef LEADER_ENABLE
 #define QK_LEAD KC_NO

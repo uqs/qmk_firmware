@@ -14,12 +14,9 @@
 
 #define TAPPING_TERM 200  // ms to trigger tap
 #define TAPPING_TERM_PER_KEY
-// https://precondition.github.io/home-row-mods
-//#define QUICK_TAP_TERM 0  // make tap-then-hold _not_ do key auto repeat
-#define QUICK_TAP_TERM_PER_KEY  // ... but do it for some!
+#define QUICK_TAP_TERM_PER_KEY  // make tap-then-hold _not_ do key auto repeat
 #define HOLD_ON_OTHER_KEY_PRESS  // obsolete my LT_NUM_BSPC
 #define HOLD_ON_OTHER_KEY_PRESS_PER_KEY  // ... but not for mod-taps!
-#define PERMISSIVE_HOLD  // I don't think this works for me, hence I rolled my own implementation.
 
 #define LEADER_TIMEOUT 400
 #define LEADER_PER_KEY_TIMING
@@ -31,13 +28,8 @@
 #undef MOUSEKEY_WHEEL_DELAY
 #define MOUSEKEY_WHEEL_DELAY 10
 #define MOUSEKEY_WHEEL_INTERVAL 100 // 80 is default
-#define MOUSEKEY_WHEEL_MAX_SPEED 4
+#define MOUSEKEY_WHEEL_MAX_SPEED 16 //4
 #define MOUSEKEY_WHEEL_TIME_TO_MAX 250 // 40 is default
-
-// From https://michael.stapelberg.ch/posts/2021-05-08-keyboard-input-latency-qmk-kinesis/
-#define USB_POLLING_INTERVAL_MS 1
-// Too quick polling of trackball makes acceleration code useless
-#define POINTING_DEVICE_TASK_THROTTLE_MS 8
 
 #ifdef KEYBOARD_preonic_rev3
 // Some games seem to not register Esc otherwise when tapped, maybe try with this delay?
