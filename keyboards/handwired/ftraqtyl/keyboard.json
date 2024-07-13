@@ -21,6 +21,12 @@
         "rows": ["E6", "B4", "B5", "B7"]
     },
     "diode_direction": "COL2ROW",
+    "encoder": {
+        "enabled": true,
+        "rotary": [
+            {"pin_a": "D3", "pin_b": "D2"}
+        ]
+    },
     "usb": {
         "device_version": "0.2.0",
         "vid": "0x444D",
@@ -75,11 +81,5 @@
                 {"matrix": [3, 9], "x": 9.5, "y": 3.25}
             ]
         }
-    },
-    "encoder": {
-        "enabled": true,
-        "rotary": [
-            {"pin_a": "D3", "pin_b": "D2"}
-        ]
     }
 }
