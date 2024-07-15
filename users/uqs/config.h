@@ -14,7 +14,8 @@
 
 #define TAPPING_TERM 200  // ms to trigger tap
 #define TAPPING_TERM_PER_KEY
-#define QUICK_TAP_TERM_PER_KEY  // make tap-then-hold _not_ do key auto repeat
+#define QUICK_TAP_TERM 0  // actually disable them all, I only had it enabled for LT(L_FUNC,KC_TAB)
+//#define QUICK_TAP_TERM_PER_KEY  // make tap-then-hold _not_ do key auto repeat
 #define HOLD_ON_OTHER_KEY_PRESS  // obsolete my LT_NUM_BSPC
 #define HOLD_ON_OTHER_KEY_PRESS_PER_KEY  // ... but not for mod-taps!
 

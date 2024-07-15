@@ -155,16 +155,13 @@ uint16_t get_tapping_term(uint16_t keycode, keyrecord_t *record) {
 uint16_t get_quick_tap_term(uint16_t keycode, keyrecord_t *record) {
     switch (keycode) {
         case LT(L_FUNC, KC_TAB):
-        case LT(L_NUM, KC_BSPC):  // would be nice, but can't backspace + number entry quickly anymore
+        //case LT(L_NUM, KC_BSPC):  // would be nice, but can't backspace + number entry quickly anymore
             return QUICK_TAP_TERM;
             // For mod-taps aka home row mods, default to holding the hold
             // function, so I can type 's' followed by holding it, to get a
-            // shifted '?'. If this sounds reversed, that's because I have
-            // TAPPING_FORCE_HOLD defined globally, so tapping will force a
-            // hold of the hold function, not a hold of the tapping function.
-            // See https://github.com/qmk/qmk_firmware/pull/7859
+            // shifted '?'.
         default:
-            return true;
+            return 0;
     }
 }
 #endif
@@ -659,6 +656,7 @@ void leader_end_user(void) {
         ucis_start();
     }
 #endif
+#ifdef UNICODE_COMMON_ENABLE
     if (leader_sequence_one_key(KC_H)) {
         send_unicode_string("ᕕ( ᐛ )ᕗ");  // happy
     }
@@ -683,8 +681,9 @@ void leader_end_user(void) {
         //send_unicode_hex_string("0028 30CE 0CA0 75CA 0CA0 0029 30CE 5F61 253B 2501 253B");
         send_unicode_string("┬─┬ノ( º _ ºノ)");
     }
-}
 #endif
+#endif
+}
 
 #ifdef UCIS_ENABLE
 // 3 codepoints at most, otherwise increase UCIS_MAX_CODE_POINTS
