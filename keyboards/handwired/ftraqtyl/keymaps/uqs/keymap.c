@@ -2,7 +2,6 @@
 // SPDX-License-Identifier: GPL-2.0-or-later
 // vi:et sw=4 ve=all cc=5,15,25,35,45,55,56,57,65,75,85,95,105:
 
-#include QMK_KEYBOARD_H
 #include "uqs.h"
 
 /*
