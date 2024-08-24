@@ -26,7 +26,7 @@ void pointing_device_init_kb(void) {
     // there
     //pmw33xx_init(1);
 
-    pointing_device_set_cpi(250);
+    pointing_device_set_cpi(400);
     pointing_device_init_user();
 }
 
@@ -50,6 +50,21 @@ report_mouse_t pointing_device_task_kb(report_mouse_t mouse_report) {
         mouse_report.y = constrain_hid(mouse_report.y + data.delta_y);
     }
 
+    // From https://www.reddit.com/r/ErgoMechKeyboards/comments/zttki9/developments_in_posture_efficiency_and_mouse/
+    // Using pow() explodes the image size by about 2200 bytes.
+    // Check out https://www.wolframalpha.com/input?i=plot+%28x%5E2%29+%2F+4+%2B+x+and+x%5E3+%2F+16+%2B+x+and+x+%28x%5E1.8%29+%2B+1.5*x+for+x%3D-10+to+10
+    if (mouse_report.x != 0 || mouse_report.y != 0) {
+#if 1
+        dprintf("turning x/y %d %d", mouse_report.x, mouse_report.y);
+        mouse_xy_report_t x = mouse_report.x;
+        mouse_xy_report_t y = mouse_report.y;
+        x = (x*x*x) / 64 + x;
+        y = (y*y*y) / 64 + y;
+        mouse_report.x = x;
+        mouse_report.y = y;
+        dprintf(" into x/y %d %d\n", mouse_report.x, mouse_report.y);
+#endif
+    }
     return pointing_device_task_user(mouse_report);
 }
 #endif

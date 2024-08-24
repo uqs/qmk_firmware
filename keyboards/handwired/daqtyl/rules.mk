@@ -13,6 +13,12 @@ CONSOLE_ENABLE = yes         # Console for debug
 #COMMAND_ENABLE = no         # Commands for debug and configuration
 RGBLIGHT_ENABLE = no        # Enable keyboard RGB underglow
 
+LTO_ENABLE ?= yes  # disables the legacy TMK Macros and Functions features
+COMBO_ENABLE ?= yes
+# Disable all the unused stuff.
+SPACE_CADET_ENABLE = no
+#MAGIC_ENABLE = no  # needed for volume up/down
+
 # Specify firmware format that is copied to root qmk_firmware folder
 FIRMWARE_FORMAT = hex
 
