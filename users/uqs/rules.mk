@@ -8,8 +8,8 @@ ifneq ($(filter $(strip $(KEYBOARD)),splitkb/kyria),)
 endif
     LTO_ENABLE ?= yes  # disables the legacy TMK Macros and Functions features
 
-    #UCIS_ENABLE ?= yes
-    #UNICODE_COMMON = yes
+    UCIS_ENABLE ?= yes
+    UNICODE_COMMON ?= yes
     LEADER_ENABLE ?= yes
     COMBO_ENABLE ?= yes
     MOUSEKEY_ENABLE ?= yes

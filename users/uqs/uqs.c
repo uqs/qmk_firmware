@@ -638,14 +638,10 @@ void leader_end_user(void) {
     }
     // tableflip (LEADER - TF)
     if (leader_sequence_two_keys(KC_T, KC_F)) {
-        //set_unicode_input_mode(UNICODE_MODE_LINUX);
-        //send_unicode_hex_string("0028 30CE 0CA0 75CA 0CA0 0029 30CE 5F61 253B 2501 253B");
         send_unicode_string("(╯°□°）╯︵ ┻━┻");
     }
     // untableflip
     if (leader_sequence_three_keys(KC_U, KC_T, KC_F)) {
-        //set_unicode_input_mode(UNICODE_MODE_LINUX);
-        //send_unicode_hex_string("0028 30CE 0CA0 75CA 0CA0 0029 30CE 5F61 253B 2501 253B");
         send_unicode_string("┬─┬ノ( º _ ºノ)");
     }
 #endif
