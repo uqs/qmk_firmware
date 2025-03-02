@@ -22,7 +22,7 @@
     },
     "diode_direction": "COL2ROW",
     "encoder": {
-        "enabled": true,
+        "enabled": false,
         "rotary": [
             {"pin_a": "D3", "pin_b": "D2"}
         ]

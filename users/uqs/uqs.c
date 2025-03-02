@@ -340,7 +340,9 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
         return true;
     }
 
+#ifndef CHORDAL_HOLD
     static bool force_shift = false;
+#endif
 
     switch (keycode) {
         // From https://github.com/qmk/qmk_firmware/issues/6053
@@ -441,43 +443,6 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
 #define OSM_GUI OSM(MOD_LGUI)
 #define OSM_SFT OSM(MOD_LSFT)
 #endif
-    // Obsoleted by using combos for umlauts now.
-    case KC_A_AE:
-        if (record->event.pressed) {
-            key_timer = timer_read();
-            auml_pressed = true;
-        } else {
-            maybe_send_umlaut(KC_A, &auml_pressed);
-        }
-        break;
-    case KC_O_OE:
-        if (record->event.pressed) {
-            key_timer = timer_read();
-            ouml_pressed = true;
-        } else {
-            maybe_send_umlaut(KC_O, &ouml_pressed);
-        }
-        break;
-    case KC_U_UE:
-        if (record->event.pressed) {
-            key_timer = timer_read();
-            uuml_pressed = true;
-        } else {
-            maybe_send_umlaut(KC_U, &uuml_pressed);
-        }
-        break;
-    case MINS_UNDSCR:
-        if (record->event.pressed) {
-            key_timer = timer_read();
-        } else {
-            if (timer_elapsed(key_timer) < TAPPING_TERM) {
-                // Can't send KC_KP_MINUS, it doesn't compose to, say →
-                tap_code16(KC_MINUS);
-            } else {
-                tap_code16(KC_UNDERSCORE);
-            }
-        }
-        break;
         // This turns on dragscroll when held, otherwise '"
     case LT(3,KC_NO):
         if (record->tap.count > 0 && record->event.pressed) {
@@ -493,6 +458,7 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
         }
         return false;
         break;
+#ifndef CHORDAL_HOLD
         // Need to remember if this was pressed, to make the RCTL_T(KC_N) work
         // with that key held.
         // BUG: should one roll ST improperly, the default handling of
@@ -569,6 +535,7 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
             }
         }
         break;
+#endif
     case ALT_TAB:
         if (record->event.pressed) {
             register_mods(MOD_BIT(KC_LALT));

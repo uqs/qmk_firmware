@@ -32,8 +32,6 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
      LT_EXTD_ESC, LSFT_T(KC_SPC), LT(L_FUNC, KC_TAB),    MO(L_MOUSE), RSFT_T(KC_ENT), LT(L_NUM, KC_BSPC)
   ),
 
-  // The encoder could up/down the mouse sensitivity maybe? Hard to do in game,
-  // but possible if/when mouse is directly in the keyboard?
   [L_WASD] = LAYOUT_uqs(
      KC_TAB,   KC_Q,     KC_W,     KC_E,     KC_R,               KC_Y,     KC_U,     KC_I,     KC_O,     KC_P,
      KC_LSFT,  KC_A,     KC_S,     KC_D,     KC_F,               KC_H,     KC_J,     KC_K,     KC_L,     KC_SCLN,
@@ -62,7 +60,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 
   [L_NUM] = LAYOUT_uqs(
      KC_EXLM,  KC_AT,    KC_HASH,  KC_DLR,   KC_PERC,            KC_KP_ASTERISK, KC_7, KC_8,   KC_9,     KC_KP_PLUS,
-     KC_SCLN,  KC_COLN,  KC_LCBR,  KC_LPRN,  KC_LBRC,            KC_EQUAL, KC_4,     KC_5,     KC_6,     MINS_UNDSCR,
+     KC_SCLN,  KC_COLN,  KC_LCBR,  KC_LPRN,  KC_LBRC,            KC_EQUAL, KC_4,     KC_5,     KC_6,     KC_MINS,
      KC_CIRC,  KC_AMPR,  KC_RCBR,  KC_RPRN,  KC_RBRC,            KC_0,     KC_1,     KC_2,     KC_3,     KC_KP_SLASH,
                KC_NO,    KC_NO,                                                      KC_0,     KC_KP_DOT,
                          KC_ESC,   KC_SPC,   KC_TAB,     _______,  _______,  _______

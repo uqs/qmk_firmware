@@ -12,6 +12,8 @@
 
 #define DYNAMIC_KEYMAP_LAYER_COUNT 6  // default is 4 for VIA builds
 
+// Alternative to bilateral combinations
+#define CHORDAL_HOLD
 #define TAPPING_TERM 200  // ms to trigger tap
 #define TAPPING_TERM_PER_KEY
 #define QUICK_TAP_TERM 0  // actually disable them all, I only had it enabled for LT(L_FUNC,KC_TAB)
