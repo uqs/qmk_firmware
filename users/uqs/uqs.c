@@ -88,16 +88,9 @@ _Static_assert(ARRAY_SIZE(my_rgb_layers) ==
 void keyboard_post_init_user(void) {
 #ifndef KEYBOARD_preonic_rev3
     debug_enable=true;
-    //debug_matrix=true;
+    debug_matrix=true;
     debug_keyboard=true;
-    debug_mouse=true;
-    // Set TCNT3 to count ticks of 4us each.
-    TCCR3A = 0; // TCCR0A register set to 0
-    TCCR3B = 0; // same with registreb B
-    TCNT3  = 0; // counter value to 0
-    // set prescaler to 64, should be 4us per tick then ...
-    TCCR3B |=(1<<CS31)|(1<<CS30);
-    dprintf("keyboard_post_init_user done\n");
+    //debug_mouse=true;
 #endif
 #ifndef KEYBOARD_preonic_rev3
     default_layer_set(1ul << L_COLM);
@@ -134,13 +127,15 @@ uint16_t get_tapping_term(uint16_t keycode, keyrecord_t *record) {
         case KC_A_R:
         case KC_A_I:
         case KC_G_O:
-            return TAPPING_TERM + 50;
+            return TAPPING_TERM + 20;
         case KC_C_T:
         case KC_C_N:
-            return TAPPING_TERM - 50;
+            return TAPPING_TERM - 80;
         case KC_S_S:
         case KC_S_E:
             return TAPPING_TERM - 80;
+        case LSFT_T(KC_SPC):
+            return TAPPING_TERM - 50;
         case QK_TAP_DANCE ... QK_TAP_DANCE_MAX:
             return TAPPING_TERM - 50;
         default:
@@ -182,30 +177,39 @@ bool get_hold_on_other_key_press(uint16_t keycode, keyrecord_t *record) {
 }
 #endif
 
+#ifdef CHORDAL_HOLD
+bool get_chordal_hold(uint16_t tap_hold_keycode, keyrecord_t* tap_hold_record,
+                      uint16_t other_keycode, keyrecord_t* other_record) {
+    // Exceptionally allow some one-handed chords for hotkeys.
+    switch (tap_hold_keycode) {
+        // Like the above, but now chordal hold will mess with quickly entering
+        // the num layer, as it considers it the same hand and thus will
+        // perform a tap, not a hold.
+        case LT(L_NUM, KC_BSPC):
+            return true;
+        case LSFT_T(KC_SPC):
+            return false;
+        case KC_C_T:
+            if (other_keycode == KC_C || other_keycode == KC_T
+                    || other_keycode == KC_W || other_keycode == KC_K) {
+                return true;
+            }
+            break;
+        case LT_EXTD_ESC:
+            if (other_keycode == OSM_GUI || other_keycode == KC_G_A) {
+                return true;
+            }
+            break;
+    }
+    // Otherwise defer to the opposite hands rule.
+    return get_chordal_hold_default(tap_hold_record, other_record);
+}
+#endif
+
 uint16_t key_timer;
 bool delkey_registered;
 bool num_layer_was_used;
 bool extd_layer_was_used;
-// These keep state about the long-press-means-umlaut keys.
-bool auml_pressed;
-bool ouml_pressed;
-bool uuml_pressed;
-
-void maybe_send_umlaut(uint16_t keycode, bool *is_pressed) {
-    // Some other key did _not_ already re-arm this key, so now we need to do
-    // that ourselves.
-    if (*is_pressed) {
-        *is_pressed = false;
-        // If released within the timer, then just KC_A, KC_O, KC_U
-        if (timer_elapsed(key_timer) < TAPPING_TERM) {
-            tap_code16(keycode);
-        } else {
-            tap_code16(KC_RALT);
-            tap_code16(LSFT(KC_QUOT));
-            tap_code16(keycode);
-        }
-    }
-}
 
 // Can't use MH_AUTO_BUTTONS, as that requires PS/2 stuff, so crib this from drashna's pointing.c
 static bool set_scrolling = false;
@@ -284,20 +288,21 @@ report_mouse_t pointing_device_task_user(report_mouse_t mouse_report) {
     // Check out https://www.wolframalpha.com/input?i=plot+%28x%5E2%29+%2F+4+%2B+x+and+x%5E3+%2F+16+%2B+x+and+x+%28x%5E1.8%29+%2B+1.5*x+for+x%3D-10+to+10
     if (mouse_report.x != 0 || mouse_report.y != 0) {
 #if 1
-        dprintf("turning x/y %d %d", mouse_report.x, mouse_report.y);
+        //dprintf("turning x/y %d %d", mouse_report.x, mouse_report.y);
         mouse_xy_report_t x = mouse_report.x;
         mouse_xy_report_t y = mouse_report.y;
         x = (x*x*x) / 64 + x;
         y = (y*y*y) / 64 + y;
         mouse_report.x = x;
         mouse_report.y = y;
-        dprintf(" into x/y %d %d\n", mouse_report.x, mouse_report.y);
+        //dprintf(" into x/y %d %d\n", mouse_report.x, mouse_report.y);
 #endif
     }
 
     return mouse_report;
 }
 
+#if 1
 bool process_record_user(uint16_t keycode, keyrecord_t *record) {
     // TODO: why not use key_timer here? is it dynamic or not?
     static uint16_t extd_layer_timer;
@@ -311,20 +316,6 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
     // An umlaut key was pressed previously (but will only emit the key on
     // release), but we've pressed a different key now, so fire the regular key,
     // re-arm it and continue with whatever actual key was pressed just now.
-    if (record->event.pressed) {
-        if (auml_pressed) {
-            tap_code16(KC_A);
-            auml_pressed = false;
-        }
-        if (ouml_pressed) {
-            tap_code16(KC_O);
-            ouml_pressed = false;
-        }
-        if (uuml_pressed) {
-            tap_code16(KC_U);
-            uuml_pressed = false;
-        }
-    }
     if (keycode == DRAG_SCROLL) {
 #if defined(POINTING_DEVICE_ENABLE)
         if (record->event.pressed) {
@@ -342,6 +333,7 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
 
 #ifndef CHORDAL_HOLD
     static bool force_shift = false;
+    (void)force_shift;
 #endif
 
     switch (keycode) {
@@ -458,6 +450,7 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
         }
         return false;
         break;
+#if 1
 #ifndef CHORDAL_HOLD
         // Need to remember if this was pressed, to make the RCTL_T(KC_N) work
         // with that key held.
@@ -535,6 +528,7 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
             }
         }
         break;
+#endif
 #endif
     case ALT_TAB:
         if (record->event.pressed) {
@@ -615,6 +609,7 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
 
     return true;
 }
+#endif
 
 #ifdef LEADER_ENABLE
 void leader_end_user(void) {

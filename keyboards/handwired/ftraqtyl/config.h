@@ -22,7 +22,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * algorithm, this debounce latency only affects key releases (not key
  * presses). */
 #undef DEBOUNCE
-#define DEBOUNCE 10
+#define DEBOUNCE 20
 
 /* EVQWGD001 encoders are apparently A, B, C, - as seen from the 2 switch pins.
  */
@@ -44,3 +44,4 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #define MOUSEKEY_MAX_SPEED   7
 
 #define MOUSE_EXTENDED_REPORT
+#define ACTION_DEBUG

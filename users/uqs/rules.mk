@@ -8,8 +8,8 @@ ifneq ($(filter $(strip $(KEYBOARD)),splitkb/kyria),)
 endif
     LTO_ENABLE ?= yes  # disables the legacy TMK Macros and Functions features
 
-    UCIS_ENABLE ?= yes
-    UNICODE_COMMON ?= yes
+    UCIS_ENABLE ?= no
+    UNICODE_COMMON ?= no
     LEADER_ENABLE ?= yes
     COMBO_ENABLE ?= yes
     MOUSEKEY_ENABLE ?= yes
@@ -21,8 +21,6 @@ endif
     SPACE_CADET_ENABLE = no
     COMMAND_ENABLE = no
     MAGIC_ENABLE = no
-
-    CONSOLE_ENABLE ?= no
 endif
 
 # From https://michael.stapelberg.ch/posts/2021-05-08-keyboard-input-latency-qmk-kinesis/
