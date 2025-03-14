@@ -19,8 +19,6 @@ endif
 
     # Disable all the unused stuff.
     SPACE_CADET_ENABLE = no
-    COMMAND_ENABLE = no
-    MAGIC_ENABLE = no
 endif
 
 # From https://michael.stapelberg.ch/posts/2021-05-08-keyboard-input-latency-qmk-kinesis/

@@ -44,7 +44,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
      KC_Q,     KC_W,     KC_F,     KC_P,     KC_B,               KC_J,     KC_L,     KC_U,     KC_Y,     LT(3, KC_NO),
      KC_G_A,   KC_A_R,   KC_S_S,   KC_C_T,   KC_G,               KC_M,     KC_C_N,   KC_S_E,   KC_A_I,   KC_G_O,
      KC_Z,     KC_X,     KC_C,     KC_D,     KC_V,               KC_K,     KC_H,     KC_COMM,  KC_DOT,   KC_SLSH,
-               DB_TOGG,    KC_NO,                                                      KC_NO,    KC_NO,
+               DB_TOGG,  KC_NO,                                                      KC_NO,    KC_NO,
      LT_EXTD_ESC, LSFT_T(KC_SPC), LT(L_FUNC, KC_TAB),    MO(L_MOUSE), RSFT_T(KC_ENT), LT(L_NUM, KC_BSPC)
   ),
 
@@ -94,4 +94,14 @@ bool encoder_update_user(uint8_t index, bool clockwise) {
     }
     return false;
 }
+#endif
+
+#ifdef CHORDAL_HOLD
+const char chordal_hold_layout[MATRIX_ROWS][MATRIX_COLS] PROGMEM =
+    LAYOUT_uqs(
+        'L', 'L', 'L', 'L', 'L', 'R', 'R', 'R', 'R', 'R',
+        'L', 'L', 'L', 'L', 'L', 'R', 'R', 'R', 'R', 'R',
+        'L', 'L', 'L', 'L', 'L', 'R', 'R', 'R', 'R', 'R',
+        'L', 'L', 'L', 'L', 'L', 'R', 'R', 'R', 'R', 'R'
+    );
 #endif

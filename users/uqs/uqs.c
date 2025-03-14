@@ -88,7 +88,7 @@ _Static_assert(ARRAY_SIZE(my_rgb_layers) ==
 void keyboard_post_init_user(void) {
 #ifndef KEYBOARD_preonic_rev3
     debug_enable=true;
-    debug_matrix=true;
+    //debug_matrix=true;
     debug_keyboard=true;
     //debug_mouse=true;
 #endif
@@ -127,7 +127,7 @@ uint16_t get_tapping_term(uint16_t keycode, keyrecord_t *record) {
         case KC_A_R:
         case KC_A_I:
         case KC_G_O:
-            return TAPPING_TERM + 20;
+            return TAPPING_TERM + 50;
         case KC_C_T:
         case KC_C_N:
             return TAPPING_TERM - 80;
@@ -302,7 +302,6 @@ report_mouse_t pointing_device_task_user(report_mouse_t mouse_report) {
     return mouse_report;
 }
 
-#if 1
 bool process_record_user(uint16_t keycode, keyrecord_t *record) {
     // TODO: why not use key_timer here? is it dynamic or not?
     static uint16_t extd_layer_timer;
@@ -313,9 +312,6 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
         num_layer_was_used = true;
     }
 
-    // An umlaut key was pressed previously (but will only emit the key on
-    // release), but we've pressed a different key now, so fire the regular key,
-    // re-arm it and continue with whatever actual key was pressed just now.
     if (keycode == DRAG_SCROLL) {
 #if defined(POINTING_DEVICE_ENABLE)
         if (record->event.pressed) {
@@ -450,7 +446,6 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
         }
         return false;
         break;
-#if 1
 #ifndef CHORDAL_HOLD
         // Need to remember if this was pressed, to make the RCTL_T(KC_N) work
         // with that key held.
@@ -528,7 +523,6 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
             }
         }
         break;
-#endif
 #endif
     case ALT_TAB:
         if (record->event.pressed) {
@@ -609,7 +603,6 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
 
     return true;
 }
-#endif
 
 #ifdef LEADER_ENABLE
 void leader_end_user(void) {
@@ -640,8 +633,8 @@ void leader_end_user(void) {
         send_unicode_string("┬─┬ノ( º _ ºノ)");
     }
 #endif
-#endif
 }
+#endif
 
 #ifdef UCIS_ENABLE
 // 3 codepoints at most, otherwise increase UCIS_MAX_CODE_POINTS

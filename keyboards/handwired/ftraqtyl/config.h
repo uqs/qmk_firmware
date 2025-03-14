@@ -22,7 +22,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * algorithm, this debounce latency only affects key releases (not key
  * presses). */
 #undef DEBOUNCE
-#define DEBOUNCE 20
+#define DEBOUNCE 10
 
 /* EVQWGD001 encoders are apparently A, B, C, - as seen from the 2 switch pins.
  */
