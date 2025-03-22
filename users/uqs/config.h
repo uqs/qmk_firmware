@@ -14,15 +14,21 @@
 
 // Alternative to bilateral combinations
 #define CHORDAL_HOLD
-#define TAPPING_TERM 200  // ms to trigger tap
-#define TAPPING_TERM_PER_KEY
-#define QUICK_TAP_TERM 0  // actually disable them all, I only had it enabled for LT(L_FUNC,KC_TAB)
+#define TAPPING_TERM 250  // ms to trigger tap
+#define TAPPING_TERM_PER_KEY  // only still here for lower BKSP timing, as the feature below doesn't work natively, so I have to mess with timings and hope for the best instead :(
 //#define QUICK_TAP_TERM_PER_KEY  // make tap-then-hold _not_ do key auto repeat
+#define QUICK_TAP_TERM 0  // disable tap-then-hold to _not_ do key auto repeat
 #define HOLD_ON_OTHER_KEY_PRESS  // obsolete my LT_NUM_BSPC
 #define HOLD_ON_OTHER_KEY_PRESS_PER_KEY  // ... but not for mod-taps!
+//#define PERMISSIVE_HOLD
+// Here's my problem: I want HOLD_ON_OTHER_KEY_PRESS for all keys to have
+// rolling keys like ABAB resolve to the hold (usually SHIFT). But, it takes
+// precedence over PERMISSIVE_HOLD and resolves the rolls, but I'd want the
+// PERMISSIVE_HOLD behavior for a single key: LT(L_NUM,KC_BSPC) This seems not
+// supported, though, get_hold_on_other_key_press() is forced to return a bool
+// and can't return a "don't know yet".
 
 #define LEADER_TIMEOUT 400
-#define LEADER_PER_KEY_TIMING
 
 #define UNICODE_SELECTED_MODES UNICODE_MODE_LINUX
 

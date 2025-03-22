@@ -19,7 +19,7 @@ const uint16_t PROGMEM my_action_combos[][3] = {
 #ifndef KEYBOARD_preonic_rev3
     [C_AUML] = {KC_G_A, KC_W, COMBO_END},
     [C_OUML] = {KC_G_O, KC_Y, COMBO_END},
-    [C_UUML] = {KC_C_N, KC_U, COMBO_END},
+    [C_UUML] = {KC_U, KC_Y, COMBO_END},
     [C_SZ]   = {KC_S_S, KC_Z, COMBO_END},
 #else
     [C_AUML] = {COMBO_END},
@@ -45,9 +45,9 @@ const uint16_t PROGMEM my_combos[][4] = {
     {KC_DOT, KC_2, KC_3, COMBO_END},
     {LSFT(KC_MINUS), KC_D, KC_H, COMBO_END},
     {LSFT(KC_MINUS), KC_RPRN, KC_1, COMBO_END},  // dupe to work on NUM
-    {KC_GRV,  KC_Q, KC_W, COMBO_END},  // remove this? turn into esc:wq?
-    {KC_GRV,  KC_C, KC_COMM, COMBO_END},
+    {KC_GRV,  KC_Q, KC_W, COMBO_END},
     {LSFT(KC_GRV), KC_G, KC_M, COMBO_END},
+    {KC_GRV, KC_V, KC_K, COMBO_END},
 #else
     {COMBO_END},
     {COMBO_END},
@@ -61,8 +61,8 @@ const uint16_t PROGMEM my_combos[][4] = {
     {LSFT(KC_MINUS), KC_V, KC_M, COMBO_END},
     {LSFT(KC_MINUS), KC_RPRN, KC_1, COMBO_END},  // dupe to work on NUM
     {COMBO_END},
-    {KC_GRV,  KC_C, KC_COMM, COMBO_END},
     {LSFT(KC_GRV), KC_G, KC_H, COMBO_END},
+    {KC_GRV, KC_B, KC_N, COMBO_END},
 #endif
     {KC_BTN3, KC_BTN1, KC_BTN2, COMBO_END},
     {KC_BTN1, KC_BTN2, KC_BTN3, COMBO_END},
@@ -77,8 +77,6 @@ const uint16_t COMBO_LEN = ARRAY_SIZE(my_action_combos) + ARRAY_SIZE(my_combos);
 
 // NOTE: while my_combos can live in PROGMEM, the key_combos data also
 // contains state that is tweaked at runtime, so we need to indirect. Ugh.
-#define COMBO_STATICALLY
-#ifdef COMBO_STATICALLY
 // TODO: fill this at runtime with a loop?
 combo_t key_combos[] = {
   MY_ACTION_COMBO(0),
@@ -110,9 +108,6 @@ combo_t key_combos[] = {
 _Static_assert(ARRAY_SIZE(key_combos) ==
                (ARRAY_SIZE(my_action_combos) + ARRAY_SIZE(my_combos)),
                "Number of combo definitions does not match up!");
-#else
-combo_t key_combos[ARRAY_SIZE(my_action_combos) + ARRAY_SIZE(my_combos)];
-#endif
 
 void process_combo_event(uint16_t combo_index, bool pressed) {
     switch (combo_index) {

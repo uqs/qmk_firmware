@@ -88,7 +88,7 @@ _Static_assert(ARRAY_SIZE(my_rgb_layers) ==
 void keyboard_post_init_user(void) {
 #ifndef KEYBOARD_preonic_rev3
     debug_enable=true;
-    //debug_matrix=true;
+    debug_matrix=true;
     debug_keyboard=true;
     //debug_mouse=true;
 #endif
@@ -135,8 +135,6 @@ uint16_t get_tapping_term(uint16_t keycode, keyrecord_t *record) {
         case KC_S_E:
             return TAPPING_TERM - 80;
         case LSFT_T(KC_SPC):
-            return TAPPING_TERM - 50;
-        case QK_TAP_DANCE ... QK_TAP_DANCE_MAX:
             return TAPPING_TERM - 50;
         default:
             return TAPPING_TERM;
@@ -186,9 +184,9 @@ bool get_chordal_hold(uint16_t tap_hold_keycode, keyrecord_t* tap_hold_record,
         // the num layer, as it considers it the same hand and thus will
         // perform a tap, not a hold.
         case LT(L_NUM, KC_BSPC):
-            return true;
+            return true;  // always hold with other keys
         case LSFT_T(KC_SPC):
-            return false;
+            return true;  // TESTING
         case KC_C_T:
             if (other_keycode == KC_C || other_keycode == KC_T
                     || other_keycode == KC_W || other_keycode == KC_K) {
@@ -207,7 +205,6 @@ bool get_chordal_hold(uint16_t tap_hold_keycode, keyrecord_t* tap_hold_record,
 #endif
 
 uint16_t key_timer;
-bool delkey_registered;
 bool num_layer_was_used;
 bool extd_layer_was_used;
 
@@ -251,7 +248,7 @@ report_mouse_t pointing_device_task_user(report_mouse_t mouse_report) {
             mouse_report.v = scroll_buffer_y > 0 ? 1 : -1;
             scroll_buffer_y = 0;
         }
-        dprintf("dragscroll buffer at h=%d v=%d\n", scroll_buffer_x, scroll_buffer_y);
+        //dprintf("dragscroll buffer at h=%d v=%d\n", scroll_buffer_x, scroll_buffer_y);
 #endif
         mouse_report.x = mouse_report.y = 0;
         // TODO: accumulate movement in a var and spit it out when a threshold has been reached?
