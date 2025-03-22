@@ -29,7 +29,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
      KC_A,     KC_S,     KC_D,     KC_F,     KC_G,               KC_H,     KC_J,     KC_K,     KC_L,     KC_SCLN,
      KC_Z,     KC_X,     KC_C,     KC_V,     KC_B,               KC_N,     KC_M,     KC_COMM,  KC_DOT,   KC_SLSH,
                KC_LBRC,  KC_RBRC,                                                    KC_MINS,  KC_EQL,
-     LT_EXTD_ESC, LSFT_T(KC_SPC), LT(L_FUNC, KC_TAB),    MO(L_MOUSE), RSFT_T(KC_ENT), LT(L_NUM, KC_BSPC)
+     LT_EXTD_ESC, LSFT_T(KC_SPC), LT(L_FUNC, KC_TAB),    MO(L_MOUSE), RSFT_T(KC_ENT), LT_NUM_BSPC
   ),
 
   [L_WASD] = LAYOUT_uqs(
@@ -37,7 +37,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
      KC_LSFT,  KC_A,     KC_S,     KC_D,     KC_F,               KC_H,     KC_J,     KC_K,     KC_L,     KC_SCLN,
      KC_GRV,   KC_Z,     KC_X,     KC_C,     KC_V,               KC_N,     KC_M,     KC_COMM,  KC_DOT,   KC_SLSH,
                KC_LGUI,  KC_LALT,                                                    KC_MINS,  KC_EQL,
-     KC_LCTL,  KC_SPC,   KC_LALT,                        DF(L_COLM), KC_ENT, LT(L_NUM, KC_BSPC)
+     KC_LCTL,  KC_SPC,   KC_LALT,                        DF(L_COLM), KC_ENT, LT_NUM_BSPC
   ),                                                     // TODO: make DF a tap, on hold do an MO to COLM??
 
   [L_COLM] = LAYOUT_uqs(
@@ -45,7 +45,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
      KC_G_A,   KC_A_R,   KC_S_S,   KC_C_T,   KC_G,               KC_M,     KC_C_N,   KC_S_E,   KC_A_I,   KC_G_O,
      KC_Z,     KC_X,     KC_C,     KC_D,     KC_V,               KC_K,     KC_H,     KC_COMM,  KC_DOT,   KC_SLSH,
                DB_TOGG,  KC_NO,                                                      KC_NO,    KC_NO,
-     LT_EXTD_ESC, LSFT_T(KC_SPC), LT(L_FUNC, KC_TAB),    MO(L_MOUSE), RSFT_T(KC_ENT), LT(L_NUM, KC_BSPC)
+     LT_EXTD_ESC, LSFT_T(KC_SPC), LT(L_FUNC, KC_TAB),    MO(L_MOUSE), RSFT_T(KC_ENT), LT_NUM_BSPC
   ),
 
   // Updated with inspiration from https://forum.colemak.com/topic/2014-extend-extra-extreme/

@@ -355,6 +355,11 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
         } else {
             layer_off(L_NUM);
             // NOTE: Custom LT method so that any press of a key on that layer will prevent the backspace.
+            // This is essentially HOLD_ON_OTHER_KEY_PRESS but for only this
+            // single key with fallback to PERMISSIVE_HOLD otherwise, something
+            // you cannot do with just HOLD_ON_OTHER_KEY_PRESS_PER_KEY. And on
+            // top of that, it doesn't break my combo 5+6=0, like
+            // HOLD_ON_OTHER_KEY_PRESS would.
             if (timer_elapsed(extd_layer_timer) < TAPPING_TERM && !num_layer_was_used) {
                 tap_code(KC_BSPC);
             }
