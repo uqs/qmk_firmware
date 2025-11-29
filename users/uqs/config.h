@@ -15,7 +15,7 @@
 // Alternative to bilateral combinations
 #define CHORDAL_HOLD
 #define PERMISSIVE_HOLD
-#define TAPPING_TERM 250  // ms to trigger tap
+#define TAPPING_TERM 200  // ms to trigger tap
 #define TAPPING_TERM_PER_KEY
 #define QUICK_TAP_TERM 0  // disable tap-then-hold to _not_ do key auto repeat
 
