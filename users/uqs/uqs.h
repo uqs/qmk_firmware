@@ -67,12 +67,6 @@ typedef struct {
 #define QK_LEAD KC_NO
 #endif
 
-// Shorter names
-#define MS_WHDN KC_MS_WH_DOWN
-#define MS_WHUP KC_MS_WH_UP
-#define MS_WHLEFT KC_MS_WH_LEFT
-#define MS_WHRGHT KC_MS_WH_RIGHT
-
 // GASC/◆⎇⇧⎈ home row mod, read all about it here:
 // https://precondition.github.io/home-row-mods
 // Left-hand home row mods

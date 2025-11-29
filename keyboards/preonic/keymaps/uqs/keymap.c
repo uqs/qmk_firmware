@@ -37,7 +37,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
      KC_F11,   KC_F1,    KC_F2,    KC_F3,    KC_F4,    KC_F5,    KC_F6,    KC_F7,    KC_F8,    KC_F9,    KC_F10,   KC_F12,
      _______,  T_PANE,   KC_SCTAB, KC_PGUP,  KC_CTAB,  QK_LEAD,  KC_HOME,  KC_PGDN,  KC_PGUP,  KC_END,   KC_INS,   KC_NO,
      _______,  OSM_GUI,  OSM_ALT,  OSM_SFT,  OSM_CTL,  KC_RALT,  KC_LEFT,  KC_DOWN,  KC_UP,    KC_RGHT,  KC_DEL,   KC_NO,
-     _______,  ALT_TAB,  MS_WHUP,  MS_WHDN,  KC_PGDN,  INS_HARD, WIN_LEFT, WIN_DN,   WIN_UP,   WIN_RGHT, KC_PSTE,  _______,
+     _______,  ALT_TAB,  MS_WHLU,  MS_WHLD,  KC_PGDN,  INS_HARD, WIN_LEFT, WIN_DN,   WIN_UP,   WIN_RGHT, KC_PSTE,  _______,
      _______,  _______,  _______, _______,             _______,  _______,            KC_BSPC, _______,  _______,   _______
   ),
 
@@ -51,7 +51,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 
   [L_FUNC] = LAYOUT_uqs(
      _______,  KC_NO,    KC_NO,    KC_NO,    KC_NO,    KC_NO,    KC_NO,    KC_NO,    KC_NO,    KC_NO,    KC_NO,    KC_NO,
-     _______,  KC_BTN1,  KC_BTN2,  KC_BTN3,  KC_BTN1,  KC_NO,    KC_PSCR,  KC_F7,    KC_F8,    KC_F9,    KC_F10,   KC_NO,
+     _______,  MS_BTN1,  MS_BTN2,  MS_BTN3,  MS_BTN1,  KC_NO,    KC_PSCR,  KC_F7,    KC_F8,    KC_F9,    KC_F10,   KC_NO,
      _______,  KC_LGUI,  KC_LALT,  KC_LSFT,  KC_LCTL,  KC_NO,    KC_SCRL,  KC_F4,    KC_F5,    KC_F6,    KC_F11,   KC_NO,
      _______,  _______,  KC_VOLU,  KC_VOLD,  KC_MUTE,  KC_NO,    KC_PAUS,  KC_F1,    KC_F2,    KC_F3,    KC_F12,   KC_NO,
      _______,  _______,  _______, _______,             _______,  _______,            _______,  _______,  _______,  _______

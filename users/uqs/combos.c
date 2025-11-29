@@ -64,8 +64,8 @@ const uint16_t PROGMEM my_combos[][4] = {
     {LSFT(KC_GRV), KC_G, KC_H, COMBO_END},
     {KC_GRV, KC_B, KC_N, COMBO_END},
 #endif
-    {KC_BTN3, KC_BTN1, KC_BTN2, COMBO_END},
-    {KC_BTN1, KC_BTN2, KC_BTN3, COMBO_END},
+    {MS_BTN3, MS_BTN1, MS_BTN2, COMBO_END},
+    {MS_BTN1, MS_BTN2, MS_BTN3, COMBO_END},
 };
 
 const uint16_t COMBO_LEN = ARRAY_SIZE(my_action_combos) + ARRAY_SIZE(my_combos);

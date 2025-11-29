@@ -65,7 +65,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
   ),
 
   [L_COLM] = LAYOUT_uqs(
-     //KC_NO,    KC_BTN2,  KC_BTN3,  KC_BTN1,  KC_NO,
+     //KC_NO,    MS_BTN2,  MS_BTN3,  MS_BTN1,  KC_NO,
      KC_NO,    KC_NO,    KC_NO,    KC_NO,    KC_NO,
      KC_Q,     KC_W,     KC_F,     KC_P,     KC_B,
      KC_G_A,   KC_A_R,   KC_S_S,   KC_C_T,   KC_G,
@@ -85,7 +85,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
      _______,  _______,  _______,  _______,  _______,
      T_PANE,   KC_SCTAB, KC_PGUP,  KC_CTAB,  QK_LEAD,
      OSM_GUI,  OSM_ALT,  OSM_SFT,  OSM_CTL,  KC_RALT,
-     ALT_TAB,  MS_WHUP,  MS_WHDN,  KC_PGDN,  INS_HARD,
+     ALT_TAB,  MS_WHLU,  MS_WHLD,  KC_PGDN,  INS_HARD,
                _______,  _______,
      /*thumb*/ _______,  _______,  _______,
      KC_HOME,  KC_PGDN,  KC_PGUP,  KC_END,   KC_INS,
@@ -125,14 +125,14 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 
   [L_MOUSE] = LAYOUT_uqs(
      _______,  _______,  _______,  _______,  _______,
-     KC_BTN1,  KC_BTN2,  KC_PGUP,  KC_BTN1,  KC_BTN3,
+     MS_BTN1,  MS_BTN2,  KC_PGUP,  MS_BTN1,  MS_BTN3,
      KC_LGUI,  KC_LALT,  KC_LSFT,  KC_LCTL,  KC_NO,
-     ALT_TAB,  MS_WHUP,  MS_WHDN,  KC_PGDN,  KC_NO,
+     ALT_TAB,  MS_WHLU,  MS_WHLD,  KC_PGDN,  KC_NO,
                KC_NO,    KC_NO,
-     /*thumb*/ LT_EXTD_ESC,  KC_BTN1,  KC_BTN2,
-     KC_BTN3,  KC_BTN1,  KC_MS_U,  KC_BTN2,  _______,
-     KC_NO,    KC_MS_L,  KC_MS_D,  KC_MS_R,  KC_NO,
-     KC_BTN1,  KC_BTN2,  KC_BTN3,  KC_BTN4,  KC_BTN5,
+     /*thumb*/ LT_EXTD_ESC,  MS_BTN1,  MS_BTN2,
+     MS_BTN3,  MS_BTN1,  MS_UP,  MS_BTN2,  _______,
+     KC_NO,    MS_LEFT,  MS_DOWN,  MS_RGHT,  KC_NO,
+     MS_BTN1,  MS_BTN2,  MS_BTN3,  MS_BTN4,  MS_BTN5,
                          KC_NO,    KC_NO,
      /*thumb*/ _______,  _______,  _______
   ),
@@ -141,15 +141,15 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 bool encoder_update_user(uint8_t index, bool clockwise) {
     if (index == 0) { /* First encoder */
         if (clockwise) {
-            tap_code(MS_WHDN);
+            tap_code(MS_WHLD);
         } else {
-            tap_code(MS_WHUP);
+            tap_code(MS_WHLU);
         }
     } else if (index == 1) { /* Second encoder */
         if (clockwise) {
-            tap_code(MS_WHUP);
+            tap_code(MS_WHLU);
         } else {
-            tap_code(MS_WHDN);
+            tap_code(MS_WHLD);
         }
     }
     return false;

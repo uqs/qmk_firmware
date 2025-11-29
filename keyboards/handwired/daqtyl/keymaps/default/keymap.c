@@ -31,7 +31,7 @@ enum custom_keycodes {
 
 const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
   [L_QWER] = LAYOUT_uqs(
-               KC_BTN2,  KC_BTN3,  KC_BTN1,
+               MS_BTN2,  MS_BTN3,  MS_BTN1,
      KC_Q,     KC_W,     KC_E,     KC_R,     KC_T,
      KC_A,     KC_S,     KC_D,     KC_F,     KC_G,
      KC_Z,     KC_X,     KC_C,     KC_V,     KC_B,
@@ -66,11 +66,11 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
   // can't actually set caps lock, as I'm rebinding that for a saner laptop
   // keyboard. See drashna's keymap.
   [L_COLM] = LAYOUT_uqs(
-               KC_BTN2,  KC_BTN3,  KC_BTN1,
+               MS_BTN2,  MS_BTN3,  MS_BTN1,
      KC_Q,     KC_W,     KC_F,     KC_P,     KC_B,
      KC_G_A,   KC_A_R,   KC_S_S,   KC_C_T,   KC_G,
      KC_Z,     KC_X,     KC_C,     KC_D,     KC_V,
-               MS_WHUP,  MS_WHDN, // these are on the encoder
+               MS_WHLU,  MS_WHLD, // these are on the encoder
      /*thumb*/ LT_EXTD_ESC, SFT_T(KC_SPC), LT(L_MOUSE, KC_TAB),
      KC_J,     KC_L,     KC_U,     KC_Y,     KC_QUOT,
      KC_M,     KC_C_N,   KC_S_E,   KC_A_I,   KC_G_O,
@@ -86,7 +86,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
     /* Base */
     [_BASE] = LAYOUT(
-            KC_BTN2, KC_BTN3, KC_BTN1,
+            MS_BTN2, MS_BTN3, MS_BTN1,
      KC_Q,  KC_W,    KC_E,    KC_R,   KC_T, /**/ KC_Y, KC_U,    KC_I,    KC_O,   KC_P,
      KC_A,  KC_S,    KC_D,    KC_F,   KC_G, /**/ KC_H, KC_J,    KC_K,    KC_L,   KC_SCLN,
      KC_Z,  KC_X,    KC_C,    KC_V,   KC_B, /**/ KC_N, KC_M,    KC_COMM, KC_DOT, KC_SLSH,

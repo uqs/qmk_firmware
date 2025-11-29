@@ -53,7 +53,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
   [L_EXTD] = LAYOUT_uqs(
      T_PANE,   KC_SCTAB, KC_PGUP,  KC_CTAB,  QK_LEAD,            KC_HOME,  KC_PGDN,  KC_PGUP,  KC_END,   KC_INS,
      OSM_GUI,  OSM_ALT,  OSM_SFT,  OSM_CTL,  KC_RALT,            KC_LEFT,  KC_DOWN,  KC_UP,    KC_RGHT,  KC_DEL,
-     ALT_TAB,  MS_WHUP,  MS_WHDN,  KC_PGDN,  INS_HARD,           WIN_LEFT, WIN_DN,   WIN_UP,   WIN_RGHT, KC_PSTE,
+     ALT_TAB,  MS_WHLU,  MS_WHLD,  KC_PGDN,  INS_HARD,           WIN_LEFT, WIN_DN,   WIN_UP,   WIN_RGHT, KC_PSTE,
                _______,  _______,                                                    _______,  _______,
                          _______,  _______,  _______,    _______,  KC_ENT,   KC_BSPC
   ),
@@ -75,11 +75,11 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
   ),
 
   [L_MOUSE] = LAYOUT_uqs(
-     KC_BTN1,  KC_BTN2,  KC_PGUP,  KC_BTN1,  KC_BTN3,            KC_BTN3,  KC_BTN1,  KC_BTN5,  KC_BTN2,  KC_BTN4,
-     KC_LGUI,  KC_LALT,  KC_LSFT,  KC_LCTL,  KC_NO,              KC_LEFT,  KC_DOWN,  KC_UP,    KC_RGHT,  MS_WHUP,
-     KC_NO,    MS_WHUP,  MS_WHDN,  KC_PGDN,  KC_NO,              KC_MS_L,  KC_MS_D,  KC_MS_U,  KC_MS_R,  MS_WHDN,
+     MS_BTN1,  MS_BTN2,  KC_PGUP,  MS_BTN1,  MS_BTN3,            MS_BTN3,  MS_BTN1,  MS_BTN5,  MS_BTN2,  MS_BTN4,
+     KC_LGUI,  KC_LALT,  KC_LSFT,  KC_LCTL,  KC_NO,              KC_LEFT,  KC_DOWN,  KC_UP,    KC_RGHT,  MS_WHLU,
+     KC_NO,    MS_WHLU,  MS_WHLD,  KC_PGDN,  KC_NO,              MS_LEFT,  MS_DOWN,  MS_UP,  MS_RGHT,  MS_WHLD,
                KC_NO,    KC_NO,                                                      KC_NO,    KC_NO,
-                     LT_EXTD_ESC,  KC_BTN1,  KC_BTN2,    _______,  _______,  _______
+                     LT_EXTD_ESC,  MS_BTN1,  MS_BTN2,    _______,  _______,  _______
   ),
 };
 
@@ -87,9 +87,9 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 bool encoder_update_user(uint8_t index, bool clockwise) {
     if (index == 0) { /* First encoder */
         if (clockwise) {
-            tap_code(MS_WHDN);
+            tap_code(MS_WHLD);
         } else {
-            tap_code(MS_WHUP);
+            tap_code(MS_WHLU);
         }
     }
     return false;

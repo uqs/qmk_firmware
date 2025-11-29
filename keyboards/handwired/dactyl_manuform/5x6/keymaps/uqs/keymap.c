@@ -72,14 +72,14 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
   ),
 
   [L_COLM] = LAYOUT_uqs(
-     KC_NO,    KC_NO,    KC_BTN2,  KC_BTN3,  KC_BTN1,  KC_NO,
-     KC_BTN2,  KC_Q,     KC_W,     KC_F,     KC_P,     KC_B,
-     KC_BTN1,  KC_G_A,   KC_A_R,   KC_S_S,   KC_C_T,   KC_G,
-     KC_BTN3,  KC_Z,     KC_X,     KC_C,     KC_D,     KC_V,
-                         MS_WHUP,  MS_WHDN,
+     KC_NO,    KC_NO,    MS_BTN2,  MS_BTN3,  MS_BTN1,  KC_NO,
+     MS_BTN2,  KC_Q,     KC_W,     KC_F,     KC_P,     KC_B,
+     MS_BTN1,  KC_G_A,   KC_A_R,   KC_S_S,   KC_C_T,   KC_G,
+     MS_BTN3,  KC_Z,     KC_X,     KC_C,     KC_D,     KC_V,
+                         MS_WHLU,  MS_WHLD,
      /*thumb*/ LT_EXTD_ESC, SFT_T(KC_SPC), LT(L_MOUSE, KC_TAB),
       /*aux*/  QK_LEAD,  OSM_GUI,  KC_LALT,
-     KC_NO,    KC_BTN1,  KC_BTN2,  KC_BTN3,  KC_NO,    KC_NO,
+     KC_NO,    MS_BTN1,  MS_BTN2,  MS_BTN3,  KC_NO,    KC_NO,
      KC_J,     KC_L,     KC_U,     KC_Y,     KC_QUOT,  KC_NO,
      KC_M,     KC_C_N,   KC_S_E,   KC_A_I,   KC_G_O,   KC_NO,
      KC_K,     KC_H,     KC_COMM,  KC_DOT,   KC_SLSH,  KC_NO,
@@ -92,9 +92,9 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
   // I like the AltGr trick from https://stevep99.github.io/seniply/ and should probably incorporate some stuff from it.
   [L_EXTD] = LAYOUT_uqs(
      _______,  _______,  _______,  _______,  _______,  _______,
-     _______,  KC_BTN1,  KC_SCTAB, KC_PGUP,  KC_CTAB,  QK_LEAD,
+     _______,  MS_BTN1,  KC_SCTAB, KC_PGUP,  KC_CTAB,  QK_LEAD,
      _______,  OSM_GUI,  OSM_ALT,  OSM_SFT,  OSM_CTL,  KC_RALT,
-     _______,  ALT_TAB,  MS_WHUP,  MS_WHDN,  KC_PGDN,  INS_HARD,
+     _______,  ALT_TAB,  MS_WHLU,  MS_WHLD,  KC_PGDN,  INS_HARD,
                          _______,  _______,
      /*thumb*/ _______,  _______,  _______,
       /*aux*/  _______,  _______,  _______,
@@ -122,7 +122,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
                /* ^^^^ use these */
      KC_NUM,   KC_NO,    KC_NO,    KC_NO,    KC_NO,    KC_NO,
      KC_EQUAL, KC_7,     KC_8,     KC_9,     KC_KP_PLUS,_______,
-     KC_KP_ASTERISK,KC_4,KC_5,     KC_6,     MINS_UNDSCR,_______,
+     KC_KP_ASTERISK,KC_4,KC_5,     KC_6,     KC_MINUS, _______,
      KC_COMM,  KC_1,     KC_2,     KC_3,     KC_KP_SLASH,KC_KP_ENTER,  // Enter here, because thumb is occupied
                          KC_0,     KC_KP_DOT,
      /*thumb*/ _______,  _______,  _______,
@@ -151,19 +151,19 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 
   [L_MOUSE] = LAYOUT_uqs(
      _______,  _______,  _______,  _______,  _______,  _______,
-     _______,  KC_NO,    KC_BTN2,  KC_BTN3,  KC_BTN1,  KC_VOLU,
-     _______,  KC_NO,    KC_ACL0,  KC_ACL1,  KC_ACL2,  KC_VOLD,
+     _______,  KC_NO,    MS_BTN2,  MS_BTN3,  MS_BTN1,  KC_VOLU,
+     _______,  KC_NO,    MS_ACL0,  MS_ACL1,  MS_ACL2,  KC_VOLD,
      _______,  KC_NO,    KC_NO,    KC_NO,    KC_NO,    KC_MUTE,
                          KC_NO,    KC_NO,
      /*thumb*/ _______,  _______,  _______,
       /*aux*/  _______,  _______,  _______,
                /* ^^^^ can't be used */
      _______,  _______,  _______,  _______,  _______,  _______,
-     _______,  _______,  KC_MS_UP, MS_WHUP,  _______,  _______,
-     MS_WHLEFT,KC_MS_L,  KC_MS_D,  KC_MS_R,  MS_WHRGHT,_______,
-     _______,  MS_WHDN,  KC_BTN3,  KC_BTN4,  KC_BTN5,  _______,
+     _______,  _______,  MS_UP,    MS_WHLU,  _______,  _______,
+     MS_WHLL,  MS_LEFT,  MS_DOWN,  MS_RGHT,  MS_WHLR,_______,
+     _______,  MS_WHLD,  MS_BTN3,  MS_BTN4,  MS_BTN5,  _______,
                          KC_NO,    KC_NO,
-     /*thumb*/ KC_NO,    KC_BTN1,  KC_BTN2,
+     /*thumb*/ KC_NO,    MS_BTN1,  MS_BTN2,
       /*aux*/  _______,  _______,  _______
                /* use these ^^^^ */
   ),
