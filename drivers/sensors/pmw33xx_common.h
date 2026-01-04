@@ -72,14 +72,12 @@ STATIC_ASSERT(sizeof((pmw33xx_report_t){0}.motion) == 1, "pmw33xx_report_t.motio
 #    ifndef PMW33XX_CS_PIN
 #        ifdef POINTING_DEVICE_CS_PIN
 #            define PMW33XX_CS_PIN POINTING_DEVICE_CS_PIN
-#            define PMW33XX_CS_PINS \
-                { PMW33XX_CS_PIN }
+#            define PMW33XX_CS_PINS {PMW33XX_CS_PIN}
 #        else
 #            error "No chip select pin defined -- missing PMW33XX_CS_PIN or PMW33XX_CS_PINS"
 #        endif
 #    else
-#        define PMW33XX_CS_PINS \
-            { PMW33XX_CS_PIN }
+#        define PMW33XX_CS_PINS {PMW33XX_CS_PIN}
 #    endif
 #endif
 
