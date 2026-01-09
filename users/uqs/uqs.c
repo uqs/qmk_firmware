@@ -204,6 +204,44 @@ bool get_chordal_hold(uint16_t tap_hold_keycode, keyrecord_t* tap_hold_record,
 }
 #endif
 
+#ifdef SPECULATIVE_HOLD
+bool get_speculative_hold(uint16_t keycode, keyrecord_t* record) {
+    return true; // Enable for all mod-taps.
+}
+#endif
+
+
+#ifdef FLOW_TAP_TERM
+bool is_flow_tap_key(uint16_t keycode) {
+    if ((get_mods() & (MOD_MASK_CG | MOD_BIT_LALT)) != 0) {
+        return false; // Disable Flow Tap on hotkeys.
+    }
+    switch (get_tap_keycode(keycode)) {
+        // Customize further, need to not flow on my special space==shift key
+        //case KC_SPC:
+        //case KC_A ... KC_Z:
+        //case KC_DOT:
+        //case KC_COMM:
+        //case KC_SCLN:
+        //case KC_SLSH:
+        case KC_A:
+        case KC_R:
+        case KC_I:
+        case KC_O:
+            return true;
+    }
+    return false;
+}
+
+uint16_t get_flow_tap_term(uint16_t keycode, keyrecord_t* record,
+                           uint16_t prev_keycode) {
+    if (is_flow_tap_key(keycode) && is_flow_tap_key(prev_keycode)) {
+        return FLOW_TAP_TERM;
+    }
+    return 0;
+}
+#endif
+
 uint16_t key_timer;
 bool num_layer_was_used;
 bool extd_layer_was_used;

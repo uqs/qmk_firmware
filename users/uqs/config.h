@@ -15,6 +15,9 @@
 // Alternative to bilateral combinations
 #define CHORDAL_HOLD
 #define PERMISSIVE_HOLD
+// See https://www.reddit.com/r/ErgoMechKeyboards/comments/1q1jo3c/urobs_zmk_timeless_home_row_mods_ported_to_native/
+#define FLOW_TAP_TERM 100
+//#define SPECULATIVE_HOLD
 #define TAPPING_TERM 200  // ms to trigger tap
 #define TAPPING_TERM_PER_KEY
 #define QUICK_TAP_TERM 0  // disable tap-then-hold to _not_ do key auto repeat
