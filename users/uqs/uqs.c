@@ -639,6 +639,26 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
     case T_PANE:
         if (record->event.pressed) SEND_STRING(SS_LCTL("a") SS_TAP(X_SCLN));
         break;
+    case NP_1 ... NP_9: {
+        // Send KP_n when unmodified, but plain n for Ctrl-1, Alt-1, Shift-1 etc.
+        uint8_t i = keycode - NP_1;
+        if (record->event.pressed) {
+            if ((get_mods() | get_oneshot_mods()) == 0) {
+                register_code(KC_KP_1 + i);
+            } else {
+                register_code(KC_1 + i);
+            }
+        } else {
+            // Mods may have changed since the press, so we can't recompute
+            // which one went out. A single "was keypad" flag breaks on
+            // rollover (press NP_1, Ctrl, NP_2, release NP_1 -> KP_1 stuck).
+            // Just release both, unregistering a key that isn't down is a
+            // no-op. Only caveat: also releases a real KC_n held elsewhere.
+            unregister_code(KC_KP_1 + i);
+            unregister_code(KC_1 + i);
+        }
+        return false;
+    }
     }
 
     return true;

@@ -45,6 +45,8 @@ enum custom_keycodes {
     OSM_ALT,
     ALT_TAB,
     DRAG_SCROLL,
+    // Keypad digits, unless a mod is active. Must stay contiguous.
+    NP_1, NP_2, NP_3, NP_4, NP_5, NP_6, NP_7, NP_8, NP_9,
 };
 
 // Define a type for as many tap dance states as you need

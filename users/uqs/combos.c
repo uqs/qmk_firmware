@@ -64,8 +64,13 @@ const uint16_t PROGMEM my_combos[][4] = {
     {LSFT(KC_GRV), KC_G, KC_H, COMBO_END},
     {KC_GRV, KC_B, KC_N, COMBO_END},
 #endif
-    {MS_BTN3, MS_BTN1, MS_BTN2, COMBO_END},
-    {MS_BTN1, MS_BTN2, MS_BTN3, COMBO_END},
+    // Same for the NP_ keypad digits on the NUM layer.
+    {KC_MINUS, KC_LPRN, NP_4, COMBO_END},
+    {KC_0, NP_4, NP_5, COMBO_END},
+    {KC_0, NP_5, NP_6, COMBO_END},
+    {KC_DOT, NP_2, NP_3, COMBO_END},
+    {LSFT(KC_MINUS), KC_RPRN, NP_1, COMBO_END},
+    {MS_BTN3, MS_BTN1, MS_BTN2, COMBO_END},  // classic 3 button emulation
 };
 
 const uint16_t COMBO_LEN = ARRAY_SIZE(my_action_combos) + ARRAY_SIZE(my_combos);
@@ -87,7 +92,6 @@ combo_t key_combos[] = {
   MY_ACTION_COMBO(5),
   MY_ACTION_COMBO(6),
   MY_ACTION_COMBO(7),
-  MY_ACTION_COMBO(8),
   MY_COMBO(0),
   MY_COMBO(1),
   MY_COMBO(2),
@@ -103,6 +107,11 @@ combo_t key_combos[] = {
   MY_COMBO(12),
   MY_COMBO(13),
   MY_COMBO(14),
+  MY_COMBO(15),
+  MY_COMBO(16),
+  MY_COMBO(17),
+  MY_COMBO(18),
+  MY_COMBO(19),
 };
 
 _Static_assert(ARRAY_SIZE(key_combos) ==

@@ -18,9 +18,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #pragma once
 
 /* Well-worn Cherry MX key switches can bounce for up to 20ms, despite the
- * Cherry data sheet specifying 5ms. Because we use the sym_eager_pk debounce
- * algorithm, this debounce latency only affects key releases (not key
- * presses). */
+ * Cherry data sheet specifying 5ms. Non-AVR setups should move to sym_eager_pk
+ * debounce algorithm, this debounce latency only affects key releases (not key
+ * presses). TODO: switch when moving to an ARM platform.
+ */
 #undef DEBOUNCE
 #define DEBOUNCE 10
 

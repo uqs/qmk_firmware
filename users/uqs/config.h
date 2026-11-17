@@ -10,7 +10,7 @@
 #    define RGBLIGHT_DEFAULT_HUE 15
 #endif
 
-#define DYNAMIC_KEYMAP_LAYER_COUNT 6  // default is 4 for VIA builds
+#define DYNAMIC_KEYMAP_LAYER_COUNT 7
 
 // Alternative to bilateral combinations
 #define CHORDAL_HOLD

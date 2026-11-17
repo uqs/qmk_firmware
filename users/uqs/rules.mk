@@ -10,7 +10,7 @@ endif
 
     UCIS_ENABLE ?= no
     UNICODE_COMMON ?= no
-    LEADER_ENABLE ?= yes
+    # LEADER_ENABLE ?= yes
     COMBO_ENABLE ?= yes
     MOUSEKEY_ENABLE ?= yes
 

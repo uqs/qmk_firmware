@@ -59,17 +59,17 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
   ),
 
   [L_NUM] = LAYOUT_uqs(
-     KC_EXLM,  KC_AT,    KC_HASH,  KC_DLR,   KC_PERC,            KC_KP_ASTERISK, KC_7, KC_8,   KC_9,     KC_KP_PLUS,
-     KC_SCLN,  KC_COLN,  KC_LCBR,  KC_LPRN,  KC_LBRC,            KC_EQUAL, KC_4,     KC_5,     KC_6,     KC_MINS,
-     KC_CIRC,  KC_AMPR,  KC_RCBR,  KC_RPRN,  KC_RBRC,            KC_0,     KC_1,     KC_2,     KC_3,     KC_KP_SLASH,
+     KC_EXLM,  KC_AT,    KC_HASH,  KC_DLR,   KC_PERC,            KC_KP_ASTERISK, NP_7, NP_8,   NP_9,     KC_KP_PLUS,
+     KC_SCLN,  KC_COLN,  KC_LCBR,  KC_LPRN,  KC_LBRC,            KC_EQUAL, NP_4,     NP_5,     NP_6,     KC_MINS,
+     KC_CIRC,  KC_AMPR,  KC_RCBR,  KC_RPRN,  KC_RBRC,            KC_0,     NP_1,     NP_2,     NP_3,     KC_KP_SLASH,
                KC_NO,    KC_NO,                                                      KC_0,     KC_KP_DOT,
                          KC_ESC,   KC_SPC,   KC_TAB,     _______,  _______,  _______
   ),
 
   [L_FUNC] = LAYOUT_uqs(
-     KC_NO,    KC_NO,    KC_NO,    KC_NO,    DF(L_QWER),         KC_PSCR,  KC_F7,    KC_F8,    KC_F9,    KC_F10,
+     KC_LEFT,  KC_UP,    KC_DOWN,  KC_RIGHT, DF(L_QWER),         KC_PSCR,  KC_F7,    KC_F8,    KC_F9,    KC_F10,
      KC_LGUI,  KC_LALT,  KC_LSFT,  KC_LCTL,  DF(L_WASD),         KC_SCRL,  KC_F4,    KC_F5,    KC_F6,    KC_F11,
-     KC_NO,    KC_VOLD,  KC_VOLU,  KC_MUTE,  DF(L_COLM),         KC_PAUS,  KC_F1,    KC_F2,    KC_F3,    KC_F12,
+     KC_NO,    KC_VOLU,  KC_VOLD,  KC_MUTE,  DF(L_COLM),         KC_PAUS,  KC_F1,    KC_F2,    KC_F3,    KC_F12,
                KC_NO,    KC_NO,                                                      KC_NO,    KC_NO,
                          _______,  _______,  _______,    _______,  _______,  _______
   ),
