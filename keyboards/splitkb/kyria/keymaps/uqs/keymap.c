@@ -55,7 +55,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
   // Updated with inspiration from https://forum.colemak.com/topic/2014-extend-extra-extreme/
   // I like the AltGr trick from https://stevep99.github.io/seniply/ and should probably incorporate some stuff from it.
   [L_EXTD] = LAYOUT_uqs(
-     _______,  T_PANE,   KC_SCTAB, KC_PGUP,  KC_CTAB,  QK_LEAD,    KC_HOME,  KC_PGDN,  KC_PGUP,  KC_END,   KC_INS,   KC_NO,
+     _______,  T_PANE,   KC_PRTAB, KC_PGUP,  KC_NXTAB, QK_LEAD,    KC_HOME,  KC_PGDN,  KC_PGUP,  KC_END,   KC_INS,   KC_NO,
      _______,  OSM_GUI,  OSM_ALT,  OSM_SFT,  OSM_CTL,  KC_RALT,    KC_LEFT,  KC_DOWN,  KC_UP,    KC_RGHT,  KC_DEL,   KC_NO,
      _______,  ALT_TAB,  MS_WHLU,  MS_WHLD,  KC_PGDN,  INS_HARD,   WIN_LEFT, WIN_DN,   WIN_UP,   WIN_RGHT, KC_PSTE,  KC_NO,  // KC_PSTE works in XTerm to emulate middle-click
                          _______,  _______,                                            _______,  _______,

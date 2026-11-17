@@ -20,8 +20,8 @@ enum layers {
 _Static_assert(DYNAMIC_KEYMAP_LAYER_COUNT >= L_LAST, "VIA enabled, but not enough DYNAMIC_KEYMAP_LAYER_COUNT for all layers");
 #endif
 
-#define KC_CTAB LCTL(KC_TAB)
-#define KC_SCTAB LCTL(LSFT(KC_TAB))
+#define KC_PRTAB LCTL(KC_PGUP)
+#define KC_NXTAB LCTL(KC_PGDN)
 
 // Custom single-key codes, see uqs.c for the combos.
 enum custom_keycodes {

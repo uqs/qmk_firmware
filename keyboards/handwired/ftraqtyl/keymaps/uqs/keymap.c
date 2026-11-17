@@ -51,7 +51,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
   // Updated with inspiration from https://forum.colemak.com/topic/2014-extend-extra-extreme/
   // I like the AltGr trick from https://stevep99.github.io/seniply/ and should probably incorporate some stuff from it.
   [L_EXTD] = LAYOUT_uqs(
-     T_PANE,   KC_SCTAB, KC_PGUP,  KC_CTAB,  QK_LEAD,            KC_HOME,  KC_PGDN,  KC_PGUP,  KC_END,   KC_INS,
+     T_PANE,   KC_PRTAB, KC_PGUP,  KC_NXTAB, QK_LEAD,            KC_HOME,  KC_PGDN,  KC_PGUP,  KC_END,   KC_INS,
      OSM_GUI,  OSM_ALT,  OSM_SFT,  OSM_CTL,  KC_RALT,            KC_LEFT,  KC_DOWN,  KC_UP,    KC_RGHT,  KC_DEL,
      ALT_TAB,  MS_WHLU,  MS_WHLD,  KC_PGDN,  INS_HARD,           WIN_LEFT, WIN_DN,   WIN_UP,   WIN_RGHT, KC_PSTE,
                _______,  _______,                                                    _______,  _______,
@@ -69,7 +69,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
   [L_FUNC] = LAYOUT_uqs(
      KC_NO,    KC_NO,    KC_NO,    KC_NO,    DF(L_QWER),         KC_PSCR,  KC_F7,    KC_F8,    KC_F9,    KC_F10,
      KC_LGUI,  KC_LALT,  KC_LSFT,  KC_LCTL,  DF(L_WASD),         KC_SCRL,  KC_F4,    KC_F5,    KC_F6,    KC_F11,
-     KC_NO,    KC_VOLU,  KC_VOLD,  KC_MUTE,  DF(L_COLM),         KC_PAUS,  KC_F1,    KC_F2,    KC_F3,    KC_F12,
+     KC_NO,    KC_VOLD,  KC_VOLU,  KC_MUTE,  DF(L_COLM),         KC_PAUS,  KC_F1,    KC_F2,    KC_F3,    KC_F12,
                KC_NO,    KC_NO,                                                      KC_NO,    KC_NO,
                          _______,  _______,  _______,    _______,  _______,  _______
   ),
@@ -77,7 +77,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
   [L_MOUSE] = LAYOUT_uqs(
      MS_BTN1,  MS_BTN2,  KC_PGUP,  MS_BTN1,  MS_BTN3,            MS_BTN3,  MS_BTN1,  MS_BTN5,  MS_BTN2,  MS_BTN4,
      KC_LGUI,  KC_LALT,  KC_LSFT,  KC_LCTL,  KC_NO,              KC_LEFT,  KC_DOWN,  KC_UP,    KC_RGHT,  MS_WHLU,
-     KC_NO,    MS_WHLU,  MS_WHLD,  KC_PGDN,  KC_NO,              MS_LEFT,  MS_DOWN,  MS_UP,  MS_RGHT,  MS_WHLD,
+     KC_NO,    MS_WHLU,  MS_WHLD,  KC_PGDN,  KC_NO,              MS_LEFT,  MS_DOWN,  MS_UP,    MS_RGHT,  MS_WHLD,
                KC_NO,    KC_NO,                                                      KC_NO,    KC_NO,
                      LT_EXTD_ESC,  MS_BTN1,  MS_BTN2,    _______,  _______,  _______
   ),
