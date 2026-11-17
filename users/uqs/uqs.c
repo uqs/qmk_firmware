@@ -188,12 +188,12 @@ bool get_chordal_hold(uint16_t tap_hold_keycode, keyrecord_t* tap_hold_record,
         case LSFT_T(KC_SPC):
             return true;  // TESTING
         case KC_C_T:
-            if (other_keycode == KC_C || other_keycode == KC_T
-                    || other_keycode == KC_W || other_keycode == KC_K) {
+            if (other_keycode == KC_C || other_keycode == KC_W) {
                 return true;
             }
             break;
         case LT_EXTD_ESC:
+            // XXX probably doesn't work ... ask Claude
             if (other_keycode == OSM_GUI || other_keycode == KC_G_A) {
                 return true;
             }
@@ -242,7 +242,6 @@ uint16_t get_flow_tap_term(uint16_t keycode, keyrecord_t* record,
 }
 #endif
 
-uint16_t key_timer;
 bool num_layer_was_used;
 bool extd_layer_was_used;
 
@@ -338,8 +337,11 @@ report_mouse_t pointing_device_task_user(report_mouse_t mouse_report) {
 }
 
 bool process_record_user(uint16_t keycode, keyrecord_t *record) {
-    // TODO: why not use key_timer here? is it dynamic or not?
-    static uint16_t extd_layer_timer;
+    // One timer per key, a shared one gets reset when rolling them and then
+    // tap vs. hold is decided on the wrong press.
+    static uint16_t extd_layer_timer, num_layer_timer;
+    static uint16_t osm_gui_timer, osm_sft_timer, osm_ctl_timer, osm_alt_timer;
+    static uint16_t shift_ins_timer, alt_shift_ins_timer;
     if (layer_state_is(L_EXTD) && record->event.pressed) {
         extd_layer_was_used = true;
     }
@@ -388,7 +390,7 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
     case LT_NUM_BSPC:
         if (record->event.pressed){
             num_layer_was_used = false;
-            extd_layer_timer = timer_read();
+            num_layer_timer = timer_read();
             layer_on(L_NUM);
         } else {
             layer_off(L_NUM);
@@ -398,7 +400,7 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
             // you cannot do with just HOLD_ON_OTHER_KEY_PRESS_PER_KEY. And on
             // top of that, it doesn't break my combo 5+6=0, like
             // HOLD_ON_OTHER_KEY_PRESS would.
-            if (timer_elapsed(extd_layer_timer) < TAPPING_TERM && !num_layer_was_used) {
+            if (timer_elapsed(num_layer_timer) < TAPPING_TERM && !num_layer_was_used) {
                 tap_code(KC_BSPC);
             }
         }
@@ -412,11 +414,11 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
          * of the modifier to move windows around with the mouse. If only
          * tapped, however, have it be a win OSM */
         if (record->event.pressed) {
-            key_timer = timer_read();
+            osm_gui_timer = timer_read();
             register_mods(MOD_BIT(KC_LGUI));
         } else {
             unregister_mods(MOD_BIT(KC_LGUI));
-            if (timer_elapsed(key_timer) < TAPPING_TERM) {
+            if (timer_elapsed(osm_gui_timer) < TAPPING_TERM) {
                 add_oneshot_mods(MOD_BIT(KC_LGUI));
             } else {
                 del_oneshot_mods(MOD_BIT(KC_LGUI));
@@ -428,11 +430,11 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
         // already, so I cannot roll them fast...
     case OSM_SFT:
         if (record->event.pressed) {
-            key_timer = timer_read();
+            osm_sft_timer = timer_read();
             register_mods(MOD_BIT(KC_LSFT));
         } else {
             unregister_mods(MOD_BIT(KC_LSFT));
-            if (timer_elapsed(key_timer) < TAPPING_TERM) {
+            if (timer_elapsed(osm_sft_timer) < TAPPING_TERM) {
                 add_oneshot_mods(MOD_BIT(KC_LSFT));
             } /*else {
                 del_oneshot_mods(MOD_BIT(KC_LSFT));
@@ -441,11 +443,11 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
         return true;
     case OSM_CTL:
         if (record->event.pressed) {
-            key_timer = timer_read();
+            osm_ctl_timer = timer_read();
             register_mods(MOD_BIT(KC_LCTL));
         } else {
             unregister_mods(MOD_BIT(KC_LCTL));
-            if (timer_elapsed(key_timer) < TAPPING_TERM) {
+            if (timer_elapsed(osm_ctl_timer) < TAPPING_TERM) {
                 add_oneshot_mods(MOD_BIT(KC_LCTL));
             } /*else {
                 del_oneshot_mods(MOD_BIT(KC_LCTL));
@@ -454,11 +456,11 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
         return true;
     case OSM_ALT:
         if (record->event.pressed) {
-            key_timer = timer_read();
+            osm_alt_timer = timer_read();
             register_mods(MOD_BIT(KC_LALT));
         } else {
             unregister_mods(MOD_BIT(KC_LALT));
-            if (timer_elapsed(key_timer) < TAPPING_TERM) {
+            if (timer_elapsed(osm_alt_timer) < TAPPING_TERM) {
                 add_oneshot_mods(MOD_BIT(KC_LALT));
             } /*else {
                 del_oneshot_mods(MOD_BIT(KC_LALT));
@@ -479,9 +481,10 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
 #if defined(POINTING_DEVICE_ENABLE)
             set_scrolling = 1;
             pointing_device_set_cpi(100);
-        } else {
+        } else if (set_scrolling) {
+            // Only undo what the hold did, a tap release must not touch the CPI.
             set_scrolling = 0;
-            pointing_device_set_cpi(300);
+            pointing_device_set_cpi(PMW33XX_CPI);
 #endif
         }
         return false;
@@ -581,12 +584,12 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
     case SHIFT_INS:
         if (record->event.pressed) {
             // when keycode is pressed
-            key_timer = timer_read();
+            shift_ins_timer = timer_read();
             // Shift when held ...
             register_mods(MOD_BIT(KC_RSFT));
         } else {
             // If released within the timer, then Shift+Ins
-            if (timer_elapsed(key_timer) < TAPPING_TERM) {
+            if (timer_elapsed(shift_ins_timer) < TAPPING_TERM) {
                 tap_code16(KC_INS);
             }
             unregister_mods(MOD_BIT(KC_RSFT));
@@ -594,12 +597,12 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
         break;
     case ALT_SHIFT_INS:
         if (record->event.pressed) {
-            key_timer = timer_read();
+            alt_shift_ins_timer = timer_read();
             // Shift when held ...
             register_mods(MOD_BIT(KC_LSFT));
         } else {
             // If released within the timer, then Shift+Alt+Ins
-            if (timer_elapsed(key_timer) < TAPPING_TERM) {
+            if (timer_elapsed(alt_shift_ins_timer) < TAPPING_TERM) {
                 register_mods(MOD_BIT(KC_LALT));
                 tap_code16(KC_INS);
             }
