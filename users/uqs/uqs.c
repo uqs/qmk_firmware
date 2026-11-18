@@ -342,6 +342,7 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
     static uint16_t extd_layer_timer, num_layer_timer;
     static uint16_t osm_gui_timer, osm_sft_timer, osm_ctl_timer, osm_alt_timer;
     static uint16_t shift_ins_timer, alt_shift_ins_timer;
+    static bool alt_tab_owns_alt;
     if (layer_state_is(L_EXTD) && record->event.pressed) {
         extd_layer_was_used = true;
     }
@@ -378,7 +379,11 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
             layer_on(L_EXTD);
         } else {
             layer_off(L_EXTD);
-            unregister_mods(MOD_BIT(KC_LALT));   // undo what ALT_TAB might've set
+            // Only undo what ALT_TAB set, not an Alt held otherwise (KC_A_R).
+            if (alt_tab_owns_alt) {
+                unregister_mods(MOD_BIT(KC_LALT));
+                alt_tab_owns_alt = false;
+            }
             // NOTE: need to track whether we made use of the extd layer and
             // that all happened within the tapping term. Otherwise we'd emit
             // that layer key code _plus_ an extra Esc.
@@ -569,7 +574,10 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
 #endif
     case ALT_TAB:
         if (record->event.pressed) {
-            register_mods(MOD_BIT(KC_LALT));
+            if (!(get_mods() & MOD_BIT(KC_LALT))) {
+                register_mods(MOD_BIT(KC_LALT));
+                alt_tab_owns_alt = true;
+            }
             tap_code16(KC_TAB);
         }
         break;
